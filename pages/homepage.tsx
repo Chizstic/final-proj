@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import Footer from './footer';
 import BookingForm from './bookingform';
+import Image from 'next/image';
 
 // Define types for booking details and service types
 type BookingDetails = {
@@ -52,7 +53,8 @@ function Homepage() {
       <header className="sticky top-0 z-50 shadow-md" style={{ backgroundColor: 'rgba(171, 198, 191, 0.30)' }}>
         <nav className="flex items-center justify-between flex-wrap p-6 h-24">
           <div className="header-background flex items-center flex-shrink-0 text-white mr-6">
-            <img src="/logo.png" alt="Logo" className="h-16 w-16 mr-4 rounded-full" />
+          <Image  src="logo_png" alt="example" width={500} height={500}  className="your-css-class another-css-class"
+/>
             <div className="flex flex-row items-center">
               <span className="font-bold text-2xl tracking-tight" style={{ color: '#D20062', fontFamily: 'Serif' }}>Guys & Gals</span>
               <span className="font-bold text-2xl tracking-tight ml-2" style={{ color: '#D6589F', fontFamily: 'Serif' }}>Salon</span>

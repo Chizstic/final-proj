@@ -6,8 +6,7 @@ import { Staff } from './api/type';
 
 const AdminPage: React.FC = () => {
   const [staffList, setStaffList] = useState<Staff[]>([]);
-  const [error, setError] = useState<string>('');
-
+ 
   const fetchStaffList = async () => {
     // Simulated fetch staff list for Next.js
     const data: Staff[] = [
@@ -36,7 +35,7 @@ const AdminPage: React.FC = () => {
           <section className="bg-white shadow-md rounded-lg p-6">
             <h2 className="text-2xl font-semibold mb-4 text-blue-600">Staffs</h2>
             <p className="text-gray-700">View and manage your staff.</p>
-            {error && <p className="text-red-500">{error}</p>}
+            
             <StaffList 
               staffList={staffList} 
               handleAddStaff={handleAddStaff} 

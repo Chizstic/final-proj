@@ -24,4 +24,19 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+
+  /* New custom button class */
+  .custom-button {
+    background-color: #3490dc; /* Blue background */
+    color: white; /* White text */
+    padding: 10px 20px; /* Padding around the button */
+    border-radius: 5px; /* Rounded corners */
+    text-align: center; /* Center the text */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s ease; /* Smooth transition on hover */
+  }
+
+  .custom-button:hover {
+    background-color: #2779bd; /* Darker blue on hover */
+  }
 }
