@@ -132,15 +132,18 @@ function Homepage() {
 
       <div className="container mx-auto mt-24 px-4 flex flex-col md:flex-row">
         {/* Description */}
-        <div className="text-gray-800 text-lg md:w-1/2 first-line:uppercase first-line:tracking-widest first-letter:text-7xl first-letter:font-bold first-letter:text-black first-letter:mr-3 first-letter:float-left mt-9">
-          <p><span className="font-2xl">Welcome to Guys & Gals Salon, where style meets personality!</span></p>
-          <p>Step into our sanctuary of beauty and refinement, where expert</p>
-          <p>stylists and personalized service await. Whether you're seeking</p>
-          <p>a bold new look or a subtle enhancement, our salon is dedicated</p>
-          <p>to elevating your confidence and enhancing your natural charm.</p>
-          <p>Experience the epitome of glamour and relaxation at Guys & Gals Salon</p>
-          <p>where every visit promises a transformative journey to your most radiant self.</p>
-        </div>
+        
+  <div className="text-gray-800 text-lg md:w-1/2 first-line:uppercase first-line:tracking-widest first-letter:text-7xl first-letter:font-bold first-letter:text-black first-letter:mr-3 first-letter:float-left mt-9">
+    <p><span className="font-2xl">Welcome to Guys & Gals Salon, where style meets personality!</span></p>
+    <p>Step into our sanctuary of beauty and refinement, where expert</p>
+    <p>stylists and personalized service await. Whether you&apos;re seeking</p>
+    <p>a bold new look or a subtle enhancement, our salon is dedicated</p>
+    <p>to elevating your confidence and enhancing your natural charm.</p>
+    <p>Experience the epitome of glamour and relaxation at Guys & Gals Salon</p>
+    <p>where every visit promises a transformative journey to your most radiant self.</p>
+  
+</div>
+
 
         {/* Image */}
         <div className="md:w-1/2 md:ml-auto mt-6 md:mt-0">
