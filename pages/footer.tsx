@@ -56,7 +56,7 @@ function Footer() {
           <div className="-ml-14">
             <div className="-mt-28 w-48 h-48 rounded-full bg-rose-200 flex justify-center items-center">
               <div className="w-40">
-                <Image src="/public/logo.png" alt="Logo" className="rounded-full" width={160} height={160} />
+                <Image src="/logo.png" alt="Logo" className="rounded-full" width={160} height={160} />
               </div>
             </div>
           </div>
@@ -64,7 +64,9 @@ function Footer() {
           <div className="flex justify-center text-lg text-slate-600 w-full">
             <nav className="flex space-x-8">
               <a href="#" className="hover:text-teal-600">About Us</a>
-              <Link href="/shop"> <a>Shop</a></Link>
+            <Link href="/shop"> <button>shop
+               </button>
+          </Link>
               <a href="#" className="hover:text-teal-600">Contacts</a>
             </nav>
           </div>

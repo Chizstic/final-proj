@@ -2,17 +2,18 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import BookingForm from './bookingform';
+import Image from 'next/image';
 
 const comboRatesImages = [
-  '/servicesOffered/SO_img1.jpg',
-  '/servicesOffered/SO_img2.jpg',
-  '/servicesOffered/SO_img3.jpg',
-  '/servicesOffered/SO_img4.jpg',
-  '/servicesOffered/SO_img5.jpg',
-  '/servicesOffered/SO_img6.jpg',
-  '/servicesOffered/SO_img7.jpg',
-  '/servicesOffered/SO_img8.jpg',
-  '/servicesOffered/SO_img9.jpg',
+  '/SO_img1.jpg',
+  '/SO_img2.jpg',
+  '/SO_img3.jpg',
+  '/SO_img4.jpg',
+  '/SO_img5.jpg',
+  '/SO_img6.jpg',
+  '/SO_img7.jpg',
+  '/SO_img8.jpg',
+  '/SO_img9.jpg',
 ];
 
 interface Service {
@@ -42,10 +43,12 @@ const Slideshow: React.FC<{ images: string[] }> = ({ images }) => {
 
   return (
     <div className="relative w-2/4 h-96 overflow-hidden group">
-      <img
+      <Image
         src={images[currentIndex]}
         alt={`Slide ${currentIndex + 1}`}
-        className="w-full h-full object-cover"
+        layout="fill"
+        objectFit="cover"
+        className="w-full h-full"
       />
       <button
         className="absolute left-3 top-1/2 transform -translate-y-1/2 border-none text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
@@ -72,30 +75,30 @@ const Slideshow: React.FC<{ images: string[] }> = ({ images }) => {
 
 const servicesData = {
   hairCare: [
-    { name: 'Hair Trim', image: '/servicesOffered/SO_img1.jpg' },
-    { name: 'Hair Color', image: '/servicesOffered/SO_img2.jpg' },
-    { name: 'Hot Oil', image: '/servicesOffered/SO_img4.jpg' },
-    { name: 'Balayage', image: '/servicesOffered/SO_img3.jpg' },
-    { name: 'Hair Rebond', image: '/servicesOffered/SO_img5.jpg' },
-    { name: 'Hair Botox', image: '/servicesOffered/SO_img6.jpg' },
-    { name: 'Keratin', image: '/servicesOffered/SO_img7.jpg' },
-    { name: 'Highlights', image: '/servicesOffered/SO_img8.jpg' },
+    { name: 'Hair Trim', image: '/SO_img1.jpg' },
+    { name: 'Hair Color', image: '/SO_img2.jpg' },
+    { name: 'Hot Oil', image: '/SO_img4.jpg' },
+    { name: 'Balayage', image: '/SO_img3.jpg' },
+    { name: 'Hair Rebond', image: '/SO_img5.jpg' },
+    { name: 'Hair Botox', image: '/SO_img6.jpg' },
+    { name: 'Keratin', image: '/SO_img7.jpg' },
+    { name: 'Highlights', image: '/SO_img8.jpg' },
   ],
   spaTreatments: [
-    { name: 'Foot Spa', image: '/servicesOffered/SO_img9.jpg' },
-    { name: 'Foot Massage', image: '/servicesOffered/SO_img10.jpg' },
-    { name: 'Waxing (Armpit & Legs)', image: '/servicesOffered/SO_img11.jpg' },
+    { name: 'Foot Spa', image: '/SO_img9.jpg' },
+    { name: 'Foot Massage', image: '/SO_img10.jpg' },
+    { name: 'Waxing (Armpit & Legs)', image: '/SO_img11.jpg' },
   ],
   hairAndMakeUp: [
-    { name: 'Hair Styling', image: '/servicesOffered/SO_img12.jpg' },
-    { name: 'Makeup', image: '/servicesOffered/SO_img13.jpg' },
+    { name: 'Hair Styling', image: '/SO_img12.jpg' },
+    { name: 'Makeup', image: '/SO_img13.jpg' },
   ],
   nailCare: [
-    { name: 'Manicure', image: '/servicesOffered/SO_img14.jpg' },
-    { name: 'Pedicure', image: '/servicesOffered/SO_img15.jpg' },
-    { name: 'Nail Gel', image: '/servicesOffered/SO_img16.jpg' },
-    { name: 'Gel Polish', image: '/servicesOffered/SO_img17.jpg' },
-    { name: 'Soft Gel Nail Extension', image: '/servicesOffered/SO_img18.jpg' },
+    { name: 'Manicure', image: '/SO_img14.jpg' },
+    { name: 'Pedicure', image: '/SO_img15.jpg' },
+    { name: 'Nail Gel', image: '/SO_img16.jpg' },
+    { name: 'Gel Polish', image: '/SO_img17.jpg' },
+    { name: 'Soft Gel Nail Extension', image: '/SO_img18.jpg' },
   ],
 };
 
@@ -103,7 +106,7 @@ const Section: React.FC<{
   title: string;
   services: Service[];
   sectionRef: React.RefObject<HTMLDivElement>;
-  onBookNowClick: () => void;
+  onBookNowClick: () => void; // Removed unused prop warning
 }> = ({ title, services, sectionRef, onBookNowClick }) => {
   return (
     <div ref={sectionRef} className="mb-12 bg-white rounded-lg shadow-lg p-8">
@@ -112,10 +115,12 @@ const Section: React.FC<{
         {services.map((service, index) => (
           <div key={index} className="relative bg-white shadow-xl rounded-lg flex flex-col items-center justify-center overflow-hidden transition-transform duration-300 transform hover:scale-105 hover:shadow-2xl focus:outline-none">
             <div className="relative w-full h-60">
-              <img
+              <Image
                 src={service.image}
                 alt={service.name}
-                className="w-full h-full object-cover"
+                layout="fill"
+                objectFit="cover"
+                className="w-full h-full"
               />
               <div className="absolute bottom-0 right-0 p-2 bg-rose-200 rounded-lg bg-opacity-70 text-gray-800">
                 <h3 className="text-lg font-semibold">{service.name}</h3>
@@ -143,66 +148,42 @@ const ServicesPage: React.FC = () => {
     setShowBookingForm(false);
   };
 
-  const handleBookingSubmit = (bookingDetails: any) => {
+  interface BookingDetails {
+    name: string;
+    date: string;
+    time: string; // Keep this to match Booking type in BookingForm
+    // Add more fields as necessary
+  }
+  
+
+  const handleBookingSubmit = (bookingDetails: BookingDetails) => {
     console.log('Booking details:', bookingDetails);
+    handleCloseBookingForm(); // Close the form after submission
   };
 
   return (
     <div className="min-h-screen sticky top-0 z-50 shadow-md">
       <div className="fixed top-0 left-0 w-full py-4 flex justify-between items-center px-8 z-50" style={{ backgroundColor: 'rgba(171, 198, 191, 0.30)' }}>
         <div className="header-background flex items-center flex-shrink-0 text-white mr-6">
-          <img src="/logo.png" alt="Logo" className="h-16 w-16 mr-4 rounded-full" />
+          <Image src="/logo.png" alt="Logo" width={64} height={64} className="mr-4 rounded-full" />
           <div className="flex flex-row items-center">
             <span className="font-bold text-2xl tracking-tight" style={{ color: '#D20062', fontFamily: 'Serif' }}>Guys & Gals</span>
             <span className="font-bold text-2xl tracking-tight ml-2" style={{ color: '#D6589F', fontFamily: 'Serif' }}>Salon</span>
           </div>
         </div>
-        <button onClick={handleBookNowClick} className="hover:text-teal-600 bg-opacity-70 text-slate-700 font-semibold text-xl hover:underline py-2 px-4 rounded ml-52">
+        <button onClick ={handleBookNowClick} className="hover:text-teal-600 bg-opacity-70 text-slate-700 font-semibold text-xl hover:underline py-2 px-4 rounded ml-52">
           Book Now
         </button>
       </div>
 
-      <div className="mt-20 relative pt-20 p-8 bg-white bg-opacity-90 min-h-screen">
-        <div className="container mx-auto">
-          <Slideshow images={comboRatesImages} />
-          <Section
-            title="Hair Care Services"
-            services={servicesData.hairCare}
-            sectionRef={hairCareRef}
-            onBookNowClick={handleBookNowClick}
-          />
-          <Section
-            title="Spa Treatments"
-            services={servicesData.spaTreatments}
-            sectionRef={spaTreatmentsRef}
-            onBookNowClick={handleBookNowClick}
-          />
-          <Section
-            title="Hair & Makeup Services"
-            services={servicesData.hairAndMakeUp}
-            sectionRef={hairAndMakeUpRef}
-            onBookNowClick={handleBookNowClick}
-          />
-          <Section
-            title="Nail Care Services"
-            services={servicesData.nailCare}
-            sectionRef={nailCareRef}
-            onBookNowClick={handleBookNowClick}
-          />
-        </div>
+      <Slideshow images={comboRatesImages} />
 
-        {showBookingForm && (
-          <div className="fixed inset-0 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-8 shadow-lg z-50">
-              <h2 className="text-2xl font-bold mb-4">Booking Form</h2>
-              <BookingForm onClose={handleCloseBookingForm} onSubmit={handleBookingSubmit} />
-              <button onClick={handleCloseBookingForm} className="mt-4 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                Close
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
+      <Section title="Hair Care" services={servicesData.hairCare} sectionRef={hairCareRef} onBookNowClick={handleBookNowClick} />
+      <Section title="Spa Treatments" services={servicesData.spaTreatments} sectionRef={spaTreatmentsRef} onBookNowClick={handleBookNowClick} />
+      <Section title="Hair and Make Up" services={servicesData.hairAndMakeUp} sectionRef={hairAndMakeUpRef} onBookNowClick={handleBookNowClick} />
+      <Section title="Nail Care" services={servicesData.nailCare} sectionRef={nailCareRef} onBookNowClick={handleBookNowClick} />
+
+      {showBookingForm && <BookingForm onClose={handleCloseBookingForm} onSubmit={handleBookingSubmit} />}
     </div>
   );
 };

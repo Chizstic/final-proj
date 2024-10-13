@@ -1,4 +1,3 @@
-// src/components/BookingForm.tsx
 import React, { useState, useEffect } from 'react';
 
 // Define the type for booking details, including an optional id
@@ -8,8 +7,12 @@ type BookingDetails = {
   service: string;
 };
 
+interface Booking extends BookingDetails {
+  id: number; // Required for existing bookings
+}
+
 interface BookingFormProps {
-  onSubmit: (bookingDetails: BookingDetails) => void;
+  onSubmit: (booking: Booking) => void; // Change to accept Booking
   onClose: () => void;
   initialBookingDetails?: BookingDetails | null; // Allow for initial values
 }
@@ -21,20 +24,27 @@ const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, onClose, initialBoo
     service: '',
   });
 
+  // Use effect to set initial values if provided
   useEffect(() => {
     if (initialBookingDetails) {
       setFormDetails(initialBookingDetails);
     }
   }, [initialBookingDetails]);
 
+  // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormDetails({ ...formDetails, [name]: value });
   };
 
+  // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formDetails); // This remains unchanged as we are submitting BookingDetails
+    const booking: Booking = {
+      ...formDetails,
+      id: Date.now(), // Or any unique ID logic you prefer
+    };
+    onSubmit(booking); // Pass the Booking object to onSubmit
     onClose(); // Close the form after submission
   };
 

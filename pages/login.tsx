@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
+import Link from 'next/link'; // Import Link from next/link
 
 const LoginPage = () => {
   const router = useRouter();
@@ -20,24 +21,24 @@ const LoginPage = () => {
 
     // Simulate authentication
     setTimeout(() => {
-        if (email === mockEmailAdmin && password === mockPasswordAdmin) {
-            // Admin login
-            localStorage.setItem('userEmail', email);
-            localStorage.setItem('userRole', 'admin');
-            localStorage.setItem('userName', 'Admin User'); // Hardcoded name for now
-            router.push('/admin'); // Redirect to admin page
-        } else if (email === mockEmailUser && password === mockPasswordUser) {
-            // User login
-            localStorage.setItem('userEmail', email);
-            localStorage.setItem('userRole', 'user');
-            localStorage.setItem('userName', 'Regular User'); // Hardcoded name for now
-            router.push('/homepage'); // Redirect to homepage
-        } else {
-            setError('Invalid email or password. Please try again.');
-        }
-        setLoading(false);
+      if (email === mockEmailAdmin && password === mockPasswordAdmin) {
+        // Admin login
+        localStorage.setItem('userEmail', email);
+        localStorage.setItem('userRole', 'admin');
+        localStorage.setItem('userName', 'Admin User'); // Hardcoded name for now
+        router.push('/admin'); // Redirect to admin page
+      } else if (email === mockEmailUser && password === mockPasswordUser) {
+        // User login
+        localStorage.setItem('userEmail', email);
+        localStorage.setItem('userRole', 'user');
+        localStorage.setItem('userName', 'Regular User'); // Hardcoded name for now
+        router.push('/homepage'); // Redirect to homepage
+      } else {
+        setError('Invalid email or password. Please try again.');
+      }
+      setLoading(false);
     }, 1000); // Mock delay for loading effect
-};
+  };
 
   return (
     <div className="flex min-h-screen bg-slate-100">
@@ -90,7 +91,7 @@ const LoginPage = () => {
             {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
           </form>
           <p className="mt-4 text-center">
-            Don't have an account? <a href="/signup" className="text-pink-500 hover:text-pink-700">Sign Up</a>
+            Don&apos;t have an account? <Link href="/signup" className="text-pink-500 hover:text-pink-700">Sign Up</Link>
           </p>
         </div>
       </div>
