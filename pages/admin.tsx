@@ -1,3 +1,4 @@
+// src/pages/AdminPage.tsx
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import StaffList from './stafflist';
@@ -7,12 +8,17 @@ const AdminPage: React.FC = () => {
   const [staffList, setStaffList] = useState<Staff[]>([]);
 
   const fetchStaffList = async () => {
-    // Simulated fetch staff list for Next.js
-    const data: Staff[] = [
-      { id: 1, firstName: 'John', lastName: 'Doe', position: 'Manager' },
-      // Add more sample data if necessary
-    ];
-    setStaffList(data);
+    try {
+      // Simulated fetch staff list for Next.js
+      const data: Staff[] = [
+        { id: 1, firstName: 'John', lastName: 'Doe', position: 'Manager' },
+        // Add more sample data if necessary
+      ];
+      setStaffList(data);
+    } catch (error) {
+      console.error("Failed to fetch staff list:", error);
+      setStaffList([]); // Set to empty array on error
+    }
   };
 
   useEffect(() => {

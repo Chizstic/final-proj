@@ -9,11 +9,11 @@ interface CartItem {
 }
 
 interface CartProps {
-  cartItems: CartItem[];
+  cartItems: CartItem[]; // Ensure cartItems is defined
   removeFromCart: (id: number) => void;
 }
 
-const Cart: React.FC<CartProps> = ({ cartItems, removeFromCart }) => {
+const Cart: React.FC<CartProps> = ({ cartItems = [], removeFromCart }) => { // Provide a default value
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
 
