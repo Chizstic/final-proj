@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import Link from 'next/link'; // Import Link from next/link
+import Link from 'next/link';
 
 const SignUpPage = () => {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
+  const [name, setName] = useState(''); // Add a field for name
   const [success, setSuccess] = useState('');
 
   const validateEmail = (email: string) => {
@@ -15,29 +15,46 @@ const SignUpPage = () => {
     return emailRegex.test(email);
   };
 
-  const handleSignUp = (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Validate email format
     if (!validateEmail(email)) {
-      setError('Please enter a valid email address');
       return;
     }
 
     // Check if passwords match
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
       return;
     }
 
-    // Clear any previous error messages
-    setError('');
-    setSuccess('Sign up successful! You can now log in.');
+    // Send data to the backend
+    try {
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password, name, role: 'user' }), // Assume role as 'user' by default
+      });
 
-    // Simulate a redirect to login after successful sign-up
-    setTimeout(() => {
-      router.push('/login');
-    }, 2000); // Redirect after 2 seconds
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Something went wrong');
+      }
+
+      // If registration is successful
+      setSuccess('Sign up successful! You can now log in.');
+      
+      // Simulate a redirect to login after successful sign-up
+      setTimeout(() => {
+        router.push('/login');
+      }, 2000); // Redirect after 2 seconds
+    } catch (err) {
+      // You can choose to log the error for debugging purposes or completely ignore it
+      console.error(err);
+    }
   };
 
   return (
@@ -45,6 +62,18 @@ const SignUpPage = () => {
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
         <h2 className="text-2xl font-bold mb-6 text-center">Sign Up</h2>
         <form onSubmit={handleSignUp}>
+          <div className="mb-4">
+            <label htmlFor="name" className="block text-sm font-semibold mb-2">Name</label>
+            <input
+              type="text"
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md"
+              placeholder="Enter your name"
+              required
+            />
+          </div>
           <div className="mb-4">
             <label htmlFor="email" className="block text-sm font-semibold mb-2">Email</label>
             <input
@@ -87,11 +116,10 @@ const SignUpPage = () => {
           >
             Sign Up
           </button>
-          {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
           {success && <p className="text-green-500 mt-4 text-center">{success}</p>}
         </form>
         <p className="mt-4 text-center">
-          Already have an account? <Link href="/" className="text-teal-500 hover:text-teal-700">Login</Link>
+          Already have an account? <Link href="/login" className="text-teal-500 hover:text-teal-700">Login</Link>
         </p>
       </div>
     </div>
@@ -99,3 +127,4 @@ const SignUpPage = () => {
 };
 
 export default SignUpPage;
+
