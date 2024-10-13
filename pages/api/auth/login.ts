@@ -1,4 +1,6 @@
+// /pages/api/login.ts
 import { NextApiRequest, NextApiResponse } from 'next';
+import bcrypt from 'bcrypt';
 import { Client } from '@vercel/postgres';
 
 const client = new Client({
@@ -24,16 +26,16 @@ const loginHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
       const user = result.rows[0];
 
-      // Here you should verify the password (consider using bcrypt for hashing)
-      // For now, we'll just check against a hardcoded password
-      if (password !== user.password) {
+      // Verify the password using bcrypt
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (!isPasswordValid) {
         return res.status(401).json({ message: 'Invalid email or password' });
       }
 
       // Send back user details (omit sensitive data)
       res.status(200).json({ message: 'Login successful', user: { email: user.email, role: user.role, name: user.name } });
     } catch (error) {
-      console.error(error);
+      console.error('Error during login:', error);
       res.status(500).json({ message: 'Internal server error' });
     } finally {
       await client.end();
