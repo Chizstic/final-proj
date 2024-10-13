@@ -35,7 +35,7 @@ const SignUpPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password, name, role: 'user' }), // Assume role as 'user' by default
+        body: JSON.stringify({ email, password, role: 'user' }), // Assume role as 'user' by default
       });
 
       const data = await response.json();

@@ -10,14 +10,14 @@ const client = new Client({
 
 const registerHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
-    const { email, password, name, role } = req.body;
+    const { email, password, role } = req.body;
 
     try {
       await client.connect();
 
       // Check if the user already exists
       const existingUser = await client.query(
-        'SELECT * FROM Users WHERE email = $1',
+        'SELECT * FROM users WHERE email = $1',
         [email]
       );
 
@@ -30,8 +30,8 @@ const registerHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
       // Insert the new user into the Users table
       await client.query(
-        'INSERT INTO Users (email, password, name, role) VALUES ($1, $2, $3, $4)',
-        [email, hashedPassword, name, role]
+        'INSERT INTO Users (email, password, role) VALUES ($1, $2, $4)',
+        [email, hashedPassword, role]
       );
 
       // Send back a success response
