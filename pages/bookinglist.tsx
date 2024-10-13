@@ -23,7 +23,7 @@ const BookingList: React.FC<BookingListProps> = ({ bookings, deleteBooking, edit
         </thead>
         <tbody>
           {bookings.map((booking) => (
-            <tr key={booking.id}>
+            <tr key={booking.id || booking.name}> 
               <td className="border-b p-2">{booking.name}</td>
               <td className="border-b p-2">{booking.date}</td>
               <td className="border-b p-2">{booking.service}</td>
@@ -31,7 +31,7 @@ const BookingList: React.FC<BookingListProps> = ({ bookings, deleteBooking, edit
                 <button
                   className="bg-red-500 text-white px-2 py-1 rounded ml-2 hover:bg-red-700 transition"
                   onClick={() => {
-                    const id = booking.id; // Make sure to handle the optional id
+                    const id = booking.id;
                     if (id) {
                       deleteBooking(id);
                     } else {

@@ -16,11 +16,11 @@ const ShopPage: React.FC = () => {
   const [cartItems, setCartItems] = useState<Product[]>([]);
 
   const products: Product[] = [
-    { id: 1, name: 'Keravit', size: '1000ml', price: '₱1,650', image: '/shopPics/keravit.png' },
-    { id: 2, name: 'Keravit', size: '300ml', price: '₱500', image: '/shopPics/keravit.png' },
-    { id: 3, name: 'Cindynal Moisturizer', size: '500g', price: '₱250', image: '/shopPics/cyndal.jpg' },
-    { id: 4, name: 'Ashley Hair Serum', size: '120ml', price: '₱400', image: '/shopPics/hair_serum.jpg' },
-    { id: 5, name: 'Semidilino Essential Oil', size: '12x3ml', price: '₱800', image: '/shopPics/semidilino.jpg' },
+    { id: 1, name: 'Keravit', size: '1000ml', price: '₱1,650', image: '/keravit.png' },
+    { id: 2, name: 'Keravit', size: '300ml', price: '₱500', image: '/keravit.png' },
+    { id: 3, name: 'Cindynal Moisturizer', size: '500g', price: '₱250', image: '/cyndal.jpg' },
+    { id: 4, name: 'Ashley Hair Serum', size: '120ml', price: '₱400', image: '/hair_serum.jpg' },
+    { id: 5, name: 'Semidilino Essential Oil', size: '12x3ml', price: '₱800', image: '/semidilino.jpg' },
   ];
 
   const addToCart = (product: Product) => {

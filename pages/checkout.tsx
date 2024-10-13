@@ -23,10 +23,14 @@ const CheckOutPage: React.FC<CheckOutPageProps> = ({ cartItems }) => {
 
   return (
     <div>
-      <h2 className="text-xl font-bold">Checkout</h2>
+    <h2 className="text-xl font-bold">Checkout</h2>
+    {cartItems.length === 0 ? (
+      <p>Your cart is empty.</p>
+    ) : (
       <div>{renderCartItems()}</div>
-      {/* You can add more checkout logic and UI here */}
-    </div>
+    )}
+  </div>
+  
   );
 };
 
