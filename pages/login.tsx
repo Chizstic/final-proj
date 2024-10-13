@@ -9,35 +9,35 @@ const LoginPage = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
 
-    // Mock login check (replace this with real logic later)
-    const mockEmailAdmin = 'admin@gmail.com'; // Example admin email
-    const mockPasswordAdmin = 'admin123'; // Example admin password
-    const mockEmailUser = 'jomar@gmail.com'; // Example user email
-    const mockPasswordUser = 'user123'; // Example user password
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    // Simulate authentication
-    setTimeout(() => {
-      if (email === mockEmailAdmin && password === mockPasswordAdmin) {
-        // Admin login
-        localStorage.setItem('userEmail', email);
-        localStorage.setItem('userRole', 'admin');
-        localStorage.setItem('userName', 'Admin User'); // Hardcoded name for now
-        router.push('/admin'); // Redirect to admin page
-      } else if (email === mockEmailUser && password === mockPasswordUser) {
-        // User login
-        localStorage.setItem('userEmail', email);
-        localStorage.setItem('userRole', 'user');
-        localStorage.setItem('userName', 'Regular User'); // Hardcoded name for now
-        router.push('/homepage'); // Redirect to homepage
+      if (!response.ok) {
+        const errorData = await response.json();
+        setError(errorData.message);
       } else {
-        setError('Invalid email or password. Please try again.');
+        const data = await response.json();
+        localStorage.setItem('userEmail', data.user.email);
+        localStorage.setItem('userRole', data.user.role);
+        localStorage.setItem('userName', data.user.name); // Assuming user has a name property
+        router.push(data.user.role === 'admin' ? '/admin' : '/homepage');
       }
+    } catch (error) {
+      setError('Something went wrong. Please try again.');
+    } finally {
       setLoading(false);
-    }, 1000); // Mock delay for loading effect
+    }
   };
 
   return (
