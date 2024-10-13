@@ -1,27 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import { Bookings } from './api/booking'; // Import the Bookings interface
 
-// Define the type for booking details, including an optional id
-type BookingDetails = {
-  name: string;
-  date: string;
-  service: string;
-};
-
-interface Booking extends BookingDetails {
-  id: number; // Required for existing bookings
-}
-
+// Define the type for booking details used within the form
 interface BookingFormProps {
-  onSubmit: (booking: Booking) => void; // Change to accept Booking
   onClose: () => void;
-  initialBookingDetails?: BookingDetails | null; // Allow for initial values
+  onSubmit: (booking: Bookings) => void; // Use the Bookings type here
+  initialBookingDetails?: Bookings; // Use Bookings for initial values
 }
 
-const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, onClose, initialBookingDetails }) => {
-  const [formDetails, setFormDetails] = useState<BookingDetails>({
+const BookingForm: React.FC<BookingFormProps> = ({ onClose, onSubmit, initialBookingDetails }) => {
+  const [formDetails, setFormDetails] = useState<Bookings>({
     name: '',
     date: '',
     service: '',
+    id: undefined // Optional id
   });
 
   // Use effect to set initial values if provided
@@ -40,9 +32,9 @@ const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, onClose, initialBoo
   // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const booking: Booking = {
+    const booking: Bookings = {
       ...formDetails,
-      id: Date.now(), // Or any unique ID logic you prefer
+      id: Date.now(), // Assign a unique ID
     };
     onSubmit(booking); // Pass the Booking object to onSubmit
     onClose(); // Close the form after submission

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-
+import Link from 'next/link'; // Import Link from next/link
 
 const SignUpPage = () => {
   const router = useRouter();
@@ -91,7 +91,7 @@ const SignUpPage = () => {
           {success && <p className="text-green-500 mt-4 text-center">{success}</p>}
         </form>
         <p className="mt-4 text-center">
-          Already have an account? <a href="/" className="text-teal-500 hover:text-teal-700">Login</a>
+          Already have an account? <Link href="/" className="text-teal-500 hover:text-teal-700">Login</Link>
         </p>
       </div>
     </div>
