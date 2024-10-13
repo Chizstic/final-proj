@@ -39,7 +39,7 @@ const Cart: React.FC<CartProps> = ({ cartItems, removeFromCart }) => {
   };
 
   return (
-    <div className="">
+    <div>
       <div className="w-64 p-4 bg-gray-100 shadow-lg">
         <h2 className="text-xl font-bold mb-4">Cart</h2>
         {cartItems.length === 0 ? (

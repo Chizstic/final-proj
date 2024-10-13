@@ -40,7 +40,7 @@ const ShopPage: React.FC = () => {
   return (
     <div className="relative flex flex-col md:flex-row">
       {/* Product Grid Section */}
-      <div className="flex grid-cols-1 lg:grid-cols-3 gap-3 p-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
         {products.map((product) => (
           <div
             key={product.id}
@@ -50,14 +50,14 @@ const ShopPage: React.FC = () => {
               alt={product.name}
               width={192}
               height={192}
-              className="mb-4 border border-gray-200 rounded-md shadow-md"
+              className="mb-4 border border-gray-200 rounded-md shadow-md object-cover w-full h-48" // Adjusted image styling for better alignment
             />
             <h2 className="text-xl text-slate-700 font-semibold mb-1">{product.name}</h2>
-            <p className="text-gray-500 mb-8 text-sm">{product.size}</p>
-            <p className="text-rose-600 font-medium text-lg -ml-32 -mb-8">{product.price}</p>
+            <p className="text-gray-500 mb-2 text-sm">{product.size}</p>
+            <p className="text-rose-600 font-medium text-lg">{product.price}</p>
             <button
               onClick={() => addToCart(product)}
-              className="bg-rose-500 -mr-24 opacity-90 text-white px-4 py-2 rounded-lg hover:bg-rose-600 transition-colors duration-300">
+              className="bg-rose-500 opacity-90 text-white px-4 py-2 rounded-lg hover:bg-rose-600 transition-colors duration-300 mt-2">
               Add to Cart
             </button>
           </div>

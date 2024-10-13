@@ -11,7 +11,7 @@ interface CheckOutPageProps {
   cartItems: CartItem[];
 }
 
-const CheckOutPage: React.FC<CheckOutPageProps> = ({ cartItems }) => {
+const CheckOutPage: React.FC<CheckOutPageProps> = ({ cartItems = [] }) => {
   const renderCartItems = () => {
     return cartItems.map((item) => (
       <div key={item.id} className="flex justify-between">
@@ -23,14 +23,13 @@ const CheckOutPage: React.FC<CheckOutPageProps> = ({ cartItems }) => {
 
   return (
     <div>
-    <h2 className="text-xl font-bold">Checkout</h2>
-    {cartItems.length === 0 ? (
-      <p>Your cart is empty.</p>
-    ) : (
-      <div>{renderCartItems()}</div>
-    )}
-  </div>
-  
+      <h2 className="text-xl font-bold">Checkout</h2>
+      {cartItems.length === 0 ? (
+        <p>Your cart is empty.</p>
+      ) : (
+        <div>{renderCartItems()}</div>
+      )}
+    </div>
   );
 };
 
