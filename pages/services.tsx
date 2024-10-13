@@ -19,6 +19,13 @@ interface Service {
   image: string;
 }
 
+// Define the BookingDetails interface with appropriate properties
+interface BookingDetails {
+  name: string; // Add properties to match Bookings interface
+  date: string;
+  service: string;
+}
+
 const Slideshow: React.FC<{ images: string[] }> = ({ images }) => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -36,7 +43,9 @@ const Slideshow: React.FC<{ images: string[] }> = ({ images }) => {
       nextSlide();
     }, 3000);
 
-    return () => clearTimeout(timeoutRef.current!);
+    return () => {
+      clearTimeout(timeoutRef.current!);
+    };
   }, [currentIndex, nextSlide]);
 
   return (
@@ -49,13 +58,17 @@ const Slideshow: React.FC<{ images: string[] }> = ({ images }) => {
         className="w-full h-full"
       />
       <button
+        aria-label="Previous Slide"
         className="absolute left-3 top-1/2 transform -translate-y-1/2 border-none text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-        onClick={prevSlide}>
+        onClick={prevSlide}
+      >
         <span className="w-5 h-5 border-t-2 border-l-2 border-slate-600 block transform -rotate-45" />
       </button>
       <button
+        aria-label="Next Slide"
         className="absolute right-3 top-1/2 transform -translate-y-1/2 border-none text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-        onClick={nextSlide}>
+        onClick={nextSlide}
+      >
         <span className="w-5 h-5 border-t-2 border-r-2 border-slate-600 block transform rotate-45" />
       </button>
 
@@ -146,8 +159,9 @@ const ServicesPage: React.FC = () => {
     setShowBookingForm(false); // Hide the form when "Close" is clicked
   };
 
-  const handleBookingSubmit = (bookingDetails: BookingDetails) => {
-    console.log('Booking details:', bookingDetails);
+  // Use the BookingDetails type for the booking details parameter
+  const handleBookingSubmit = (booking: BookingDetails) => {
+    console.log('Booking details:', booking);
     handleCloseBookingForm(); // Close the form after submission
   };
 
@@ -161,7 +175,9 @@ const ServicesPage: React.FC = () => {
             <span className="font-bold text-2xl tracking-tight ml-2" style={{ color: '#D6589F', fontFamily: 'Serif' }}>Salon</span>
           </div>
         </div>
-        <button onClick={handleBookNowClick} className="hover:text-teal-600 bg-opacity-70 text-slate-700 font-semibold text-xl hover:underline py-2 px-4 rounded">
+        <button 
+          onClick={handleBookNowClick} 
+          className="hover:text-teal-600 bg-opacity-70 text-slate-700 font-semibold text-xl hover:underline py-2 px-4 rounded">
           Book Now
         </button>
       </div>
@@ -170,16 +186,17 @@ const ServicesPage: React.FC = () => {
 
       <Section title="Hair Care" services={servicesData.hairCare} sectionRef={hairCareRef} />
       <Section title="Spa Treatments" services={servicesData.spaTreatments} sectionRef={spaTreatmentsRef} />
-      <Section title="Hair and Make Up" services={servicesData.hairAndMakeUp} sectionRef={hairAndMakeUpRef} />
+      <Section title="Hair & Makeup" services={servicesData.hairAndMakeUp} sectionRef={hairAndMakeUpRef} />
       <Section title="Nail Care" services={servicesData.nailCare} sectionRef={nailCareRef} />
 
-      {/* Conditionally render the BookingForm */}
       {showBookingForm && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <BookingForm onClose={handleCloseBookingForm} onSubmit={handleBookingSubmit} />
-        </div>
-      )}
+  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div className="bg-white rounded-lg p-6 shadow-lg">
+      <BookingForm onSubmit={handleBookingSubmit} onClose={handleCloseBookingForm} />
     </div>
+  </div>
+)}
+</div>
   );
 };
 

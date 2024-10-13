@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { Bookings } from './api/booking'; // Import the Bookings interface
+import React, { useEffect, useState } from 'react';
+import { Bookings } from './api/booking'; // Adjust the path according to your project structure
 
-// Define the type for booking details used within the form
 interface BookingFormProps {
   onClose: () => void;
-  onSubmit: (booking: Bookings) => void; // Use the Bookings type here
-  initialBookingDetails?: Bookings; // Use Bookings for initial values
+  onSubmit: (booking: Bookings) => void;
+  initialBookingDetails?: Bookings; // Optional prop for existing bookings
 }
 
 const BookingForm: React.FC<BookingFormProps> = ({ onClose, onSubmit, initialBookingDetails }) => {
@@ -13,32 +12,25 @@ const BookingForm: React.FC<BookingFormProps> = ({ onClose, onSubmit, initialBoo
     name: '',
     date: '',
     service: '',
-    id: undefined // Optional id
+    id: undefined, // Optional id
   });
 
-  // Use effect to set initial values if provided
   useEffect(() => {
     if (initialBookingDetails) {
       setFormDetails(initialBookingDetails);
     }
   }, [initialBookingDetails]);
 
-  // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormDetails({ ...formDetails, [name]: value });
+    setFormDetails((prevDetails) => ({ ...prevDetails, [name]: value }));
   };
 
-  // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const booking: Bookings = {
-      ...formDetails,
-      id: Date.now(), // Assign a unique ID
-    };
-    onSubmit(booking); // Pass the Booking object to onSubmit
-    onClose(); // Close the form after submission
+    onSubmit(formDetails);
   };
+
 
   return (
     <div className="bg-white rounded-lg p-6 shadow-lg">

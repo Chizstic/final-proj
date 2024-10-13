@@ -1,17 +1,11 @@
 // src/components/BookingList.tsx
 import React from 'react';
-
-interface Booking {
-  id: number;
-  name: string;
-  date: string;
-  service: string;
-}
+import { Bookings } from './api/booking'; // Ensure the path is correct
 
 interface BookingListProps {
-  bookings: Booking[];
+  bookings: Bookings[]; // Correctly using Bookings
   deleteBooking: (id: number) => void;
-  editBooking: (booking: Booking) => void;
+  editBooking: (booking: Bookings) => void; // Correct type for editBooking
 }
 
 const BookingList: React.FC<BookingListProps> = ({ bookings, deleteBooking, editBooking }) => {
@@ -36,10 +30,18 @@ const BookingList: React.FC<BookingListProps> = ({ bookings, deleteBooking, edit
               <td className="border-b p-2">
                 <button
                   className="bg-red-500 text-white px-2 py-1 rounded ml-2 hover:bg-red-700 transition"
-                  onClick={() => deleteBooking(booking.id)}
+                  onClick={() => {
+                    const id = booking.id; // Make sure to handle the optional id
+                    if (id) {
+                      deleteBooking(id);
+                    } else {
+                      console.error("Booking ID is undefined.");
+                    }
+                  }}
                 >
                   Delete
                 </button>
+
                 <button
                   className="bg-blue-500 text-white px-2 py-1 rounded ml-2 hover:bg-blue-700 transition"
                   onClick={() => editBooking(booking)}
@@ -56,3 +58,5 @@ const BookingList: React.FC<BookingListProps> = ({ bookings, deleteBooking, edit
 };
 
 export default BookingList;
+
+

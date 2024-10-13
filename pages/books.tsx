@@ -2,23 +2,14 @@
 import React, { useState } from 'react';
 import BookingList from './bookinglist'; // Ensure the path is correct
 import BookingForm from './bookingform'; // Ensure the path is correct
-
-interface BookingDetails {
-  name: string;
-  date: string;
-  service: string;
-}
-
-interface Booking extends BookingDetails {
-  id: number; // Required for existing bookings
-}
+import { Bookings } from './api/booking'; // Import the Bookings interface
 
 const Bookers: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
-  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
-  const [bookings, setBookings] = useState<Booking[]>([]); // Example bookings state
+  const [selectedBooking, setSelectedBooking] = useState<Bookings | null>(null);
+  const [bookings, setBookings] = useState<Bookings[]>([]); // Example bookings state
 
-  const handleEditBooking = (booking: Booking) => {
+  const handleEditBooking = (booking: Bookings) => {
     setSelectedBooking(booking);
     setShowForm(true);
   };
@@ -27,7 +18,7 @@ const Bookers: React.FC = () => {
     setBookings(bookings.filter(booking => booking.id !== id));
   };
 
-  const handleSubmitBooking = (bookingDetails: BookingDetails) => {
+  const handleSubmitBooking = (bookingDetails: Bookings) => {
     if (selectedBooking) {
       // Update existing booking
       setBookings(bookings.map(booking =>
@@ -35,7 +26,8 @@ const Bookers: React.FC = () => {
       ));
     } else {
       // Add new booking
-      setBookings([...bookings, { id: bookings.length + 1, ...bookingDetails }]);
+      const newId = bookings.length > 0 ? Math.max(...bookings.map(b => b.id ?? 0)) + 1 : 1; // Generate new id
+      setBookings((prevBookings) => [...prevBookings, { id: newId, ...bookingDetails }]);
     }
     setShowForm(false);
     setSelectedBooking(null);
@@ -62,7 +54,7 @@ const Bookers: React.FC = () => {
             name: selectedBooking.name,
             date: selectedBooking.date,
             service: selectedBooking.service,
-          } : null}
+          } : undefined} // Change null to undefined
         />
       )}
     </div>
