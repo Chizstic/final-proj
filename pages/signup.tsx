@@ -7,7 +7,6 @@ const SignUpPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [name, setName] = useState(''); // Add a field for name
   const [success, setSuccess] = useState('');
 
   const validateEmail = (email: string) => {
@@ -62,18 +61,6 @@ const SignUpPage = () => {
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
         <h2 className="text-2xl font-bold mb-6 text-center">Sign Up</h2>
         <form onSubmit={handleSignUp}>
-          <div className="mb-4">
-            <label htmlFor="name" className="block text-sm font-semibold mb-2">Name</label>
-            <input
-              type="text"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md"
-              placeholder="Enter your name"
-              required
-            />
-          </div>
           <div className="mb-4">
             <label htmlFor="email" className="block text-sm font-semibold mb-2">Email</label>
             <input
