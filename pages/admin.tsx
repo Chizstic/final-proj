@@ -1,12 +1,11 @@
-// src/pages/AdminPage.tsx
 import React, { useState, useEffect } from 'react';
-import  Link  from 'next/link';
+import Link from 'next/link';
 import StaffList from './stafflist';
 import { Staff } from './api/type';
 
 const AdminPage: React.FC = () => {
   const [staffList, setStaffList] = useState<Staff[]>([]);
- 
+
   const fetchStaffList = async () => {
     // Simulated fetch staff list for Next.js
     const data: Staff[] = [
