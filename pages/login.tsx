@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
-import Link from 'next/link'; // Import Link from next/link
+import Link from 'next/link';
 
 const LoginPage = () => {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [error, setError] = useState(''); // Error state for login issues
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -14,30 +14,31 @@ const LoginPage = () => {
     setLoading(true);
     setError('');
 
-    try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+    // Mock login check (replace this with real logic later)
+    const mockEmailAdmin = 'admin@gmail.com'; // Example admin email
+    const mockPasswordAdmin = 'admin123'; // Example admin password
+    const mockEmailUser = 'jomar@gmail.com'; // Example user email
+    const mockPasswordUser = 'user123'; // Example user password
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        setError(errorData.message);
+    // Simulate authentication
+    setTimeout(() => {
+      if (email === mockEmailAdmin && password === mockPasswordAdmin) {
+        // Admin login
+        localStorage.setItem('userEmail', email);
+        localStorage.setItem('userRole', 'admin');
+        localStorage.setItem('userName', 'Admin User'); // Hardcoded name for now
+        router.push('/admin'); // Redirect to admin page
+      } else if (email === mockEmailUser && password === mockPasswordUser) {
+        // User login
+        localStorage.setItem('userEmail', email);
+        localStorage.setItem('userRole', 'user');
+        localStorage.setItem('userName', 'Regular User'); // Hardcoded name for now
+        router.push('/homepage'); // Redirect to homepage
       } else {
-        const data = await response.json();
-        localStorage.setItem('userEmail', data.user.email);
-        localStorage.setItem('userRole', data.user.role);
-        localStorage.setItem('userName', data.user.name); // Assuming user has a name property
-        router.push(data.user.role === 'admin' ? '/admin' : '/homepage');
+        setError('Invalid email or password. Please try again.'); // Set error message if credentials are invalid
       }
-    } catch (error) {
-      setError('Something went wrong. Please try again.');
-    } finally {
       setLoading(false);
-    }
+    }, 1000); // Mock delay for loading effect
   };
 
   return (
@@ -84,11 +85,11 @@ const LoginPage = () => {
             <button
               type="submit"
               className={`w-full ${loading ? 'bg-gray-400' : 'bg-pink-500'} bg-opacity-80 text-white py-2 px-4 rounded-md font-semibold hover:bg-pink-600 transition duration-300`}
-              disabled={loading} // Disable button when loading
+              disabled={loading}
             >
               {loading ? 'Logging in...' : 'LOG IN'}
             </button>
-            {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
+            {error && <p className="text-red-500 mt-4 text-center">{error}</p>} {/* Error message display */}
           </form>
           <p className="mt-4 text-center">
             Don&apos;t have an account? <Link href="/signup" className="text-pink-500 hover:text-pink-700">Sign Up</Link>
