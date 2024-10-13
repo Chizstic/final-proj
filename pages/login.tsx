@@ -7,12 +7,10 @@ const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(''); // State for error messages
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setErrorMessage(''); // Reset error message
 
     try {
       // Send the email and password to the backend for authentication
@@ -28,8 +26,7 @@ const LoginPage = () => {
 
       if (!response.ok) {
         // Handle error response from the server (e.g., invalid credentials)
-        setErrorMessage(data.message || 'Login failed. Please try again.'); // Set error message
-        return;
+        return; // Just return and do nothing
       }
 
       // If login is successful, store user information in localStorage
@@ -44,70 +41,74 @@ const LoginPage = () => {
       }
     } catch (error) {
       console.error('Login error:', error); // Log the error if needed
-      setErrorMessage('An unexpected error occurred. Please try again later.'); // Set error message
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-100">
-      {/* Left Side */}
-      <div className="-mt-36 flex flex-col items-start justify-center w-1/2 p-8 ml-72">
-        <h1 className="text-6xl font-bold mb-4" style={{ fontFamily: 'Serif' }}>
-          <span style={{ color: '#D20062' }}>Guys & Gals</span>
-          <span style={{ color: '#D6589F' }}> Salon</span>
-        </h1>
-        <p className="text-2xl text-black mb-8 ml-2">Get ready to be served what you deserve.</p>
-      </div>
-      {/* Right Side */}
-      <div className="flex items-center justify-end w-1/2 p-4 mr-48">
-        <div className="w-full max-w-md bg-pink-300 bg-opacity-30 p-12 rounded-lg shadow-md">
-          <div className='w-full flex flex-col mb-10'>
-            <h3 className='text-4xl font-extrabold mb-2 text-center'>
-              <span className="bg-gradient-to-r from-pink-400 to-pink-600 text-transparent bg-clip-text">Login</span>
-            </h3>
+    <div className="flex flex-col lg:flex-row min-h-screen bg-slate-100">
+    {/* Left Side */}
+    <div className="flex flex-col items-center lg:items-start justify-center w-full lg:w-1/2 p-8">
+      <h1
+        className="text-4xl lg:text-6xl font-bold mr-10 text-center lg:text-right select-none"
+        style={{ fontFamily: 'Serif' }}
+      >
+        <span style={{ color: '#D20062' }}>Guys & Gals</span>
+        <span style={{ color: '#D6589F' }}> Salon</span>
+      </h1>
+      <p className="text-lg lg:text-2xl text-black mb-8 text-center lg:text-left select-none"> 
+        Get ready to be served what you deserve.
+      </p>
+    </div>
+    {/* Right Side */}
+    <div className="flex flex-1 items-center justify-center w-full lg:w-1/2 p-4">
+      <div className="w-full max-w-md bg-pink-300 bg-opacity-30 p-8 lg:p-12 rounded-lg shadow-md">
+        <h3 className="text-3xl lg:text-4xl font-extrabold mb-4 text-center">
+          <span className="bg-gradient-to-r from-pink-400 to-pink-600 text-transparent bg-clip-text select-none">
+            Login
+          </span>
+        </h3>
+        <form onSubmit={handleLogin}>
+          <div className="mb-4">
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+              placeholder="Enter your email"
+              required
+            />
           </div>
-          <form onSubmit={handleLogin}>
-            <div className="mb-4 opacity-95">
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                placeholder="Enter your email"
-                required
-              />
-            </div>
-            <div className="mb-4 opacity-95">
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                placeholder="Enter your password"
-                required
-              />
-            </div>
-            {errorMessage && (
-              <p className="text-red-500 text-center mb-4">{errorMessage}</p>
-            )}
-            <button
-              type="submit"
-              className={`w-full ${loading ? 'bg-gray-400' : 'bg-pink-500'} bg-opacity-80 text-white py-2 px-4 rounded-md font-semibold hover:bg-pink-600 transition duration-300`}
-              disabled={loading}
-            >
-              {loading ? 'Logging in...' : 'LOG IN'}
-            </button>
-          </form>
-          <p className="mt-4 text-center">
-            Don&apos;t have an account? <Link href="/signup" className="text-pink-500 hover:text-pink-700">Sign Up</Link>
-          </p>
-        </div>
+          <div className="mb-4">
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            className={`w-full ${loading ? 'bg-gray-400' : 'bg-pink-500'} bg-opacity-80 text-white py-2 px-4 rounded-md font-semibold hover:bg-pink-600 transition duration-300`}
+            disabled={loading}
+          >
+            {loading ? 'Logging in...' : 'LOG IN'}
+          </button>
+        </form>
+        <p className="mt-4 text-center select-none">
+          Don&apos;t have an account?{' '}
+          <Link href="/signup" className="text-pink-500 hover:text-pink-700">
+            Sign Up
+          </Link>
+        </p>
       </div>
     </div>
+  </div>
   );
 };
 

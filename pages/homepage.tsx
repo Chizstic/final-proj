@@ -39,7 +39,7 @@ function Homepage() {
 
   return (
     <div>
-      <div className="bg-[#cd668855] p-2">
+      <div className="bg-[#cd668855] p-2 scroll-smooth">
         <div className="text-sm font-semibold text-center text-gray-600">Call Us: +63 998 9099 129</div>
         <div className="text-sm font-semibold text-center text-gray-600">Opening Hours: Mon-Fri 9:00 AM - 6:00 PM</div>
       </div>
@@ -104,7 +104,7 @@ function Homepage() {
 
             {/* Second Container */}
             <button
-              className="bg-white bg-opacity-80 shadow-inner shadow-rose-300 p-5 rounded-lg w-56 h-36 flex flex-col items-center justify-center hover:bg-teal-50 focus:outline-none mb-4"
+              className="bg-white bg-opacity-80 shadow-inner shadow-rose-300 p-5 rounded-lg w-56 h-36 flex flex-col items-center justify-center hover:bg-teal-50 focus:outline-none mb-4 "
               onClick={() => handleContainerClick('Spa')}>
               <Image src="/Spa.png" alt="Popular Service 1" width={90} height={100} className="image rounded-2xl mr-4 mb-4 img1" />
               <h1 className="text-2xl font-bold text-gray-800 text-center">Spa</h1>
@@ -133,7 +133,7 @@ function Homepage() {
       <div className="container mx-auto mt-24 px-4 flex flex-col md:flex-row">
         {/* Description */}
         
-  <div className="text-gray-800 text-lg md:w-1/2 first-line:uppercase first-line:tracking-widest first-letter:text-7xl first-letter:font-bold first-letter:text-black first-letter:mr-3 first-letter:float-left mt-9">
+  <div className="text-gray-800 text-lg md:w-1/2 first-line:uppercase first-line:tracking-widest first-letter:text-7xl first-letter:font-bold first-letter:text-black first-letter:mr-3 first-letter:float-left mt-9 select-none">
     <p><span className="font-2xl">Welcome to Guys & Gals Salon, where style meets personality!</span></p>
     <p>Step into our sanctuary of beauty and refinement, where expert</p>
     <p>stylists and personalized service await. Whether you&apos;re seeking</p>
@@ -146,14 +146,14 @@ function Homepage() {
 
 
         {/* Image */}
-        <div className="md:w-1/2 md:ml-auto mt-6 md:mt-0">
+        <div className="md:w-1/2 md:ml-auto mt-6 md:mt-0 -skew-y-1"> 
           <Image src="/desc_img.jpg" alt="Description" width={400} height={250} className="h-full rounded-xl" />
         </div>
       </div>
 
       <div className="container mx-auto mt-24 flex flex-col items-center">
         <div className="text-center text-2xl font-bold mb-8 w-full">POPULAR SERVICES</div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 columns-1">
           <Image src="/img1.jpg" alt="Service 1" width={400} height={250} className="rounded-2xl" />
           <Image src="/img2.jpg" alt="Service 2" width={400} height={250} className="rounded-2xl" />
           <Image src="/img3.jpg" alt="Service 3" width={400} height={250} className="rounded-2xl" />

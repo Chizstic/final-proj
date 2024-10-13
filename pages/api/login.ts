@@ -21,7 +21,7 @@ const loginHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
       // Query to find the user by email
       const result = await client.query(
-        'SELECT * FROM Users WHERE email = $1',
+        'SELECT * FROM Users WHERE user_id = 1',
         [email]
       );
 
