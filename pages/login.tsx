@@ -7,10 +7,12 @@ const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(''); // State for error messages
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+    setErrorMessage(''); // Reset error message
 
     try {
       // Send the email and password to the backend for authentication
@@ -26,13 +28,13 @@ const LoginPage = () => {
 
       if (!response.ok) {
         // Handle error response from the server (e.g., invalid credentials)
-        return; // Just return and do nothing
+        setErrorMessage(data.message || 'Login failed. Please try again.'); // Set error message
+        return;
       }
 
       // If login is successful, store user information in localStorage
       localStorage.setItem('userEmail', data.user.email);
       localStorage.setItem('userRole', data.user.role);
-      localStorage.setItem('userName', data.user.name); // Use name from response
 
       // Redirect based on user role
       if (data.user.role === 'admin') {
@@ -42,6 +44,7 @@ const LoginPage = () => {
       }
     } catch (error) {
       console.error('Login error:', error); // Log the error if needed
+      setErrorMessage('An unexpected error occurred. Please try again later.'); // Set error message
     } finally {
       setLoading(false);
     }
@@ -88,6 +91,9 @@ const LoginPage = () => {
                 required
               />
             </div>
+            {errorMessage && (
+              <p className="text-red-500 text-center mb-4">{errorMessage}</p>
+            )}
             <button
               type="submit"
               className={`w-full ${loading ? 'bg-gray-400' : 'bg-pink-500'} bg-opacity-80 text-white py-2 px-4 rounded-md font-semibold hover:bg-pink-600 transition duration-300`}

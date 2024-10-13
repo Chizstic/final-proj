@@ -11,6 +11,11 @@ const loginHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
     const { email, password } = req.body;
 
+    // Validate inputs
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
+    }
+
     try {
       await client.connect();
 
@@ -33,7 +38,7 @@ const loginHandler = async (req: NextApiRequest, res: NextApiResponse) => {
       }
 
       // Send back user details (omit sensitive data)
-      res.status(200).json({ message: 'Login successful', user: { email: user.email, role: user.role, name: user.name } });
+      res.status(200).json({ message: 'Login successful', user: { email: user.email, role: user.role } });
     } catch (error) {
       console.error('Error during login:', error); // Log error for debugging
       res.status(500).json({ message: 'Internal server error' });
