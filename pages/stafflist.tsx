@@ -3,12 +3,16 @@ import React, { useState } from 'react';
 import { Staff } from './api/type';
 
 interface StaffListProps {
-  staffList: Staff[];
+  staffList?: Staff[]; // Make staffList optional
   handleAddStaff: (newStaff: Staff) => void;
   handleDeleteStaff: (staffId: number) => void;
 }
 
-const StaffList: React.FC<StaffListProps> = ({ staffList, handleAddStaff, handleDeleteStaff }) => {
+const StaffList: React.FC<StaffListProps> = ({
+  staffList = [], // Default to an empty array
+  handleAddStaff,
+  handleDeleteStaff
+}) => {
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
   const [position, setPosition] = useState<string>('');
