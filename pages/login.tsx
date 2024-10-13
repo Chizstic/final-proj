@@ -6,39 +6,45 @@ const LoginPage = () => {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(''); // Error state for login issues
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
 
-    // Mock login check (replace this with real logic later)
-    const mockEmailAdmin = 'admin@gmail.com'; // Example admin email
-    const mockPasswordAdmin = 'admin123'; // Example admin password
-    const mockEmailUser = 'jomar@gmail.com'; // Example user email
-    const mockPasswordUser = 'user123'; // Example user password
+    try {
+      // Send the email and password to the backend for authentication
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    // Simulate authentication
-    setTimeout(() => {
-      if (email === mockEmailAdmin && password === mockPasswordAdmin) {
-        // Admin login
-        localStorage.setItem('userEmail', email);
-        localStorage.setItem('userRole', 'admin');
-        localStorage.setItem('userName', 'Admin User'); // Hardcoded name for now
-        router.push('/admin'); // Redirect to admin page
-      } else if (email === mockEmailUser && password === mockPasswordUser) {
-        // User login
-        localStorage.setItem('userEmail', email);
-        localStorage.setItem('userRole', 'user');
-        localStorage.setItem('userName', 'Regular User'); // Hardcoded name for now
-        router.push('/homepage'); // Redirect to homepage
-      } else {
-        setError('Invalid email or password. Please try again.'); // Set error message if credentials are invalid
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Handle error response from the server (e.g., invalid credentials)
+        return; // Just return and do nothing
       }
+
+      // If login is successful, store user information in localStorage
+      localStorage.setItem('userEmail', data.user.email);
+      localStorage.setItem('userRole', data.user.role);
+      localStorage.setItem('userName', data.user.name); // Use name from response
+
+      // Redirect based on user role
+      if (data.user.role === 'admin') {
+        router.push('/admin'); // Redirect to admin page
+      } else {
+        router.push('/homepage'); // Redirect to homepage
+      }
+    } catch (error) {
+      console.error('Login error:', error); // Log the error if needed
+    } finally {
       setLoading(false);
-    }, 1000); // Mock delay for loading effect
+    }
   };
 
   return (
@@ -89,7 +95,6 @@ const LoginPage = () => {
             >
               {loading ? 'Logging in...' : 'LOG IN'}
             </button>
-            {error && <p className="text-red-500 mt-4 text-center">{error}</p>} {/* Error message display */}
           </form>
           <p className="mt-4 text-center">
             Don&apos;t have an account? <Link href="/signup" className="text-pink-500 hover:text-pink-700">Sign Up</Link>
