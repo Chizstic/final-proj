@@ -1,5 +1,3 @@
-// pages/services.tsx
-
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import BookingForm from './bookingform';
 import Image from 'next/image';
@@ -106,8 +104,7 @@ const Section: React.FC<{
   title: string;
   services: Service[];
   sectionRef: React.RefObject<HTMLDivElement>;
-  onBookNowClick: () => void; // Removed unused prop warning
-}> = ({ title, services, sectionRef, onBookNowClick }) => {
+}> = ({ title, services, sectionRef }) => {
   return (
     <div ref={sectionRef} className="mb-12 bg-white rounded-lg shadow-lg p-8">
       <h2 className="text-4xl font-bold text-center text-teal-600 mb-8">{title}</h2>
@@ -135,26 +132,19 @@ const Section: React.FC<{
 
 const ServicesPage: React.FC = () => {
   const [showBookingForm, setShowBookingForm] = useState<boolean>(false);
+
   const hairCareRef = useRef<HTMLDivElement>(null);
   const spaTreatmentsRef = useRef<HTMLDivElement>(null);
   const hairAndMakeUpRef = useRef<HTMLDivElement>(null);
   const nailCareRef = useRef<HTMLDivElement>(null);
 
   const handleBookNowClick = () => {
-    setShowBookingForm(true);
+    setShowBookingForm(true); // Show the form when "Book Now" is clicked
   };
 
   const handleCloseBookingForm = () => {
-    setShowBookingForm(false);
+    setShowBookingForm(false); // Hide the form when "Close" is clicked
   };
-
-  interface BookingDetails {
-    name: string;
-    date: string;
-    time: string; // Keep this to match Booking type in BookingForm
-    // Add more fields as necessary
-  }
-  
 
   const handleBookingSubmit = (bookingDetails: BookingDetails) => {
     console.log('Booking details:', bookingDetails);
@@ -162,28 +152,33 @@ const ServicesPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen sticky top-0 z-50 shadow-md">
+    <div className="min-h-screen">
       <div className="fixed top-0 left-0 w-full py-4 flex justify-between items-center px-8 z-50" style={{ backgroundColor: 'rgba(171, 198, 191, 0.30)' }}>
-        <div className="header-background flex items-center flex-shrink-0 text-white mr-6">
+        <div className="flex items-center flex-shrink-0 text-white mr-6">
           <Image src="/logo.png" alt="Logo" width={64} height={64} className="mr-4 rounded-full" />
           <div className="flex flex-row items-center">
             <span className="font-bold text-2xl tracking-tight" style={{ color: '#D20062', fontFamily: 'Serif' }}>Guys & Gals</span>
             <span className="font-bold text-2xl tracking-tight ml-2" style={{ color: '#D6589F', fontFamily: 'Serif' }}>Salon</span>
           </div>
         </div>
-        <button onClick ={handleBookNowClick} className="hover:text-teal-600 bg-opacity-70 text-slate-700 font-semibold text-xl hover:underline py-2 px-4 rounded ml-52">
+        <button onClick={handleBookNowClick} className="hover:text-teal-600 bg-opacity-70 text-slate-700 font-semibold text-xl hover:underline py-2 px-4 rounded">
           Book Now
         </button>
       </div>
 
       <Slideshow images={comboRatesImages} />
 
-      <Section title="Hair Care" services={servicesData.hairCare} sectionRef={hairCareRef} onBookNowClick={handleBookNowClick} />
-      <Section title="Spa Treatments" services={servicesData.spaTreatments} sectionRef={spaTreatmentsRef} onBookNowClick={handleBookNowClick} />
-      <Section title="Hair and Make Up" services={servicesData.hairAndMakeUp} sectionRef={hairAndMakeUpRef} onBookNowClick={handleBookNowClick} />
-      <Section title="Nail Care" services={servicesData.nailCare} sectionRef={nailCareRef} onBookNowClick={handleBookNowClick} />
+      <Section title="Hair Care" services={servicesData.hairCare} sectionRef={hairCareRef} />
+      <Section title="Spa Treatments" services={servicesData.spaTreatments} sectionRef={spaTreatmentsRef} />
+      <Section title="Hair and Make Up" services={servicesData.hairAndMakeUp} sectionRef={hairAndMakeUpRef} />
+      <Section title="Nail Care" services={servicesData.nailCare} sectionRef={nailCareRef} />
 
-      {showBookingForm && <BookingForm onClose={handleCloseBookingForm} onSubmit={handleBookingSubmit} />}
+      {/* Conditionally render the BookingForm */}
+      {showBookingForm && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <BookingForm onClose={handleCloseBookingForm} onSubmit={handleBookingSubmit} />
+        </div>
+      )}
     </div>
   );
 };

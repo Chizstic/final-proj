@@ -1,8 +1,7 @@
-// pages/shop.tsx
-
 import React, { useState } from 'react';
+import Image from 'next/image'; // Import Next.js Image component
 import Cart from './cart';
-import { FaShoppingCart } from 'react-icons/fa'; // Import a cart icon from react-icons
+import { FaShoppingCart } from 'react-icons/fa';
 
 interface Product {
   id: number;
@@ -13,15 +12,15 @@ interface Product {
 }
 
 const ShopPage: React.FC = () => {
-  const [isCartVisible, setIsCartVisible] = useState<boolean>(false); // State to toggle cart sidebar visibility
-  const [cartItems, setCartItems] = useState<Product[]>([]); // State to manage cart items
+  const [isCartVisible, setIsCartVisible] = useState<boolean>(false);
+  const [cartItems, setCartItems] = useState<Product[]>([]);
 
   const products: Product[] = [
-    { id: 1, name: 'Keravit', size: '1000ml', price: '₱1,650', image: './shopPics/keravit.png' },
-    { id: 2, name: 'Keravit', size: '300ml', price: '₱500', image: './shopPics/keravit.png' },
-    { id: 3, name: 'Cindynal Moisturizer', size: '500g', price: '₱250', image: './shopPics/cyndal.jpg' },
-    { id: 4, name: 'Ashley Hair Serum', size: '120ml', price: '₱400', image: './shopPics/hair_serum.jpg' },
-    { id: 5, name: 'Semidilino Essential Oil', size: '12x3ml', price: '₱800', image: './shopPics/semidilino.jpg' },
+    { id: 1, name: 'Keravit', size: '1000ml', price: '₱1,650', image: '/shopPics/keravit.png' },
+    { id: 2, name: 'Keravit', size: '300ml', price: '₱500', image: '/shopPics/keravit.png' },
+    { id: 3, name: 'Cindynal Moisturizer', size: '500g', price: '₱250', image: '/shopPics/cyndal.jpg' },
+    { id: 4, name: 'Ashley Hair Serum', size: '120ml', price: '₱400', image: '/shopPics/hair_serum.jpg' },
+    { id: 5, name: 'Semidilino Essential Oil', size: '12x3ml', price: '₱800', image: '/shopPics/semidilino.jpg' },
   ];
 
   const addToCart = (product: Product) => {
@@ -46,10 +45,13 @@ const ShopPage: React.FC = () => {
           <div
             key={product.id}
             className="bg-pink-100 bg-opacity-40 p-6 rounded-lg shadow-lg border border-teal-600 border-opacity-25 hover:shadow-xl transition-shadow duration-300 flex flex-col items-center">
-            <img
+            <Image
               src={product.image}
               alt={product.name}
-              className="w-48 h-48 object-cover mb-4 border border-gray-200 rounded-md shadow-md"/>
+              width={192}
+              height={192}
+              className="mb-4 border border-gray-200 rounded-md shadow-md"
+            />
             <h2 className="text-xl text-slate-700 font-semibold mb-1">{product.name}</h2>
             <p className="text-gray-500 mb-8 text-sm">{product.size}</p>
             <p className="text-rose-600 font-medium text-lg -ml-32 -mb-8">{product.price}</p>

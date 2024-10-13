@@ -85,12 +85,12 @@ function Homepage() {
           <div className="absolute inset-0 bg-black opacity-30"></div>
           <Image src="/coverphoto1.jpg" alt="Cover Photo" layout="responsive" width={300} height={200} className="w-full" />
           <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
-            <h2 className="text-white text-3xl font-bold mb-4 font-serif">"ELEVATE YOUR LOOK,</h2>
-            <h2 className="text-white text-3xl font-bold mb-4 font-serif">"ELEVATE YOUR CONFIDENCE,</h2>
+            <h2 className="text-white text-3xl font-bold mb-4 font-serif">&quot;ELEVATE YOUR LOOK,&quot;</h2>
+            <h2 className="text-white text-3xl font-bold mb-4 font-serif">&quot;ELEVATE YOUR CONFIDENCE,&quot;</h2>
             <h2 className="text-white text-xl mb-4 font-thin">Get ready to be served what you deserve</h2>
             <button onClick={handleBookNowClick} className="bg-rose-600 hover:bg-rose-500 bg-opacity-85 text-white font-semibold py-2 px-4 rounded">Book Now</button>
           </div>
-        </div>
+          </div>
 
         <div className="relative -mt-16 px-4 sm:px-10 pb-20">
           <div className="flex justify-center space-x-4 sm:space-x-6 flex-wrap">

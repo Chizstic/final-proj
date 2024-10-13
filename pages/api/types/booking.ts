@@ -1,4 +1,4 @@
-// Define the type for booking details, including an optional id
+// Remove the Booking interface if it's not being used anywhere
 type BookingDetails = {
   name: string;
   date: string;
