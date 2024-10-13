@@ -35,7 +35,7 @@ const loginHandler = async (req: NextApiRequest, res: NextApiResponse) => {
       // Send back user details (omit sensitive data)
       res.status(200).json({ message: 'Login successful', user: { email: user.email, role: user.role, name: user.name } });
     } catch (error) {
-      console.error('Error during login:', error);
+      console.error('Error during login:', error); // Log error for debugging
       res.status(500).json({ message: 'Internal server error' });
     } finally {
       await client.end();
