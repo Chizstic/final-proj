@@ -19,12 +19,12 @@ const SignUpPage = () => {
 
     // Validate email format
     if (!validateEmail(email)) {
-      return;
+      return; // No error message will be displayed
     }
 
     // Check if passwords match
     if (password !== confirmPassword) {
-      return;
+      return; // No error message will be displayed
     }
 
     // Send data to the backend
@@ -40,7 +40,7 @@ const SignUpPage = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Something went wrong');
+        throw new Error(data.message || 'Something went wrong'); // No error message will be displayed
       }
 
       // If registration is successful
@@ -51,8 +51,7 @@ const SignUpPage = () => {
         router.push('/login');
       }, 2000); // Redirect after 2 seconds
     } catch (err) {
-      // You can choose to log the error for debugging purposes or completely ignore it
-      console.error(err);
+      console.error(err); // Error is logged but not shown to the user
     }
   };
 
@@ -114,4 +113,3 @@ const SignUpPage = () => {
 };
 
 export default SignUpPage;
-

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Bookings } from './api/booking'; // Adjust the path according to your project structure
+import { Bookings } from './api/type'; // Adjust the path according to your project structure
 
 interface BookingFormProps {
   onClose: () => void;
@@ -9,10 +9,13 @@ interface BookingFormProps {
 
 const BookingForm: React.FC<BookingFormProps> = ({ onClose, onSubmit, initialBookingDetails }) => {
   const [formDetails, setFormDetails] = useState<Bookings>({
+    id: undefined, // Optional id
     name: '',
     date: '',
+    time:'',
     service: '',
-    id: undefined, // Optional id
+    staff: '', // Add staff
+    userEmail: '', // Add userEmail
   });
 
   useEffect(() => {
@@ -30,7 +33,6 @@ const BookingForm: React.FC<BookingFormProps> = ({ onClose, onSubmit, initialBoo
     e.preventDefault();
     onSubmit(formDetails);
   };
-
 
   return (
     <div className="bg-white rounded-lg p-6 shadow-lg">
@@ -73,6 +75,28 @@ const BookingForm: React.FC<BookingFormProps> = ({ onClose, onSubmit, initialBoo
             <option value="Hair & Make-up">Hair & Make-up</option>
             <option value="Nail Care">Nail Care</option>
           </select>
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">Staff:</label>
+          <input
+            type="text"
+            name="staff"
+            value={formDetails.staff}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">Email:</label>
+          <input
+            type="email"
+            name="userEmail"
+            value={formDetails.userEmail}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border border-gray-300 rounded"
+          />
         </div>
         <div className="flex justify-end">
           <button type="button" onClick={onClose} className="mr-2 bg-gray-500 text-white px-4 py-2 rounded">

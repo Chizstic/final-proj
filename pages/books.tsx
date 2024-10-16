@@ -1,8 +1,7 @@
-// src/components/Bookers.tsx
 import React, { useState } from 'react';
 import BookingList from './bookinglist'; // Ensure the path is correct
 import BookingForm from './bookingform'; // Ensure the path is correct
-import { Bookings } from './api/booking'; // Import the Bookings interface
+import { Bookings } from './api/type'; // Import the Bookings interface
 
 const Bookers: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
@@ -51,10 +50,14 @@ const Bookers: React.FC = () => {
           }}
           onSubmit={handleSubmitBooking}
           initialBookingDetails={selectedBooking ? {
+            id: selectedBooking.id, // Include the id
             name: selectedBooking.name,
             date: selectedBooking.date,
+            time: selectedBooking.time,
             service: selectedBooking.service,
-          } : undefined} // Change null to undefined
+            staff: selectedBooking.staff || '', // Add staff, defaulting to an empty string if not available
+            userEmail: selectedBooking.userEmail || '', // Add userEmail, defaulting to an empty string if not available
+          } : undefined} // Ensure undefined is passed if no selectedBooking
         />
       )}
     </div>

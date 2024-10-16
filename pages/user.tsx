@@ -1,18 +1,11 @@
 // pages/userProfile.tsx
 import React from 'react';
 import BookingList from './bookinglist'; // Ensure the path is correct
+import { Bookings } from './api/type'; // Import the Bookings interface from the correct file
 
-// Define the props type for user information and bookings
-interface Booking {
-  id: number;
-  name: string; // Add name property to match the Bookings interface
-  service: string;
-  date: string;
-  time: string;
-}
-
+// Define the props type for user information
 interface UserProfileProps {
-  userBookings: Booking[]; // Updated to match the new Booking type
+  userBookings: Bookings[]; // Use the imported Bookings type
   userEmail: string;
   userName: string;
 }
@@ -55,11 +48,11 @@ const UserProfile: React.FC<UserProfileProps> = ({ userBookings, userEmail, user
         <div className="bg-white shadow-md rounded-lg p-6">
           <h2 className="text-2xl font-semibold mb-4 text-purple-600">My Bookings</h2>
           <p className="text-gray-700 mb-4">View and manage your upcoming appointments and booking history.</p>
-          {/* Mocked bookings data */}
+          {/* Use the correct bookings data type */}
           <BookingList 
             bookings={userBookings} 
-            deleteBooking={() => {}} 
-            editBooking={() => {}} 
+            deleteBooking={() => {}}  // Add functionality as needed
+            editBooking={() => {}}    // Add functionality as needed
           />
         </div>
       </main>
@@ -75,9 +68,9 @@ const UserProfile: React.FC<UserProfileProps> = ({ userBookings, userEmail, user
 // Static props for demonstration purposes
 export async function getStaticProps() {
   // Mock user information and bookings
-  const userBookings = [
-    { id: 1, name: 'John Doe', service: 'Haircut', date: '2024-10-15', time: '10:00 AM' },
-    { id: 2, name: 'John Doe', service: 'Manicure', date: '2024-10-20', time: '2:00 PM' },
+  const userBookings: Bookings[] = [
+    { id: 1, name: 'John Doe', service: 'Haircut', date: '2024-10-15', time: '10:00 AM', staff: '', userEmail: '' }, // Include staff and userEmail
+    { id: 2, name: 'John Doe', service: 'Manicure', date: '2024-10-20', time: '2:00 PM', staff: '', userEmail: '' }, // Include staff and userEmail
   ];
 
   return {

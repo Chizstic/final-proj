@@ -1,7 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import FacebookLogo from '/public/fb_logo.png';
-import Link from 'next/link';
+
 
 function Footer() {
 
@@ -64,9 +64,6 @@ function Footer() {
           <div className="flex justify-center text-lg text-slate-600 w-full">
             <nav className="flex space-x-8">
               <a href="#" className="hover:text-teal-600">About Us</a>
-            <Link href="/shop"> <button>shop
-               </button>
-          </Link>
               <a href="#" className="hover:text-teal-600">Contacts</a>
             </nav>
           </div>

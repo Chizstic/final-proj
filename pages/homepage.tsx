@@ -56,13 +56,6 @@ function Homepage() {
 
           <div className="flex items-center space-x-4">
 
-<Link href="/shop">
-  <button className="text-slate-700 text-xl py-2 px-4 rounded-md font-semibold hover:text-teal-600 transition duration-300">
-    shop
-  </button>
-</Link>
-
-
 <Link href="/services">
   <button className="text-slate-700 text-xl py-2 px-4 rounded-md font-semibold hover:text-teal-600 transition duration-300">
     Services
@@ -71,7 +64,7 @@ function Homepage() {
 
 <Link href="/user">
   <button className="text-slate-700 text-xl py-2 px-4 rounded-md font-semibold hover:text-teal-600 transition duration-300">
-    user
+    User
   </button>
 </Link>
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bookings } from './api/booking'; // Ensure the path is correct
+import { Bookings } from './api/type'; // Ensure the path is correct
 
 interface BookingListProps {
   bookings?: Bookings[]; // Optional booking prop
@@ -29,7 +29,7 @@ const BookingList: React.FC<BookingListProps> = ({
           </thead>
           <tbody>
             {bookings.map((booking) => (
-              <tr key={booking.id || booking.name}>
+              <tr key={booking.id ? booking.id : booking.name}>
                 <td className="border-b p-2">{booking.name}</td>
                 <td className="border-b p-2">{booking.date}</td>
                 <td className="border-b p-2">{booking.service}</td>

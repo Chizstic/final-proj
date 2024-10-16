@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 
@@ -6,14 +6,13 @@ const LoginPage = () => {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState('');
+  const [error, setError] = useState('');
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
 
     try {
-      // Send the email and password to the backend for authentication
       const response = await fetch('/api/login', {
         method: 'POST',
         headers: {
@@ -24,91 +23,68 @@ const LoginPage = () => {
 
       const data = await response.json();
 
-      if (!response.ok) {
-        // Handle error response from the server (e.g., invalid credentials)
-        return; // Just return and do nothing
-      }
+      if (response.ok) {
+        setSuccess('Login successful! Redirecting...');
 
-      // If login is successful, store user information in localStorage
-      localStorage.setItem('userEmail', data.user.email);
-      localStorage.setItem('userRole', data.user.role);
-
-      // Redirect based on user role
-      if (data.user.role === 'admin') {
-        router.push('/admin'); // Redirect to admin page
+        const { role } = data;
+        setTimeout(() => {
+          if (role === 'admin') {
+            router.push('/admin');
+          } else {
+            router.push('/homepage');
+          }
+        }, 2000);
       } else {
-        router.push('/homepage'); // Redirect to homepage
+        setError('Invalid email or password');
       }
-    } catch (error) {
-      console.error('Login error:', error); // Log the error if needed
-    } finally {
-      setLoading(false);
+    } catch {
+      setError('An error occurred. Please try again.');
     }
   };
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen bg-slate-100">
-    {/* Left Side */}
-    <div className="flex flex-col items-center lg:items-start justify-center w-full lg:w-1/2 p-8">
-      <h1
-        className="text-4xl lg:text-6xl font-bold mr-10 text-center lg:text-right select-none"
-        style={{ fontFamily: 'Serif' }}
-      >
-        <span style={{ color: '#D20062' }}>Guys & Gals</span>
-        <span style={{ color: '#D6589F' }}> Salon</span>
-      </h1>
-      <p className="text-lg lg:text-2xl text-black mb-8 text-center lg:text-left select-none"> 
-        Get ready to be served what you deserve.
-      </p>
-    </div>
-    {/* Right Side */}
-    <div className="flex flex-1 items-center justify-center w-full lg:w-1/2 p-4">
-      <div className="w-full max-w-md bg-pink-300 bg-opacity-30 p-8 lg:p-12 rounded-lg shadow-md">
-        <h3 className="text-3xl lg:text-4xl font-extrabold mb-4 text-center">
-          <span className="bg-gradient-to-r from-pink-400 to-pink-600 text-transparent bg-clip-text select-none">
-            Login
-          </span>
-        </h3>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
+        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
         <form onSubmit={handleLogin}>
           <div className="mb-4">
+            <label htmlFor="email" className="block text-sm font-semibold mb-2">Email</label>
             <input
               type="email"
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md"
               placeholder="Enter your email"
               required
             />
           </div>
           <div className="mb-4">
+            <label htmlFor="password" className="block text-sm font-semibold mb-2">Password</label>
             <input
               type="password"
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md"
               placeholder="Enter your password"
               required
             />
           </div>
           <button
             type="submit"
-            className={`w-full ${loading ? 'bg-gray-400' : 'bg-pink-500'} bg-opacity-80 text-white py-2 px-4 rounded-md font-semibold hover:bg-pink-600 transition duration-300`}
-            disabled={loading}
+            className="w-full bg-teal-500 text-white py-2 px-4 rounded-md font-semibold hover:bg-teal-600 transition duration-300"
           >
-            {loading ? 'Logging in...' : 'LOG IN'}
+            Login
           </button>
+          {success && <p className="text-green-500 mt-4 text-center">{success}</p>}
+          {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
         </form>
-        <p className="mt-4 text-center select-none">
-          Don&apos;t have an account?{' '}
-          <Link href="/signup" className="text-pink-500 hover:text-pink-700">
-            Sign Up
-          </Link>
+        <p className="mt-4 text-center">
+          Don&#39;t have an account? <Link href="/signup" className="text-teal-500 hover:text-teal-700">Sign Up</Link>
         </p>
       </div>
     </div>
-  </div>
   );
 };
 

@@ -1,19 +1,19 @@
-// pages/api/register.ts
 import { NextApiRequest, NextApiResponse } from 'next';
-import bcrypt from 'bcrypt';
-import { Client } from '@vercel/postgres';
+import { createPool } from '@vercel/postgres'; // Use createPool for connection pooling
 
-// Initialize the database client
-const client = new Client({
-  connectionString: process.env.DATABASE_URL, // Make sure this environment variable is set
+// Initialize the database pool
+const pool = createPool({
+  connectionString: process.env.DATABASE_URL, // Ensure this is set in your environment variables
 });
 
 const registerHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
     const { email, password, role } = req.body;
 
+    let client; // Declare the client variable here
+
     try {
-      await client.connect();
+      client = await pool.connect(); // Get a client from the pool
 
       // Check if the user already exists
       const existingUser = await client.query(
@@ -25,13 +25,10 @@ const registerHandler = async (req: NextApiRequest, res: NextApiResponse) => {
         return res.status(400).json({ message: 'User already exists' });
       }
 
-      // Hash the password before saving to the database
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-      // Insert the new user into the Users table
+      // Insert the new user into the Users table without hashing the password
       await client.query(
-        'INSERT INTO Users (email, password, role) VALUES ($1, $2, $4)',
-        [email, hashedPassword, role]
+        'INSERT INTO users (email, password, role) VALUES ($1, $2, $3)',
+        [email, password, role] // Store the plaintext password directly
       );
 
       // Send back a success response
@@ -40,7 +37,9 @@ const registerHandler = async (req: NextApiRequest, res: NextApiResponse) => {
       console.error('Error registering user:', error);
       res.status(500).json({ message: 'Internal server error' });
     } finally {
-      await client.end();
+      if (client) {
+        await client.release(); // Release the client back to the pool if it was created
+      }
     }
   } else {
     res.setHeader('Allow', ['POST']);
