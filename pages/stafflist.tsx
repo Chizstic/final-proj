@@ -1,24 +1,22 @@
-// src/pages/stafflist.tsx
 import React from 'react';
 import { Staff } from './api/type';
 import AddingStaff from './staffForm'; // Ensure this import path is correct
 
 interface StaffListProps {
-  staffList: Staff[]; // Ensure this is not optional
+  staffList: Staff[];
   handleAddStaff: (newStaff: Staff) => void;
   handleDeleteStaff: (staffId: number) => void;
 }
 
 const StaffList: React.FC<StaffListProps> = ({
-  staffList,
+  staffList = [], // Default to an empty array
   handleAddStaff,
-  handleDeleteStaff
+  handleDeleteStaff,
 }) => {
   return (
     <div className="staff-list">
       <h1 className="text-2xl font-bold mb-4">Staff List</h1>
 
-      {/* Ensure handleAddStaff is passed correctly here */}
       <AddingStaff handleAddStaff={handleAddStaff} />
 
       <table className="min-w-full border-collapse border border-gray-200">
