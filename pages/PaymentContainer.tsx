@@ -10,18 +10,21 @@ const PaymentContainer: React.FC<PaymentContainerProps> = ({ qrImage, onBack }) 
   const [receipt, setReceipt] = useState<File | null>(null);
   const [proofSubmitted, setProofSubmitted] = useState(false);
 
+  // Handle file input change
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       setReceipt(event.target.files[0]);
     }
   };
 
+  // Handle form submission
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     if (receipt) {
       // Handle the proof of payment submission here
-      setProofSubmitted(true);
-      // You may want to reset the receipt or handle further actions here
+      console.log("Proof of payment submitted:", receipt); // Add logic to upload the receipt
+      setProofSubmitted(true); // Set proofSubmitted to true to show success message
+      setReceipt(null); // Reset the receipt after submission
     }
   };
 
@@ -30,15 +33,14 @@ const PaymentContainer: React.FC<PaymentContainerProps> = ({ qrImage, onBack }) 
       <h2 className="text-3xl font-bold mb-8 text-center text-indigo-600">
         Payment Instructions
       </h2>
-      <div className="w-full h-auto mb-6 rounded">
-        <Image
-          src={qrImage}
-          alt="GCash QR Code"
-          width={500} // Set an appropriate width
-          height={500} // Set an appropriate height
-          layout="responsive" // Make the image responsive
-        />
-      </div>
+      <Image
+        src={qrImage}
+        alt="GCash QR Code"
+        layout="responsive" // Makes the image responsive
+        width={500} // Set an appropriate width
+        height={500} // Set an appropriate height
+        className="rounded mb-6" // Additional styling
+      />
       <p className="text-gray-600 mb-6">
         Please scan the QR code above to complete your payment. After payment,
         please upload your proof of payment below.

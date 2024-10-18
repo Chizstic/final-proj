@@ -8,11 +8,18 @@ export interface Staff {
 // src/pages/api/type.ts
 export interface Bookings {
   id?: number; // Make id optional
-  name: string; // Assuming this is the client's name
+  name: string;
+  date: string;
   time: string;
-  date: string; // Booking date
-  service: string; // Service booked
+  service: string;
   staff: string;
-  userEmail: string; // Add this property for user's email
+  userEmail: string;
+  userId?: number; // Ensure userId is included
 }
 
+export const servicePrices: Record<'Hair Care' | 'Spa' | 'Hair & Make-up' | 'Nail Care', number> = {
+  'Hair Care': 500,      // Adjust prices as needed
+  'Spa': 700,
+  'Hair & Make-up': 800,
+  'Nail Care': 300,
+};

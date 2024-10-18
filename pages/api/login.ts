@@ -37,7 +37,7 @@ const loginHandler = async (req: NextApiRequest, res: NextApiResponse) => {
       }
 
       // Return the user's information upon successful login
-      return res.status(200).json({ message: 'Login successful', user });
+      return res.status(200).json({ message: 'Login successful', user: { ...user, role: user.role } });
     } catch (error) {
       console.error('Error logging in:', error);
       return res.status(500).json({ message: 'Internal server error' });

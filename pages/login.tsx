@@ -11,7 +11,7 @@ const LoginPage = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     try {
       const response = await fetch('/api/login', {
         method: 'POST',
@@ -20,13 +20,13 @@ const LoginPage = () => {
         },
         body: JSON.stringify({ email, password }),
       });
-
+  
       const data = await response.json();
-
+  
       if (response.ok) {
         setSuccess('Login successful! Redirecting...');
-
-        const { role } = data;
+  
+        const { role } = data.user; // Access role from data.user
         setTimeout(() => {
           if (role === 'admin') {
             router.push('/admin');
@@ -41,7 +41,7 @@ const LoginPage = () => {
       setError('An error occurred. Please try again.');
     }
   };
-
+  
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">

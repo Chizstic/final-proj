@@ -1,6 +1,6 @@
 // pages/userProfile.tsx
 import React from 'react';
-import BookingList from './bookinglist'; // Ensure the path is correct
+import BookingList from './books'; // Ensure the path is correct
 import { Bookings } from './api/type'; // Import the Bookings interface from the correct file
 
 // Define the props type for user information
@@ -19,7 +19,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userBookings, userEmail, user
     localStorage.removeItem('userName');
     console.log('Logging out...');
     // Redirect to login or homepage
-    window.location.href = '/'; // Change to the appropriate route
+    window.location.href = '/login'; // Change to the appropriate route
   };
 
   return (
@@ -66,20 +66,6 @@ const UserProfile: React.FC<UserProfileProps> = ({ userBookings, userEmail, user
 };
 
 // Static props for demonstration purposes
-export async function getStaticProps() {
-  // Mock user information and bookings
-  const userBookings: Bookings[] = [
-    { id: 1, name: 'John Doe', service: 'Haircut', date: '2024-10-15', time: '10:00 AM', staff: '', userEmail: '' }, // Include staff and userEmail
-    { id: 2, name: 'John Doe', service: 'Manicure', date: '2024-10-20', time: '2:00 PM', staff: '', userEmail: '' }, // Include staff and userEmail
-  ];
 
-  return {
-    props: {
-      userBookings,
-      userEmail: 'user@example.com',
-      userName: 'John Doe',
-    },
-  };
-}
 
 export default UserProfile;
