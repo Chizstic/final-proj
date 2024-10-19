@@ -12,7 +12,7 @@ const AdminPage: React.FC = () => {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const response = await fetch('/api/bookings');
+        const response = await fetch('/api/booking');
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
         setBookings(data);
@@ -32,11 +32,11 @@ const AdminPage: React.FC = () => {
     setStaffList((prev) => prev.filter((staff) => staff.id !== staffId));
   };
 
-  const handleDeleteBooking = (bookingId: number) => {
+  const deleteBooking = (bookingId: number) => {
     setBookings((prev) => prev.filter((booking) => booking.id !== bookingId));
   };
 
-  const handleEditBooking = (updatedBooking: Bookings) => {
+  const editBooking = (updatedBooking: Bookings) => {
     setBookings((prev) =>
       prev.map((booking) =>
         booking.id === updatedBooking.id ? updatedBooking : booking
@@ -50,17 +50,13 @@ const AdminPage: React.FC = () => {
         <h2 className="font-bold text-lg mb-4">Admin Panel</h2>
         <button
           onClick={() => setActiveTab('staff')}
-          className={`w-full text-left p-2 rounded-lg ${
-            activeTab === 'staff' ? 'bg-blue-500 text-white' : 'bg-transparent'
-          }`}
+          className={`w-full text-left p-2 rounded-lg ${activeTab === 'staff' ? 'bg-blue-500 text-white' : 'bg-transparent'}`}
         >
           Staff
         </button>
         <button
           onClick={() => setActiveTab('bookings')}
-          className={`w-full text-left p-2 rounded-lg ${
-            activeTab === 'bookings' ? 'bg-blue-500 text-white' : 'bg-transparent'
-          }`}
+          className={`w-full text-left p-2 rounded-lg ${activeTab === 'bookings' ? 'bg-blue-500 text-white' : 'bg-transparent'}`}
         >
           Bookings
         </button>
@@ -75,9 +71,9 @@ const AdminPage: React.FC = () => {
           />
         ) : (
           <Bookers
-            bookings={bookings}
-            deleteBooking={handleDeleteBooking}
-            editBooking={handleEditBooking}
+            bookings={bookings} // Pass the bookings state to Bookers
+            deleteBooking={deleteBooking} // Pass the deleteBooking function
+            editBooking={editBooking} // Pass the editBooking function
           />
         )}
       </main>

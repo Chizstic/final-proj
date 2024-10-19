@@ -1,79 +1,202 @@
-import React, { useState } from 'react';
-import Image from 'next/image';
+// import React, { useState, useEffect, useRef, useCallback } from 'react';
+// import BookingForm from './bookingform';
+// import Image from 'next/image';
 
-interface PaymentContainerProps {
-  qrImage: string; // URL of the GCash QR code image
-  onBack: () => void; // Add onBack prop for going back
-}
+// const comboRatesImages = [
+//   '/SO_img1.jpg',
+//   '/SO_img2.jpg',
+//   '/SO_img3.jpg',
+//   '/SO_img4.jpg',
+//   '/SO_img5.jpg',
+//   '/SO_img6.jpg',
+//   '/SO_img7.jpg',
+//   '/SO_img8.jpg',
+//   '/SO_img9.jpg',
+// ];
 
-const PaymentContainer: React.FC<PaymentContainerProps> = ({ qrImage, onBack }) => {
-  const [receipt, setReceipt] = useState<File | null>(null);
-  const [proofSubmitted, setProofSubmitted] = useState(false);
+// interface Service {
+//   name: string;
+//   image: string;
+// }
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-      setReceipt(event.target.files[0]);
-    }
-  };
+// // Define the BookingDetails interface with appropriate properties
+// interface BookingDetails {
+//   name: string; // Add properties to match Bookings interface
+//   date: string;
+//   service: string;
+// }
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    if (receipt) {
-      // Handle the proof of payment submission here
-      setProofSubmitted(true);
-      // You may want to reset the receipt or handle further actions here
-    }
-  };
+// const Slideshow: React.FC<{ images: string[] }> = ({ images }) => {
+//   const [currentIndex, setCurrentIndex] = useState<number>(0);
+//   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  return (
-    <div className="bg-white rounded-xl p-10 shadow-2xl border border-gray-200 max-w-lg mx-auto">
-      <h2 className="text-3xl font-bold mb-8 text-center text-indigo-600">
-        Payment Instructions
-      </h2>
-      <div className="w-full h-auto mb-6 rounded">
-        <Image
-          src={qrImage}
-          alt="GCash QR Code"
-          width={500} // Set an appropriate width
-          height={500} // Set an appropriate height
-          layout="responsive" // Make the image responsive
-        />
-      </div>
-      <p className="text-gray-600 mb-6">
-        Please scan the QR code above to complete your payment. After payment,
-        please upload your proof of payment below.
-      </p>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
-          required
-        />
-        <div className="flex justify-between mt-6">
-          <button
-            type="button"
-            onClick={onBack}
-            className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded shadow-md transition duration-200"
-          >
-            Back
-          </button>
-          <button
-            type="submit"
-            className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-2 rounded-lg shadow-md transition duration-300"
-          >
-            Submit Proof of Payment
-          </button>
-        </div>
-      </form>
-      {proofSubmitted && (
-        <div className="mt-6 p-4 border border-green-200 bg-green-50 rounded-md">
-          <p className="text-green-600">Proof of payment submitted successfully!</p>
-        </div>
-      )}
-    </div>
-  );
-};
+//   const nextSlide = useCallback(() => {
+//     setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+//   }, [images.length]);
 
-export default PaymentContainer;
+//   const prevSlide = useCallback(() => {
+//     setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
+//   }, [images.length]);
+
+//   useEffect(() => {
+//     timeoutRef.current = setTimeout(() => {
+//       nextSlide();
+//     }, 3000);
+
+//     return () => {
+//       clearTimeout(timeoutRef.current!);
+//     };
+//   }, [currentIndex, nextSlide]);
+
+//   return (
+//     <div className="relative w-2/4 h-96 overflow-hidden group">
+//       <Image
+//         src={images[currentIndex]}
+//         alt={`Slide ${currentIndex + 1}`}
+//         layout="fill"
+//         objectFit="cover"
+//         className="w-full h-full"
+//       />
+//       <button
+//         aria-label="Previous Slide"
+//         className="absolute left-3 top-1/2 transform -translate-y-1/2 border-none text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+//         onClick={prevSlide}
+//       >
+//         <span className="w-5 h-5 border-t-2 border-l-2 border-slate-600 block transform -rotate-45" />
+//       </button>
+//       <button
+//         aria-label="Next Slide"
+//         className="absolute right-3 top-1/2 transform -translate-y-1/2 border-none text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+//         onClick={nextSlide}
+//       >
+//         <span className="w-5 h-5 border-t-2 border-r-2 border-slate-600 block transform rotate-45" />
+//       </button>
+
+//       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+//         {images.map((_, index) => (
+//           <div
+//             key={index}
+//             className={`w-9 h-1 rounded-lg bg-gray-100 ${index === currentIndex ? 'bg-slate-600' : 'bg-opacity-50'}`}
+//           />
+//         ))}
+//       </div>
+//     </div>
+//   );
+// };
+
+// const servicesData = {
+//   hairCare: [
+//     { name: 'Hair Trim', image: '/SO_img1.jpg' },
+//     { name: 'Hair Color', image: '/SO_img2.jpg' },
+//     { name: 'Hot Oil', image: '/SO_img4.jpg' },
+//     { name: 'Balayage', image: '/SO_img3.jpg' },
+//     { name: 'Hair Rebond', image: '/SO_img5.jpg' },
+//     { name: 'Hair Botox', image: '/SO_img6.jpg' },
+//     { name: 'Keratin', image: '/SO_img7.jpg' },
+//     { name: 'Highlights', image: '/SO_img8.jpg' },
+//   ],
+//   spaTreatments: [
+//     { name: 'Foot Spa', image: '/SO_img9.jpg' },
+//     { name: 'Foot Massage', image: '/SO_img10.jpg' },
+//     { name: 'Waxing (Armpit & Legs)', image: '/SO_img11.jpg' },
+//   ],
+//   hairAndMakeUp: [
+//     { name: 'Hair Styling', image: '/SO_img12.jpg' },
+//     { name: 'Makeup', image: '/SO_img13.jpg' },
+//   ],
+//   nailCare: [
+//     { name: 'Manicure', image: '/SO_img14.jpg' },
+//     { name: 'Pedicure', image: '/SO_img15.jpg' },
+//     { name: 'Nail Gel', image: '/SO_img16.jpg' },
+//     { name: 'Gel Polish', image: '/SO_img17.jpg' },
+//     { name: 'Soft Gel Nail Extension', image: '/SO_img18.jpg' },
+//   ],
+// };
+
+// const Section: React.FC<{
+//   title: string;
+//   services: Service[];
+//   sectionRef: React.RefObject<HTMLDivElement>;
+// }> = ({ title, services, sectionRef }) => {
+//   return (
+//     <div ref={sectionRef} className="mb-12 bg-white rounded-lg shadow-lg p-8">
+//       <h2 className="text-4xl font-bold text-center text-teal-600 mb-8">{title}</h2>
+//       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+//         {services.map((service, index) => (
+//           <div key={index} className="relative bg-white shadow-xl rounded-lg flex flex-col items-center justify-center overflow-hidden transition-transform duration-300 transform hover:scale-105 hover:shadow-2xl focus:outline-none">
+//             <div className="relative w-full h-60">
+//               <Image
+//                 src={service.image}
+//                 alt={service.name}
+//                 layout="fill"
+//                 objectFit="cover"
+//                 className="w-full h-full"
+//               />
+//               <div className="absolute bottom-0 right-0 p-2 bg-rose-200 rounded-lg bg-opacity-70 text-gray-800">
+//                 <h3 className="text-lg font-semibold">{service.name}</h3>
+//               </div>
+//             </div>
+//           </div>
+//         ))}
+//       </div>
+//     </div>
+//   );
+// };
+
+// const ServicesPage: React.FC = () => {
+//   const [showBookingForm, setShowBookingForm] = useState<boolean>(false);
+
+//   const hairCareRef = useRef<HTMLDivElement>(null);
+//   const spaTreatmentsRef = useRef<HTMLDivElement>(null);
+//   const hairAndMakeUpRef = useRef<HTMLDivElement>(null);
+//   const nailCareRef = useRef<HTMLDivElement>(null);
+
+//   const handleBookNowClick = () => {
+//     setShowBookingForm(true); // Show the form when "Book Now" is clicked
+//   };
+
+//   const handleCloseBookingForm = () => {
+//     setShowBookingForm(false); // Hide the form when "Close" is clicked
+//   };
+
+//   // Use the BookingDetails type for the booking details parameter
+//   const handleBookingSubmit = (booking: BookingDetails) => {
+//     console.log('Booking details:', booking);
+//     handleCloseBookingForm(); // Close the form after submission
+//   };
+
+//   return (
+//     <div className="min-h-screen">
+//       <div className="fixed top-0 left-0 w-full py-4 flex justify-between items-center px-8 z-50" style={{ backgroundColor: 'rgba(171, 198, 191, 0.30)' }}>
+//         <div className="flex items-center flex-shrink-0 text-white mr-6">
+//           <Image src="/logo.png" alt="Logo" width={64} height={64} className="mr-4 rounded-full" />
+//           <div className="flex flex-row items-center">
+//             <span className="font-bold text-2xl tracking-tight" style={{ color: '#D20062', fontFamily: 'Serif' }}>Guys & Gals</span>
+//             <span className="font-bold text-2xl tracking-tight ml-2" style={{ color: '#D6589F', fontFamily: 'Serif' }}>Salon</span>
+//           </div>
+//         </div>
+//         <button 
+//           onClick={handleBookNowClick} 
+//           className="hover:text-teal-600 bg-opacity-70 text-slate-700 font-semibold text-xl hover:underline py-2 px-4 rounded">
+//           Book Now
+//         </button>
+//       </div>
+
+//       <Slideshow images={comboRatesImages} />
+
+//       <Section title="Hair Care" services={servicesData.hairCare} sectionRef={hairCareRef} />
+//       <Section title="Spa Treatments" services={servicesData.spaTreatments} sectionRef={spaTreatmentsRef} />
+//       <Section title="Hair & Makeup" services={servicesData.hairAndMakeUp} sectionRef={hairAndMakeUpRef} />
+//       <Section title="Nail Care" services={servicesData.nailCare} sectionRef={nailCareRef} />
+
+//       {showBookingForm && (
+//   <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+//     <div className="bg-white rounded-lg p-6 shadow-lg">
+//     </div>
+//   </div>
+// )}
+// </div>
+//   );
+// };
+
+// export default ServicesPage;

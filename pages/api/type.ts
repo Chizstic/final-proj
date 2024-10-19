@@ -13,8 +13,9 @@ export interface Bookings {
   time: string;
   service: string;
   staff: string;
-  userEmail: string;
+  user_email: string;
   userId?: number; // Ensure userId is included
+  payment_method: string;
 }
 
 export const servicePrices: Record<'Hair Care' | 'Spa' | 'Hair & Make-up' | 'Nail Care', number> = {

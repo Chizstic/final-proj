@@ -4,12 +4,11 @@ import { Bookings, servicePrices } from './api/type'; // Adjust the import accor
 import BookingSummary from './bookingSummary'; // Adjust the import according to your project structure
 
 interface BookingFormProps {
+
   initialBookingDetails?: Bookings; // Optional prop for existing bookings
-  onSubmit: (bookingDetails: Bookings) => void; // Prop for handling form submission
-  onClose: () => void; // Prop for handling closing the form
 }
 
-const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, onSubmit, onClose }) => {
+const BookingForm: React.FC<BookingFormProps> = ({  initialBookingDetails }) => {
   const [formDetails, setFormDetails] = useState<Bookings>({
     id: undefined, // Optional id
     name: '',
@@ -17,11 +16,11 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, onSubm
     time: '',
     service: '',
     staff: '',
-    userEmail: '',
+    user_email: '',
     userId: undefined,
+    payment_method:'',
   });
-
-  const [showSummary, setShowSummary] = useState(false); // State to toggle between form and summary
+  const [showSummary, setShowSummary] = useState(false); // New state to toggle between form and summary
 
   useEffect(() => {
     if (initialBookingDetails) {
@@ -35,9 +34,8 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, onSubm
   };
 
   const validateForm = () => {
-    const { name, date, time, service, staff, userEmail } = formDetails;
-    // Ensure all required fields are filled
-    if (!name || !date || !time || !service || !staff || !userEmail) {
+    const { name, date, time, service, staff, user_email } = formDetails;
+    if (!name || !date || !time || !service || !staff || !user_email) {
       alert('Please fill in all required fields.');
       return false;
     }
@@ -52,7 +50,6 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, onSubm
     }
 
     console.log('Submitting booking with details:', formDetails);
-    onSubmit(formDetails); // Call the onSubmit prop with form details
     setShowSummary(true); // Show the summary after submission
   };
 
@@ -61,8 +58,9 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, onSubm
   };
 
   const handleProceedToPayment = () => {
+    // Handle the transition to the payment step here
     console.log('Proceeding to payment with:', formDetails);
-    // Logic for proceeding to payment
+    // You can add logic to redirect to the payment page or display the payment container
   };
 
   return (
@@ -93,8 +91,8 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, onSubm
               <label className="block text-gray-700">Email:</label>
               <input
                 type="email"
-                name="userEmail"
-                value={formDetails.userEmail}
+                name="user_email"
+                value={formDetails.user_email}
                 onChange={handleChange}
                 required
                 className="w-full p-2 border border-gray-300 rounded"
@@ -152,13 +150,6 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, onSubm
             </div>
             <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
               Confirm Booking
-            </button>
-            <button
-              type="button"
-              onClick={onClose} // Call the onClose function when this button is clicked
-              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded ml-2"
-            >
-              Close
             </button>
           </form>
         </div>

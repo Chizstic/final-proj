@@ -8,12 +8,11 @@ const pool = createPool({
 
 const bookingHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   // Set CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*'); // Change '*' to your frontend origin for production
+  res.setHeader('Access-Control-Allow-Origin', '*'); // Adjust for production
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
-    // Handle preflight requests
     res.status(200).end();
     return;
   }
@@ -33,8 +32,13 @@ const bookingHandler = async (req: NextApiRequest, res: NextApiResponse) => {
       }
     }
   } else if (req.method === 'POST') {
-    const { name, date, time, service, staff, userId, paymentMethod } = req.body; // Include paymentMethod
-    if (!name || !date || !time || !service || !staff || !userId || !paymentMethod) {
+    const { name, user_email, date, time, service, staff, userId, paymentMethod } = req.body;
+
+    // Log incoming request body for debugging
+    console.log('Incoming request body:', req.body);
+
+    if (!name || !user_email || !date || !time || !service || !staff || !userId || !paymentMethod) {
+      console.error('Missing required fields');
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
@@ -42,8 +46,8 @@ const bookingHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     try {
       client = await pool.connect();
       const { rows } = await client.query(
-        'INSERT INTO bookings (name, date, time, service, staff, user_id, payment_method) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-        [name, date, time, service, staff, userId, paymentMethod] // Add paymentMethod to the insert statement
+        'INSERT INTO bookings (name, user_email, date, time, service, staff, user_id, payment_method) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+        [name, date, time, service, staff, userId, paymentMethod]
       );
       res.status(201).json(rows[0]);
     } catch (error) {
@@ -55,8 +59,9 @@ const bookingHandler = async (req: NextApiRequest, res: NextApiResponse) => {
       }
     }
   } else if (req.method === 'PUT') {
-    const { id, name, date, time, service, staff, userId, paymentMethod } = req.body;
-    if (!id || !name || !date || !time || !service || !staff || !userId || !paymentMethod) {
+    const { id, name, user_email, date, time, service, staff, userId, paymentMethod } = req.body;
+
+    if (!id || !name || !user_email || !date || !time || !service || !staff || !userId || !paymentMethod) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
@@ -64,8 +69,8 @@ const bookingHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     try {
       client = await pool.connect();
       const { rowCount } = await client.query(
-        'UPDATE bookings SET name = $1, date = $2, time = $3, service = $4, staff = $5, user_id = $6, payment_method = $7 WHERE id = $8',
-        [name, date, time, service, staff, userId, paymentMethod, id] // Update with paymentMethod
+        'UPDATE bookings SET name = $1, user_email =$2 date = $3, time = $4, service = $5, staff = $6, user_id = $7, payment_method = $7 WHERE id = $8',
+        [name, date, time, service, staff, userId, paymentMethod, id]
       );
       if (rowCount === 0) {
         return res.status(404).json({ message: 'Booking not found' });

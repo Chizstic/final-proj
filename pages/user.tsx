@@ -1,6 +1,6 @@
 // pages/userProfile.tsx
 import React from 'react';
-import BookingList from './books'; // Ensure the path is correct
+import Bookers from './books'; // Ensure the path is correct
 import { Bookings } from './api/type'; // Import the Bookings interface from the correct file
 
 // Define the props type for user information
@@ -18,9 +18,11 @@ const UserProfile: React.FC<UserProfileProps> = ({ userBookings, userEmail, user
     localStorage.removeItem('userRole');
     localStorage.removeItem('userName');
     console.log('Logging out...');
-    // Redirect to login or homepage
+    // Redirect to login
     window.location.href = '/login'; // Change to the appropriate route
   };
+
+  const welcomeMessage = `Welcome back, ${userName || 'Guest'}.`;
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -30,10 +32,10 @@ const UserProfile: React.FC<UserProfileProps> = ({ userBookings, userEmail, user
           <h1 className="text-3xl font-bold">
             {userName ? `Hello, ${userName}` : 'Loading...'}
           </h1>
-          <span className="text-lg">Welcome to your profile</span>
+          <span className="text-lg">{welcomeMessage}</span>
         </div>
         <div className="flex items-center">
-          <span className="mr-4">{userEmail || 'Loading...'}</span> {/* Display loading state for email */}
+          <span className="mr-4">{userEmail || 'Loading...'}</span>
           <button
             onClick={handleLogout}
             className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700 transition"
@@ -43,16 +45,21 @@ const UserProfile: React.FC<UserProfileProps> = ({ userBookings, userEmail, user
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="p-6">
         <div className="bg-white shadow-md rounded-lg p-6">
           <h2 className="text-2xl font-semibold mb-4 text-purple-600">My Bookings</h2>
           <p className="text-gray-700 mb-4">View and manage your upcoming appointments and booking history.</p>
-          {/* Use the correct bookings data type */}
-          <BookingList 
-            bookings={userBookings} 
-            deleteBooking={() => {}}  // Add functionality as needed
-            editBooking={() => {}}    // Add functionality as needed
+          <Bookers
+            bookings={userBookings} // Pass the bookings to Bookers
+            deleteBooking={(bookingId) => {
+              console.log(`Delete booking with ID: ${bookingId}`);
+              // Implement the delete functionality as needed
+            }}
+            editBooking={(updatedBooking) => {
+              console.log('Update booking:', updatedBooking);
+              // Implement the edit functionality as needed
+            }}
+           
           />
         </div>
       </main>
@@ -64,8 +71,5 @@ const UserProfile: React.FC<UserProfileProps> = ({ userBookings, userEmail, user
     </div>
   );
 };
-
-// Static props for demonstration purposes
-
 
 export default UserProfile;

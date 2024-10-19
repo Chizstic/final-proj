@@ -1,13 +1,34 @@
-import React from 'react';
-import { Bookings } from './api/type'; // Ensure you're importing the type
+// Bookers.tsx
+import React, { useEffect, useState } from 'react';
+import { Bookings } from './api/type';
 
 interface BookersProps {
-  bookings: Bookings[] | undefined;
-  deleteBooking: (id: number) => void;
-  editBooking: (booking: Bookings) => void;
+  bookings: Bookings[]; // Expecting the bookings array
+  deleteBooking: (bookingId: number) => void; // Function to delete a booking
+  editBooking: (updatedBooking: Bookings) => void; // Function to edit a booking
 }
 
 const Bookers: React.FC<BookersProps> = ({ bookings, deleteBooking, editBooking }) => {
+  const [loading, setLoading] = useState(true); // Add loading state
+  const [error, setError] = useState<string | null>(null); // Add error state
+
+  useEffect(() => {
+    if (bookings.length === 0) {
+      setError('No bookings available.');
+    }
+    setLoading(false); // Set loading to false after fetching
+  }, [bookings]);
+
+  const paidBookings = bookings.filter(booking => booking.payment_method === 'Paid');
+
+  if (loading) {
+    return <div>Loading...</div>; // Show loading message
+  }
+
+  if (error) {
+    return <div className="text-red-500">Error: {error}</div>; // Show error message
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <h2 className="text-2xl font-semibold mb-6 text-purple-600">Manage Bookings</h2>
@@ -16,18 +37,26 @@ const Bookers: React.FC<BookersProps> = ({ bookings, deleteBooking, editBooking 
           <thead>
             <tr className="bg-gray-200">
               <th className="px-4 py-2">Name</th>
+              <th className="px-4 py-2">Email</th>
               <th className="px-4 py-2">Date</th>
+              <th className="px-4 py-2">Time</th>
               <th className="px-4 py-2">Service</th>
+              <th className="px-4 py-2">Staff</th>
+              <th className="px-4 py-2">Payment</th>
               <th className="px-4 py-2">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {Array.isArray(bookings) && bookings.length > 0 ? (
-              bookings.map((booking) => (
+            {paidBookings.length > 0 ? (
+              paidBookings.map((booking) => (
                 <tr key={booking.id} className="border-t hover:bg-gray-100 transition">
                   <td className="px-4 py-2">{booking.name}</td>
+                  <td className="px-4 py-2">{booking.user_email}</td>
                   <td className="px-4 py-2">{booking.date}</td>
+                  <td className="px-4 py-2">{booking.time}</td>
                   <td className="px-4 py-2">{booking.service}</td>
+                  <td className="px-4 py-2">{booking.staff}</td>
+                  <td className="px-4 py-2">{booking.payment_method}</td>
                   <td className="px-4 py-2">
                     <button
                       className="text-blue-500 mr-4 hover:underline"
@@ -46,8 +75,8 @@ const Bookers: React.FC<BookersProps> = ({ bookings, deleteBooking, editBooking 
               ))
             ) : (
               <tr>
-                <td colSpan={4} className="text-center py-4 text-gray-500">
-                  No bookings found.
+                <td colSpan={8} className="text-center py-4 text-gray-500">
+                  No paid bookings found.
                 </td>
               </tr>
             )}
