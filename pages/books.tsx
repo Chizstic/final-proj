@@ -3,23 +3,26 @@ import React, { useEffect, useState } from 'react';
 import { Bookings } from './api/type';
 
 interface BookersProps {
-  bookings: Bookings[]; // Expecting the bookings array
+  bookings?: Bookings[]; // Make bookings optional to handle undefined cases
   deleteBooking: (bookingId: number) => void; // Function to delete a booking
   editBooking: (updatedBooking: Bookings) => void; // Function to edit a booking
 }
 
-const Bookers: React.FC<BookersProps> = ({ bookings, deleteBooking, editBooking }) => {
+const Bookers: React.FC<BookersProps> = ({ bookings = [], deleteBooking, editBooking }) => {
   const [loading, setLoading] = useState(true); // Add loading state
   const [error, setError] = useState<string | null>(null); // Add error state
 
   useEffect(() => {
-    if (bookings.length === 0) {
+    if (!bookings || bookings.length === 0) {
       setError('No bookings available.');
+    } else {
+      setError(null); // Clear any previous error
     }
-    setLoading(false); // Set loading to false after fetching
+    setLoading(false); // Set loading to false after checking bookings
   }, [bookings]);
 
-  const paidBookings = bookings.filter(booking => booking.payment_method === 'Paid');
+  // Ensure bookings is defined and filter only if not undefined
+  const paidBookings = bookings ? bookings.filter(booking => booking.payment_method === 'Paid') : [];
 
   if (loading) {
     return <div>Loading...</div>; // Show loading message

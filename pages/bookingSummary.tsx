@@ -4,30 +4,35 @@ import { Bookings, servicePrices } from './api/type'; // Adjust the import accor
 import PaymentContainer from './PaymentContainer'; // Adjust the import path as necessary
 
 interface BookingSummaryProps {
-  booking: Bookings;
+  booking?: Bookings; // Make booking optional to avoid errors
   onBack: () => void;
-  onProceedToPayment: () => void; // Add this line to include the new prop
- 
+  onProceedToPayment: () => void;
 }
 
-const BookingSummary: React.FC<BookingSummaryProps> = ({ booking, onBack, onProceedToPayment, }) => {
+const BookingSummary: React.FC<BookingSummaryProps> = ({ booking, onBack, onProceedToPayment }) => {
   const [isPaymentVisible, setIsPaymentVisible] = useState(false); // State to control payment visibility
 
   const isServiceKey = (key: string): key is keyof typeof servicePrices => {
     return key in servicePrices;
   };
 
-  const servicePrice = isServiceKey(booking.service) ? servicePrices[booking.service] : 0;
+  // Use optional chaining and provide a default value to avoid undefined errors
+  const servicePrice = booking && isServiceKey(booking.service) ? servicePrices[booking.service] : 0;
 
   const handleProceedToPayment = () => {
     setIsPaymentVisible(true); // Show payment container
-    onProceedToPayment(); 
+    onProceedToPayment();
   };
+
+  // Return null or some fallback content if booking is not available
+  if (!booking) {
+    return <div className="text-red-500">Booking information is not available.</div>;
+  }
 
   return (
     <div className="bg-white rounded-lg p-8 shadow-lg border border-gray-300 max-w-lg mx-auto">
       {isPaymentVisible ? ( // Conditional rendering based on payment visibility
-        <PaymentContainer 
+        <PaymentContainer
           qrImage="/gcash-qr.png" // Pass the image URL
           onBack={onBack} // Pass the onBack prop to PaymentContainer
         />
@@ -36,22 +41,22 @@ const BookingSummary: React.FC<BookingSummaryProps> = ({ booking, onBack, onProc
           <h2 className="text-2xl font-semibold mb-6 text-center text-blue-600">Booking Summary</h2>
           <div className="space-y-4">
             <div className="p-4 border border-gray-200 rounded-md">
-              <p className="text-gray-700"><strong>Name:</strong> {booking.name}</p>
+              <p className="text-gray-700"><strong>Name:</strong> {booking.name || 'N/A'}</p>
             </div>
             <div className="p-4 border border-gray-200 rounded-md">
-              <p className="text-gray-700"><strong>Email:</strong> {booking.user_email}</p>
+              <p className="text-gray-700"><strong>Email:</strong> {booking.user_email || 'N/A'}</p>
             </div>
             <div className="p-4 border border-gray-200 rounded-md">
-              <p className="text-gray-700"><strong>Date:</strong> {booking.date}</p>
+              <p className="text-gray-700"><strong>Date:</strong> {booking.date || 'N/A'}</p>
             </div>
             <div className="p-4 border border-gray-200 rounded-md">
-              <p className="text-gray-700"><strong>Time:</strong> {booking.time}</p>
+              <p className="text-gray-700"><strong>Time:</strong> {booking.time || 'N/A'}</p>
             </div>
             <div className="p-4 border border-gray-200 rounded-md">
-              <p className="text-gray-700"><strong>Service:</strong> {booking.service}</p>
+              <p className="text-gray-700"><strong>Service:</strong> {booking.service || 'N/A'}</p>
             </div>
             <div className="p-4 border border-gray-200 rounded-md">
-              <p className="text-gray-700"><strong>Staff:</strong> {booking.staff}</p>
+              <p className="text-gray-700"><strong>Staff:</strong> {booking.staff || 'N/A'}</p>
             </div>
             <div className="p-4 border border-gray-200 rounded-md">
               <p className="text-gray-700"><strong>Service Price:</strong> ₱{servicePrice}</p>
