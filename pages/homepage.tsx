@@ -1,30 +1,14 @@
 // ./pages/homepage.tsx
 import React, { useState } from 'react';
-import { useRouter } from 'next/router';
 import Footer from './footer';
 import BookingForm from './bookingform';
 import Image from 'next/image';
 import Link from 'next/link';
 
-// Define types for booking details and service types
-// type BookingDetails = {
-//   name: string;
-//   date: string;
-//   service: string;
-// };
-
-type ServiceType = 'Hair Care' | 'Spa' | 'Hair & Make-up' | 'Nail Care';
-
 function Homepage() {
-  const router = useRouter();
   const [showBookingForm, setShowBookingForm] = useState(false);
 
-  const handleContainerClick = (service: ServiceType) => {
-    router.push({
-      pathname: '/services',
-      query: { serviceType: service },
-    });
-  };
+ 
 
   const handleBookNowClick = () => {
     setShowBookingForm(true);
@@ -34,11 +18,6 @@ function Homepage() {
     setShowBookingForm(false); // or however you're managing the state
   };
   
-
-  // const handleBookingSubmit = (bookingDetails: BookingDetails) => {
-  //   console.log("Booking details:", bookingDetails);
-  //   setShowBookingForm(false); // Close the form after submission
-  // };
 
   return (
     <div>
@@ -57,11 +36,6 @@ function Homepage() {
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            <Link href="/services">
-              <button className="text-slate-700 text-xl py-2 px-4 rounded-md font-semibold hover:text-teal-600 transition duration-300">
-                Services
-              </button>
-            </Link>
             <Link href="/user">
               <button className="text-slate-700 text-xl py-2 px-4 rounded-md font-semibold hover:text-teal-600 transition duration-300">
                 User
@@ -88,28 +62,28 @@ function Homepage() {
           <div className="flex justify-center space-x-4 sm:space-x-6 flex-wrap">
             <button
               className="bg-white bg-opacity-80 shadow-inner shadow-rose-300 p-5 rounded-lg w-56 h-36 flex flex-col items-center justify-center hover:bg-teal-50 focus:outline-none mb-4"
-              onClick={() => handleContainerClick('Hair Care')}
+              onClick={() =>('Hair Care')}
             >
               <Image src="/Hair_Care.png" alt="Care" width={90} height={100} className="w-30 h-28 object-cover rounded-full" />
               <h1 className="text-2xl -mt-4 font-bold text-gray-800 text-center">Hair Care</h1>
             </button>
             <button
               className="bg-white bg-opacity-80 shadow-inner shadow-rose-300 p-5 rounded-lg w-56 h-36 flex flex-col items-center justify-center hover:bg-teal-50 focus:outline-none mb-4"
-              onClick={() => handleContainerClick('Spa')}
+              onClick={() => ('Spa')}
             >
               <Image src="/Spa.png" alt="Spa" width={90} height={100} className="w-30 h-28 object-cover rounded-full" />
               <h1 className="text-2xl -mt-4 font-bold text-gray-800 text-center">Spa</h1>
             </button>
             <button
               className="bg-white bg-opacity-80 shadow-inner shadow-rose-300 p-5 rounded-lg w-56 h-36 flex flex-col items-center justify-center hover:bg-teal-50 focus:outline-none mb-4"
-              onClick={() => handleContainerClick('Hair & Make-up')}
+              onClick={() => ('Hair & Make-up')}
             >
               <Image src="/HnM.jpg" alt="Hair & Make-up" width={90} height={100} className="w-30 h-28 object-cover rounded-full" />
               <h1 className="text-2xl -mt-4 font-bold text-gray-800 text-center">Hair & Make-up</h1>
             </button>
             <button
               className="bg-white bg-opacity-80 shadow-inner shadow-rose-300 p-5 rounded-lg w-56 h-36 flex flex-col items-center justify-center hover:bg-teal-50 focus:outline-none mb-4"
-              onClick={() => handleContainerClick('Nail Care')}
+              onClick={() => ('Nail Care')}
             >
               <Image src="/Nail Care.png" alt="Nail Care" width={90} height={100} className="w-30 h-28 object-cover rounded-full" />
               <h1 className="text-2xl -mt-4 font-bold text-gray-800 text-center">Nail Care</h1>

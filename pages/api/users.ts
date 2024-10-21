@@ -7,18 +7,35 @@ const pool = createPool({
 
 const usersHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'GET') {
+    const { email } = req.query; 
+
+    if (! email || typeof email !== 'string') {
+      return res.status(400).json({ message: 'User email is required.' });
+    }
+
     let client;
 
     try {
       client = await pool.connect(); // Use the pool to get a client
 
-      // Query to fetch all users
-      const result = await client.query('SELECT * FROM Users');
+      // Query to fetch the user based on the email and their bookings
+      const userQuery = 'SELECT * FROM Users WHERE email = $1';
+      const bookingsQuery = 'SELECT * FROM Bookings WHERE user_email = $1';
 
-      // Return the users data
-      res.status(200).json(result.rows);
+      const userResult = await client.query(userQuery, [ email]);
+      const bookingsResult = await client.query(bookingsQuery, [ email]);
+
+      if (userResult.rows.length === 0) {
+        return res.status(404).json({ message: 'User not found.' });
+      }
+
+      const userData = userResult.rows[0];
+      const bookings = bookingsResult.rows;
+
+      // Return user data and their bookings
+      res.status(200).json({ user: userData, bookings });
     } catch (error) {
-      console.error('Error fetching users:', error); // Log error for debugging
+      console.error('Error fetching user data:', error); // Log error for debugging
       res.status(500).json({ message: 'Internal server error' });
     } finally {
       if (client) {

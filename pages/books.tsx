@@ -1,28 +1,40 @@
-// Bookers.tsx
 import React, { useEffect, useState } from 'react';
 import { Bookings } from './api/type';
 
 interface BookersProps {
-  bookings?: Bookings[]; // Make bookings optional to handle undefined cases
-  deleteBooking: (bookingId: number) => void; // Function to delete a booking
+  bookings: Bookings[];
+  deleteBooking: (bookingId: number ) => void; // Function to delete a booking
   editBooking: (updatedBooking: Bookings) => void; // Function to edit a booking
 }
 
-const Bookers: React.FC<BookersProps> = ({ bookings = [], deleteBooking, editBooking }) => {
+const Bookers: React.FC<BookersProps> = ({ deleteBooking, editBooking }) => {
+  const [bookings, setBookings] = useState<Bookings[]>([]); // State to hold all bookings
   const [loading, setLoading] = useState(true); // Add loading state
-  const [error, setError] = useState<string | null>(null); // Add error state
+  const [error, ] = useState<string | null>(null); // Add error state
 
+  // Fetch paid bookings when the component mounts
   useEffect(() => {
-    if (!bookings || bookings.length === 0) {
-      setError('No bookings available.');
-    } else {
-      setError(null); // Clear any previous error
-    }
-    setLoading(false); // Set loading to false after checking bookings
-  }, [bookings]);
+    const fetchBookings = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/booking');
+        if (!response.ok) {
+          throw new Error('Failed to fetch bookings');
+        }
+        const data: Bookings[] = await response.json();
+        setBookings(data);
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+
+        setLoading(false);
+      }
+    };
+
+    fetchBookings();
+  }, []);
 
   // Ensure bookings is defined and filter only if not undefined
-  const paidBookings = bookings ? bookings.filter(booking => booking.payment_method === 'Paid') : [];
+  const paidBookings = bookings.filter(booking => booking.payment_method.toLowerCase() === 'paid');
 
   if (loading) {
     return <div>Loading...</div>; // Show loading message

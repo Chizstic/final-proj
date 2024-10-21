@@ -5,22 +5,24 @@ export interface Staff {
   position: string;
 }
 
-// src/pages/api/type.ts
 export interface Bookings {
-  id?: number; // Make id optional
   name: string;
   date: string;
   time: string;
   service: string;
   staff: string;
   user_email: string;
-  userId?: number; // Ensure userId is included
   payment_method: string;
+  id?: number; // Optional field
 }
 
-export const servicePrices: Record<'Hair Care' | 'Spa' | 'Hair & Make-up' | 'Nail Care', number> = {
-  'Hair Care': 500,      // Adjust prices as needed
-  'Spa': 700,
-  'Hair & Make-up': 800,
-  'Nail Care': 300,
+
+// Define service prices
+export const servicePrices: Record<'Hair Trim' | 'Hair Color' | 'Hot Oil' | 'Balayage' | 'Hair Rebond' | 'Makeup', number> = {
+  'Hair Trim': 500,      // Adjust prices as needed
+  'Hair Color': 700,
+  'Hot Oil': 800,
+  'Balayage': 900,
+  'Hair Rebond': 1000,
+  'Makeup': 850,
 };
