@@ -18,7 +18,7 @@ const AdminBookings: React.FC<AdminBookingsProps> = ({ email, deleteBooking, edi
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const response = await fetch(`/api/booking?user_email=${encodeURIComponent(email)}`);
+        const response = await fetch(`/api/booking`);
         if (!response.ok) {
           throw new Error('Failed to fetch bookings');
         }
@@ -34,10 +34,12 @@ const AdminBookings: React.FC<AdminBookingsProps> = ({ email, deleteBooking, edi
     fetchBookings();
   }, [email]); // Include user_email as a dependency
 
-  // Ensure bookings is defined and filter only if not undefined
-  const paidBookings = bookings.filter(
+  // Ensure bookings is an array before filtering
+const paidBookings = Array.isArray(bookings)
+? bookings.filter(
     (booking) => booking.paymentMethod?.toLowerCase() === 'paid'
-  );
+  )
+: [];
 
   if (loading) {
     return <div>Loading...</div>; // Show loading message

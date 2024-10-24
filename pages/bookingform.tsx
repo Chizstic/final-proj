@@ -156,6 +156,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookin
     <div>
       {showSummary ? (
         <BookingSummary
+     
           booking={formDetails}
           onBack={handleBackToForm}
           onProceedToPayment={handleProceedToPayment}

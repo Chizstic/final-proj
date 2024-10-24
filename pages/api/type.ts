@@ -7,15 +7,16 @@ export interface Staff {
 
 // Assuming this is your type definition in './api/type'
 export interface Bookings {
-  bookingID:  number; // Ensure this matches the case
+  bookingID: number; // Ensure this matches the case
   email: string;
   date: string;
   time: string;
-  services: string
+  services: string;
   paymentMethod: string;
   staffname: string; // Assuming staffID is of type string
   created_at?: string; // Optional
 }
+
 
 
 
