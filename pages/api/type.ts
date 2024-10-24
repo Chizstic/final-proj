@@ -1,28 +1,22 @@
 export interface Staff {
-  id?: number; 
-  first_name: string;
-  last_name: string;
+  staffid?: number; 
+  fname: string;
+  lname: string;
   position: string;
 }
 
+// Assuming this is your type definition in './api/type'
 export interface Bookings {
-  name: string;
+  bookingID:  number; // Ensure this matches the case
+  email: string;
   date: string;
   time: string;
-  service: string;
-  staff: string;
-  user_email: string;
-  payment_method: string;
-  id?: number; // Optional field
+  services: string
+  paymentMethod: string;
+  staffname: string; // Assuming staffID is of type string
+  created_at?: string; // Optional
 }
 
 
-// Define service prices
-export const servicePrices: Record<'Hair Trim' | 'Hair Color' | 'Hot Oil' | 'Balayage' | 'Hair Rebond' | 'Makeup', number> = {
-  'Hair Trim': 500,      // Adjust prices as needed
-  'Hair Color': 700,
-  'Hot Oil': 800,
-  'Balayage': 900,
-  'Hair Rebond': 1000,
-  'Makeup': 850,
-};
+
+

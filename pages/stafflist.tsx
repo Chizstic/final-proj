@@ -45,7 +45,7 @@ const StaffList: React.FC<StaffListProps> = ({ initialStaffList = [] }) => {
         throw new Error(`Failed to delete staff member: ${errorMessage}`);
       }
       // Update the state to reflect the deletion
-      setStaffList(staffList.filter((staff) => staff.id !== staffId));
+      setStaffList(staffList.filter((staff) => staff.staffid !== staffId));
     } catch (error) {
       setError('Error deleting staff member. Please try again.');
       console.error('Error deleting staff:', error);
@@ -60,7 +60,7 @@ const StaffList: React.FC<StaffListProps> = ({ initialStaffList = [] }) => {
   // Update a staff member in the list
   const handleUpdateStaff = (updatedStaff: Staff) => {
     setStaffList((prevStaffList) =>
-      prevStaffList.map((staff) => (staff.id === updatedStaff.id ? updatedStaff : staff))
+      prevStaffList.map((staff) => (staff.staffid === updatedStaff.staffid ? updatedStaff : staff))
     );
     setStaffToEdit(undefined); // Clear the edit state after updating
   };
@@ -103,10 +103,10 @@ const StaffList: React.FC<StaffListProps> = ({ initialStaffList = [] }) => {
           <tbody>
             {staffList.length > 0 ? (
               staffList.map((staffMember) => (
-                <tr key={staffMember.id}>
-                  <td className="border border-gray-300 p-2">{staffMember.id}</td>
-                  <td className="border border-gray-300 p-2">{staffMember.first_name}</td>
-                  <td className="border border-gray-300 p-2">{staffMember.last_name}</td>
+                <tr key={staffMember.staffid}>
+                  <td className="border border-gray-300 p-2">{staffMember.staffid}</td>
+                  <td className="border border-gray-300 p-2">{staffMember.fname}</td>
+                  <td className="border border-gray-300 p-2">{staffMember.lname}</td>
                   <td className="border border-gray-300 p-2">{staffMember.position}</td>
                   <td className="border border-gray-300 p-2">
                     <button
@@ -117,9 +117,9 @@ const StaffList: React.FC<StaffListProps> = ({ initialStaffList = [] }) => {
                     </button>
                     <button
                       onClick={() => {
-                        if (staffMember.id !== undefined) {
-                          if (window.confirm(`Are you sure you want to delete staff ID: ${staffMember.id}?`)) {
-                            handleDeleteStaff(staffMember.id);
+                        if (staffMember.staffid !== undefined) {
+                          if (window.confirm(`Are you sure you want to delete staff ID: ${staffMember.staffid}?`)) {
+                            handleDeleteStaff(staffMember.staffid);
                           }
                         } else {
                           console.error('Staff ID is undefined');

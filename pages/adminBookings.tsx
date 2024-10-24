@@ -1,40 +1,43 @@
 import React, { useEffect, useState } from 'react';
 import { Bookings } from './api/type';
 
-interface BookersProps {
+// Update the AdminBookingsProps interface to include user_email
+interface AdminBookingsProps {
   bookings: Bookings[];
-  deleteBooking: (bookingId: number ) => void; // Function to delete a booking
-  editBooking: (updatedBooking: Bookings) => void; // Function to edit a booking
+  deleteBooking: (bookingId: number ) => void;
+  editBooking: (updatedBooking: Bookings) => void;
+  email: string;
 }
 
-const Bookers: React.FC<BookersProps> = ({ deleteBooking, editBooking }) => {
+const AdminBookings: React.FC<AdminBookingsProps> = ({ email, deleteBooking, editBooking }) => {
   const [bookings, setBookings] = useState<Bookings[]>([]); // State to hold all bookings
   const [loading, setLoading] = useState(true); // Add loading state
-  const [error, ] = useState<string | null>(null); // Add error state
+  const [error, setError] = useState<string | null>(null); // Add error state
 
   // Fetch paid bookings when the component mounts
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/booking');
+        const response = await fetch(`/api/booking?user_email=${encodeURIComponent(email)}`);
         if (!response.ok) {
           throw new Error('Failed to fetch bookings');
         }
         const data: Bookings[] = await response.json();
         setBookings(data);
-        setLoading(false);
       } catch (error) {
-        console.error(error);
-
+        setError(error instanceof Error ? error.message : 'An error occurred');
+      } finally {
         setLoading(false);
       }
     };
 
     fetchBookings();
-  }, []);
+  }, [email]); // Include user_email as a dependency
 
   // Ensure bookings is defined and filter only if not undefined
-  const paidBookings = bookings.filter(booking => booking.payment_method.toLowerCase() === 'paid');
+  const paidBookings = bookings.filter(
+    (booking) => booking.paymentMethod?.toLowerCase() === 'paid'
+  );
 
   if (loading) {
     return <div>Loading...</div>; // Show loading message
@@ -64,14 +67,13 @@ const Bookers: React.FC<BookersProps> = ({ deleteBooking, editBooking }) => {
           <tbody>
             {paidBookings.length > 0 ? (
               paidBookings.map((booking) => (
-                <tr key={booking.id} className="border-t hover:bg-gray-100 transition">
-                  <td className="px-4 py-2">{booking.name}</td>
-                  <td className="px-4 py-2">{booking.user_email}</td>
+                <tr key={booking.bookingID} className="border-t hover:bg-gray-100 transition">
+                  <td className="px-4 py-2">{booking.email}</td>
                   <td className="px-4 py-2">{booking.date}</td>
                   <td className="px-4 py-2">{booking.time}</td>
-                  <td className="px-4 py-2">{booking.service}</td>
-                  <td className="px-4 py-2">{booking.staff}</td>
-                  <td className="px-4 py-2">{booking.payment_method}</td>
+                  <td className="px-4 py-2">{booking.services}</td>
+                  <td className="px-4 py-2">{booking.staffname}</td>
+                  <td className="px-4 py-2">{booking.paymentMethod}</td>
                   <td className="px-4 py-2">
                     <button
                       className="text-blue-500 mr-4 hover:underline"
@@ -81,10 +83,11 @@ const Bookers: React.FC<BookersProps> = ({ deleteBooking, editBooking }) => {
                     </button>
                     <button
                       className="text-red-500 hover:underline"
-                      onClick={() => deleteBooking(booking.id!)}
+                      onClick={() => booking.bookingID ? deleteBooking(booking.bookingID) : null} // Ensure booking.id is defined
                     >
                       Delete
                     </button>
+
                   </td>
                 </tr>
               ))
@@ -102,4 +105,4 @@ const Bookers: React.FC<BookersProps> = ({ deleteBooking, editBooking }) => {
   );
 };
 
-export default Bookers;
+export default AdminBookings;

@@ -34,7 +34,7 @@ const SignUpPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password, role: 'user' }), // Assume role as 'user' by default
+        body: JSON.stringify({ email, password, role: 'client' }), 
       });
 
       const data = await response.json();
@@ -49,7 +49,7 @@ const SignUpPage = () => {
       // Simulate a redirect to login after successful sign-up
       setTimeout(() => {
         router.push('/login');
-      }, 2000); // Redirect after 2 seconds
+      }, 1000); // Redirect after 2 seconds
     } catch (err) {
       console.error(err); // Error is logged but not shown to the user
     }

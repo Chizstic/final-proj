@@ -1,12 +1,11 @@
-// src/pages/admin.tsx
 import React, { useEffect, useState } from 'react';
 import StaffList from './stafflist'; // Ensure the path is correct
-import Bookers from './books'; // Import the Bookers component
+import AdminBookings from './adminBookings'; // Import the AdminBookings component
 import { Staff, Bookings } from './api/type'; // Import both types
 
 const AdminPage: React.FC = () => {
   const [staffList, setStaffList] = useState<Staff[]>([]);
-  const [bookings, setBookings] = useState<Bookings[]>([]);
+  const [bookings, setBookings] = useState<Bookings[]>([]); // Initialize bookings state
   const [activeTab, setActiveTab] = useState<'staff' | 'bookings'>('staff');
 
   useEffect(() => {
@@ -29,20 +28,23 @@ const AdminPage: React.FC = () => {
   };
 
   const handleDeleteStaff = (staffId: number) => {
-    setStaffList((prev) => prev.filter((staff) => staff.id !== staffId));
+    setStaffList((prev) => prev.filter((staff) => staff.staffid !== staffId));
   };
 
   const deleteBooking = (bookingId: number) => {
-    setBookings((prev) => prev.filter((booking) => booking.id !== bookingId));
+    setBookings((prev) => prev.filter((booking) => booking.bookingID !== bookingId)); // Update to use bookingID
   };
 
   const editBooking = (updatedBooking: Bookings) => {
     setBookings((prev) =>
       prev.map((booking) =>
-        booking.id === updatedBooking.id ? updatedBooking : booking
+        booking.bookingID === updatedBooking.bookingID ? updatedBooking : booking // Update to use bookingID
       )
     );
   };
+
+  // Placeholder for user email
+  const user_email = "example@example.com"; // Replace with actual user email logic
 
   return (
     <div className="flex">
@@ -70,10 +72,11 @@ const AdminPage: React.FC = () => {
             handleDeleteStaff={handleDeleteStaff}
           />
         ) : (
-          <Bookers
-            bookings={bookings} // Pass the bookings state to Bookers
+          <AdminBookings
+            bookings={bookings} // Pass the bookings to AdminBookings component
             deleteBooking={deleteBooking} // Pass the deleteBooking function
             editBooking={editBooking} // Pass the editBooking function
+            email={user_email} // Pass the user_email here
           />
         )}
       </main>

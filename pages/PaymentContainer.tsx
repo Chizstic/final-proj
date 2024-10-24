@@ -4,55 +4,37 @@ import Image from 'next/image';
 interface PaymentContainerProps {
   qrImage: string; // URL of the GCash QR code image
   onBack: () => void; // Add onBack prop for going back
-  bookingId: number; // Pass the booking ID to update
 }
 
-const PaymentContainer: React.FC<PaymentContainerProps> = ({ qrImage, onBack, bookingId }) => {
+const PaymentContainer: React.FC<PaymentContainerProps> = ({ qrImage, onBack }) => {
   const [receipt, setReceipt] = useState<File | null>(null);
-  const [email, setEmail] = useState(''); // State to store email
   const [proofSubmitted, setProofSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Handle file input change
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       setReceipt(event.target.files[0]);
     }
   };
 
-  // Handle email input change
-  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(event.target.value);
-  };
-
-  // Handle form submission
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!email) {
-      setError('Please provide your email.');
-      return;
-    }
-    
     if (!receipt) {
       setError('Please upload a receipt.');
       return;
     }
 
     try {
-      console.log("Proof of payment submitted:", receipt); // Add logic to upload the receipt
-      // Here you would normally handle receipt upload to a server or storage
+      console.log("Proof of payment submitted:", receipt);
 
-      // Update payment method in the database
       const response = await fetch('/api/booking', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          user_email: email,
-          payment_method: 'paid', // Update to 'paid'
-          bookingId: bookingId, // Include booking ID in the request
+          payment_method: 'paid',
         }),
       });
 
@@ -62,9 +44,9 @@ const PaymentContainer: React.FC<PaymentContainerProps> = ({ qrImage, onBack, bo
         return;
       }
 
-      setProofSubmitted(true); // Set proofSubmitted to true to show success message
-      setReceipt(null); // Reset the receipt after submission
-      setError(null); // Clear any previous error
+      setProofSubmitted(true);
+      setReceipt(null);
+      setError(null);
     } catch (err) {
       console.error('Error updating payment method:', err);
       setError('Failed to update payment status.');
@@ -82,21 +64,13 @@ const PaymentContainer: React.FC<PaymentContainerProps> = ({ qrImage, onBack, bo
         layout="responsive"
         width={400}
         height={400}
-        className="rounded mb-3" // Reduced margin-bottom
+        className="rounded mb-3"
       />
       <p className="text-gray-600 mb-3">
         Please scan the QR code above to complete your payment. After payment,
         please upload your proof of payment below.
       </p>
       <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          value={email}
-          onChange={handleEmailChange}
-          placeholder="Enter your email"
-          className="block w-full p-2 mb-2 border rounded"
-          required
-        />
         <input
           type="file"
           accept="image/*"

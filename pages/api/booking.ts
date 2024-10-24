@@ -1,96 +1,63 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createPool } from '@vercel/postgres';
 
-// Initialize the database pool
+// Create a connection pool
 const pool = createPool({
   connectionString: process.env.DATABASE_URL,
 });
 
 const bookingHandler = async (req: NextApiRequest, res: NextApiResponse) => {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*'); // Adjust for production
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  const client = await pool.connect(); // Ensure a client is connected
 
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
-  }
+  if (req.method === 'POST') {
+    const { email, date, time, services, staffs, paymentMethod } = req.body; // Assuming these are strings
 
-  if (req.method === 'GET') {
-    let client;
+    // Validate incoming booking data
+    if (!email || !date || !time || !services || !staffs || !paymentMethod) {
+      return res.status(400).json({ message: 'All booking fields are required' });
+    }
+
     try {
-      client = await pool.connect();
-      const { rows } = await client.query('SELECT * FROM bookings');
-      res.status(200).json(rows);
+      const insertQuery = `
+        INSERT INTO bookings (email, date, time, services, staffs, paymentmethod, created_at)
+        VALUES ($1, $2, $3, $4, $5, $6, NOW()) RETURNING *;
+      `;
+
+      const insertResult = await client.query(insertQuery, [
+        email,
+        date,
+        time,
+        services,     // String value representing the service name
+        staffs,       // String value representing the staff name
+        paymentMethod,
+      ]);
+
+      const insertedBooking = insertResult.rows[0];
+
+      // Send the response with the inserted booking
+      return res.status(201).json({ message: 'Booking created successfully', booking: insertedBooking });
+    } catch (error) {
+      console.error('Error preparing booking data:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    } finally {
+      client.release(); // Ensure client is released back to the pool
+    }
+  } else if (req.method === 'GET') {
+    try {
+      const result = await client.query('SELECT * FROM bookings ORDER BY created_at DESC;');
+      const bookings = result.rows;
+
+      // Send the response with the bookings
+      return res.status(200).json({ bookings });
     } catch (error) {
       console.error('Error fetching bookings:', error);
-      res.status(500).json({ message: 'Internal server error' });
+      return res.status(500).json({ message: 'Internal server error' });
     } finally {
-      if (client) {
-        await client.release();
-      }
+      client.release(); // Ensure client is released back to the pool
     }
-  } if (req.method === 'POST') {
-      const { name, user_email, date, time, service, staff, payment_method, created_at} = req.body;
-  
-      console.log('Incoming request body:', req.body);
-  
-      if (!name || !user_email || !date || !time || !service || !staff || !payment_method || created_at) {
-        console.error('Missing required fields');
-        return res.status(400).json({ message: 'All fields are required.' });
-      }
-  
-      let client;
-      try {
-        client = await pool.connect();
-        const { rows } = await client.query(
-          'INSERT INTO bookings (name, user_email, date, time, service, staff, payment_method, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-          [name, user_email, date, time, service, staff, payment_method, created_at]
-        );
-        res.status(201).json(rows[0]);
-      } catch  {
-        console.error('Error creating booking:',);
-        res.status(500).json({ message: 'Internal server error',});
-      } finally {
-        if (client) {
-          await client.release();
-        }
-      }
-    } else if (req.method === 'PUT') {
-      const { user_email, payment_method } = req.body;
-  
-      // Ensure that the required fields are present
-      if (!user_email|| !payment_method) {
-          return res.status(400).json({ message: 'Booking email and payment method are required.' });
-      }
-  
-      let client;
-      try {
-          client = await pool.connect();
-          // Update only the payment_method
-          const { rowCount } = await client.query(
-              'UPDATE bookings SET payment_method = $1 WHERE user_email = $2',
-              [payment_method, user_email] // Only updating payment_method
-          );
-  
-          // Check if any rows were updated
-          if (rowCount === 0) {
-              return res.status(404).json({ message: 'Booking not found' });
-          }
-          res.status(204).end(); // No content to send back
-      } catch (error) {
-          console.error('Error updating booking:', error);
-          res.status(500).json({ message: 'Internal server error' });
-      } finally {
-          if (client) {
-              await client.release();
-          }
-      }
-  
   } else {
-    res.setHeader('Allow', ['GET', 'POST', 'PUT']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+    res.setHeader('Allow', ['POST', 'GET']);
+    return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 };
 

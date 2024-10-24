@@ -16,8 +16,8 @@ const AddingStaff: React.FC<AddingStaffProps> = ({ handleAddStaff, staffToEdit, 
   useEffect(() => {
     if (staffToEdit) {
       // If a staffToEdit is passed in, populate the form fields and set edit mode
-      setFirstName(staffToEdit.first_name);
-      setLastName(staffToEdit.last_name);
+      setFirstName(staffToEdit.fname);
+      setLastName(staffToEdit.lname);
       setPosition(staffToEdit.position);
       setEditMode(true);
     }
@@ -27,9 +27,9 @@ const AddingStaff: React.FC<AddingStaffProps> = ({ handleAddStaff, staffToEdit, 
     e.preventDefault();
 
     const staffData: Staff = {
-      id: staffToEdit?.id, // Use the existing ID if editing, otherwise it will be undefined
-      first_name: firstName,
-      last_name: lastName,
+      staffid: staffToEdit?.staffid, // Use the existing ID if editing, otherwise it will be undefined
+      fname: firstName,
+      lname: lastName,
       position,
     };
 

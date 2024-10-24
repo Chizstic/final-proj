@@ -1,37 +1,79 @@
 import React, { useEffect, useState } from 'react';
-import { Bookings, servicePrices } from './api/type'; // Adjust the import according to your project structure
-import BookingSummary from './bookingSummary'; // Adjust the import according to your project structure
+import BookingSummary from './bookingSummary'; // Ensure the import path is correct
+import { Bookings } from './api/type';
 
 interface BookingFormProps {
-  initialBookingDetails?: Bookings; // Optional prop for existing bookings
+  initialBookingDetails?: Bookings; // Make this optional
+  bookingID: number  ; // Correct the case here
+  email: string,
+
+}
+interface ServiceOption {
+  serviceid: string; // Assuming serviceid is a string
+  servicename: string;
+  price: number;
 }
 
-const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails }) => {
+interface StaffOption {
+  staffid: string; // Assuming you have staff IDs
+  fname: string;
+  lname: string;
+  position: string;
+}
+const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookingID }) => {
+  // Set default state for formDetails
   const [formDetails, setFormDetails] = useState<Bookings>({
-    id: undefined, // Optional id
-    name: '',
+    bookingID, 
+    email: '',
     date: '',
     time: '',
-    service: '',
-    staff: '',
-    user_email: '',
-    payment_method: '',
+    services: '', // Changed to string
+    staffname: '', // Changed to string
+    paymentMethod: '',
   });
-  const [showSummary, setShowSummary] = useState(false); // Toggle between form and summary
-  const [errorMessages, setErrorMessages] = useState<string[]>([]); // Array to hold error messages
 
-  // Staff members list
-  const staffMembers = [
-    { id: 1, name: 'Arman Buscato', role: 'Hairstylist' },
-    { id: 2, name: 'Tata Marsada Quimpan', role: 'Hairstylist' },
-    { id: 3, name: 'Rusty Cauilanza', role: 'Hairstylist' },
-    { id: 4, name: 'Rowena Palma', role: 'Manicurist' },
-    { id: 5, name: 'Aurora Rubia', role: 'Manicurist' },
-    { id: 6, name: 'Cheryl Otazo', role: 'Manicurist' },
-    { id: 7, name: 'Angelyn Omale', role: 'Manicurist' },
-    { id: 8, name: 'Chesil Padual', role: 'Manicurist' },
-  ];
+  const [showSummary, setShowSummary] = useState(false);
+  const [errorMessages, setErrorMessages] = useState<string[]>([]);
+  const [serviceOptions, setServiceOptions] = useState<ServiceOption[]>([]);
+  const [staffOptions, setStaffOptions] = useState<StaffOption[]>([]);
 
+  // Fetching services
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await fetch('/api/services');
+        if (!response.ok) {
+          throw new Error('Failed to fetch services');
+        }
+        const services = await response.json();
+        setServiceOptions(services);
+      } catch (error) {
+        console.error('Error fetching services:', error);
+      }
+    };
+
+    fetchServices();
+  }, []);
+
+  // Fetching staff members
+  useEffect(() => {
+    const fetchStaff = async () => {
+      try {
+        const response = await fetch('/api/staff');
+        if (!response.ok) {
+          throw new Error('Failed to fetch staff');
+        }
+        const staff = await response.json();
+        setStaffOptions(staff);
+      } catch (error) {
+        console.error('Error fetching staff:', error);
+      }
+    };
+
+    fetchStaff();
+  }, []);
+
+  // Effect to update formDetails when initialBookingDetails changes
   useEffect(() => {
     if (initialBookingDetails) {
       setFormDetails(initialBookingDetails);
@@ -40,98 +82,74 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails }) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormDetails((prevDetails) => ({ ...prevDetails, [name]: value }));
+
+    setFormDetails((prevDetails) => ({
+      ...prevDetails,
+      [name]: value,
+    }));
   };
 
   const validateForm = () => {
-    const { name, date, time, service, staff, user_email, payment_method } = formDetails;
     const errors: string[] = [];
-    
-    if (!name) errors.push('Name is required.');
-    if (!date) errors.push('Date is required.');
-    if (!time) errors.push('Time is required.');
-    if (!service) errors.push('Service is required.');
-    if (!staff) errors.push('Staff selection is required.');
-    if (!user_email) errors.push('Email is required.');
-    if (!payment_method) errors.push('Payment method is required.');
-  
-    // Optional: Validate email format
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (user_email && !emailPattern.test(user_email)) {
-      errors.push('Invalid email format.');
-    }
-  
-    setErrorMessages(errors);
-    return errors.length === 0;
+    if (!formDetails.date) errors.push('Date is required.');
+    if (!formDetails.time) errors.push('Time is required.');
+    if (!formDetails.staffname) errors.push('Staff selection is required.');
+    if (!formDetails.services) errors.push('Service selection is required.');
+    if (!formDetails.paymentMethod) errors.push('Payment method is required.');
+    return errors;
   };
-  
-  const submitBooking = async (booking: Bookings) => {
-    console.log('Booking object before submission:', booking);
-  
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const errors = validateForm();
+    if (errors.length > 0) {
+      setErrorMessages(errors);
+      return;
+    }
+    setErrorMessages([]);
+
+    const bookingData = {
+      email: formDetails.email,
+      date: formDetails.date,
+      time: formDetails.time,
+      staffname: formDetails.staffname,     // This should be the staff name as a string
+      services: formDetails.services, // This should be the service name as a string
+      paymentMethod: formDetails.paymentMethod,
+      created_at: new Date().toISOString(),
+    };
+    
+
+    console.log('Booking data before submission:', bookingData); // Debugging line
+
+    // Submit the booking
     try {
       const response = await fetch('/api/booking', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(booking),
+        body: JSON.stringify(bookingData),
       });
-  
       if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Error details:', errorData);
-        throw new Error(errorData.message || `Failed to submit booking. Status code: ${response.status}`);
+        const errorDetails = await response.json();
+        console.error('Failed to submit booking:', errorDetails);
+        setErrorMessages(['Failed to submit booking. ' + (errorDetails.message || '')]);
+        return;
       }
-  
-      const data = await response.json();
-      console.log('Booking submitted successfully:', data);
-      return data;
+      setShowSummary(true);
     } catch (error) {
       console.error('Error submitting booking:', error);
-      throw error;
+      setErrorMessages(['Failed to submit booking.']);
     }
   };
-  
-  
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-  
-    if (!validateForm()) {
-      console.error('Validation failed:', formDetails);
-      return;
-    }  
-    console.log('Form details to be submitted:', formDetails); // Debugging statement
-  
-    try {
-      await submitBooking(formDetails);
-      setShowSummary(true); // Show the summary after submission
-    } catch (error) {
-      console.error('Failed to submit booking:', error);
-    }
-  };
-  
 
   const handleBackToForm = () => {
     setShowSummary(false);
   };
 
   const handleProceedToPayment = () => {
-    console.log('Proceeding to payment with:', formDetails);
-  };
-
-  const resetForm = () => {
-    setFormDetails({
-      id: undefined,
-      name: '',
-      date: '',
-      time: '',
-      service: '',
-      staff: '',
-      user_email: '',
-      payment_method: '',
-    });
-    setErrorMessages([]);
+    // Implement your payment processing logic here
   };
 
   return (
@@ -156,27 +174,17 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails }) => {
           )}
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
-              <label className="block text-gray-700">Name:</label>
-              <input
-                type="text"
-                name="name"
-                value={formDetails.name}
-                onChange={handleChange}
-                required
-                className="w-full p-2 border border-gray-300 rounded"
-              />
-            </div>
-            <div className="mb-4">
               <label className="block text-gray-700">Email:</label>
               <input
                 type="email"
-                name="user_email"
-                value={formDetails.user_email}
+                name="email"
+                value={formDetails.email}
                 onChange={handleChange}
                 required
                 className="w-full p-2 border border-gray-300 rounded"
               />
             </div>
+
             <div className="mb-4">
               <label className="block text-gray-700">Date:</label>
               <input
@@ -202,16 +210,16 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails }) => {
             <div className="mb-4">
               <label className="block text-gray-700">Service:</label>
               <select
-                name="service"
-                value={formDetails.service}
+                name="services"
+                value={formDetails.services}
                 onChange={handleChange}
                 required
                 className="w-full p-2 border border-gray-300 rounded"
               >
                 <option value="">Select a service</option>
-                {Object.keys(servicePrices).map((service) => (
-                  <option key={service} value={service}>
-                    {service} - ₱{servicePrices[service as keyof typeof servicePrices]}
+                {serviceOptions.map((service) => (
+                  <option key={service.serviceid} value={service.servicename}>
+                    {service.servicename} - ${service.price}
                   </option>
                 ))}
               </select>
@@ -219,16 +227,16 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails }) => {
             <div className="mb-4">
               <label className="block text-gray-700">Staff:</label>
               <select
-                name="staff"
-                value={formDetails.staff}
+                name="staffname"
+                value={formDetails.staffname}
                 onChange={handleChange}
                 required
                 className="w-full p-2 border border-gray-300 rounded"
               >
                 <option value="">Select a staff member</option>
-                {staffMembers.map((staff) => (
-                  <option key={staff.id} value={staff.name}>
-                    {staff.name} - {staff.role}
+                {staffOptions.map((staff) => (
+                  <option key={staff.staffid} value={`${staff.fname} ${staff.lname}`}>
+                    {staff.fname} {staff.lname} - {staff.position}
                   </option>
                 ))}
               </select>
@@ -236,30 +244,19 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails }) => {
             <div className="mb-4">
               <label className="block text-gray-700">Payment Method:</label>
               <select
-                name="payment_method"
-                value={formDetails.payment_method}
+                name="paymentMethod"
+                value={formDetails.paymentMethod || ''}
                 onChange={handleChange}
                 required
                 className="w-full p-2 border border-gray-300 rounded"
               >
                 <option value="">Select a payment method</option>
-                <option value="GCash">GCash</option>
-                <option value="Credit Card">Credit Card</option>
-                <option value="PayPal">PayPal</option>
+                <option value="Credit Card">Gcash</option>
               </select>
             </div>
-            <div className="flex justify-between">
-              <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
-                Confirm Booking
-              </button>
-              <button
-                type="button"
-                onClick={resetForm}
-                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
-              >
-                Reset
-              </button>
-            </div>
+            <button type="submit" className="bg-blue-500 text-white p-2 rounded">
+              Submit Booking
+            </button>
           </form>
         </div>
       )}

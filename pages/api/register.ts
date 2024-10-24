@@ -22,7 +22,7 @@ const registerHandler = async (req: NextApiRequest, res: NextApiResponse) => {
       );
 
       if (existingUser.rows.length > 0) {
-        return res.status(400).json({ message: 'User already exists' });
+        return res.status(400).json({ message: 'Client already exists' });
       }
 
       // Insert the new user into the Users table without hashing the password

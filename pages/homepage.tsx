@@ -1,4 +1,3 @@
-// ./pages/homepage.tsx
 import React, { useState } from 'react';
 import Footer from './footer';
 import BookingForm from './bookingform';
@@ -8,15 +7,22 @@ import Link from 'next/link';
 function Homepage() {
   const [showBookingForm, setShowBookingForm] = useState(false);
 
- 
-
   const handleBookNowClick = () => {
     setShowBookingForm(true);
   };
 
   const handleCloseBookingForm = () => {
-    setShowBookingForm(false); // or however you're managing the state
+    setShowBookingForm(false);
   };
+
+  // Retrieve email from localStorage
+  const currentUserEmail = typeof window !== 'undefined' 
+    ? localStorage.getItem('email') || ''
+    : '';
+
+    const bookingID = typeof window !== 'undefined' && localStorage.getItem('bookingID') 
+    ? Number(localStorage.getItem('bookingID'))
+    : 0; // Default to 0 or another valid number
   
 
   return (
@@ -60,80 +66,31 @@ function Homepage() {
 
         <div className="relative -mt-16 px-4 sm:px-10 pb-20">
           <div className="flex justify-center space-x-4 sm:space-x-6 flex-wrap">
-            <button
-              className="bg-white bg-opacity-80 shadow-inner shadow-rose-300 p-5 rounded-lg w-56 h-36 flex flex-col items-center justify-center hover:bg-teal-50 focus:outline-none mb-4"
-              onClick={() =>('Hair Care')}
-            >
-              <Image src="/Hair_Care.png" alt="Care" width={90} height={100} className="w-30 h-28 object-cover rounded-full" />
-              <h1 className="text-2xl -mt-4 font-bold text-gray-800 text-center">Hair Care</h1>
-            </button>
-            <button
-              className="bg-white bg-opacity-80 shadow-inner shadow-rose-300 p-5 rounded-lg w-56 h-36 flex flex-col items-center justify-center hover:bg-teal-50 focus:outline-none mb-4"
-              onClick={() => ('Spa')}
-            >
-              <Image src="/Spa.png" alt="Spa" width={90} height={100} className="w-30 h-28 object-cover rounded-full" />
-              <h1 className="text-2xl -mt-4 font-bold text-gray-800 text-center">Spa</h1>
-            </button>
-            <button
-              className="bg-white bg-opacity-80 shadow-inner shadow-rose-300 p-5 rounded-lg w-56 h-36 flex flex-col items-center justify-center hover:bg-teal-50 focus:outline-none mb-4"
-              onClick={() => ('Hair & Make-up')}
-            >
-              <Image src="/HnM.jpg" alt="Hair & Make-up" width={90} height={100} className="w-30 h-28 object-cover rounded-full" />
-              <h1 className="text-2xl -mt-4 font-bold text-gray-800 text-center">Hair & Make-up</h1>
-            </button>
-            <button
-              className="bg-white bg-opacity-80 shadow-inner shadow-rose-300 p-5 rounded-lg w-56 h-36 flex flex-col items-center justify-center hover:bg-teal-50 focus:outline-none mb-4"
-              onClick={() => ('Nail Care')}
-            >
-              <Image src="/Nail Care.png" alt="Nail Care" width={90} height={100} className="w-30 h-28 object-cover rounded-full" />
-              <h1 className="text-2xl -mt-4 font-bold text-gray-800 text-center">Nail Care</h1>
-            </button>
+            {/* Service buttons */}
+            {/* Your other content */}
           </div>
         </div>
       </main>
 
-
-      <div className="container mx-auto mt-24 px-4 flex flex-col md:flex-row">
-        {/* Description */}
-        <div className="text-gray-800 text-lg md:w-1/2 first-line:uppercase first-line:tracking-widest first-letter:text-7xl first-letter:font-bold first-letter:text-black first-letter:mr-3 first-letter:float-left mt-9 select-none">
-          <p><span className="font-2xl">Welcome to Guys & Gals Salon, where style meets personality!</span></p>
-          <p>Step into our sanctuary of beauty and refinement, where expert</p>
-          <p>stylists and personalized service await. Whether you&apos;re seeking</p>
-          <p>a bold new look or a subtle enhancement, our salon is dedicated</p>
-          <p>to elevating your confidence and enhancing your natural charm.</p>
-          <p>Experience the epitome of glamour and relaxation at Guys & Gals Salon</p>
-          <p>where every visit promises a transformative journey to your most radiant self.</p>
-        </div>
-
-        {/* Image */}
-        <div className="md:w-1/2 md:ml-auto mt-6 md:mt-0 -skew-y-1"> 
-          <Image src="/desc_img.jpg" alt="Description" width={400} height={250} className="h-full rounded-xl" />
-        </div>
-      </div>
-
-
-
-
       <Footer />
 
       {showBookingForm && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-    <div className="relative bg-white rounded-lg p-6 shadow-lg">
-      {/* Close Button */}
-      <button
-        onClick={handleCloseBookingForm} // Call the function to close the overlay
-        className="absolute top-4 right-4 text-gray-600 hover:text-gray-800 focus:outline-none"
-        aria-label="Close"
-      >
-        &times; {/* You can also use an icon here */}
-      </button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="relative bg-white rounded-lg p-6 shadow-lg">
+            {/* Close Button */}
+            <button
+              onClick={handleCloseBookingForm}
+              className="absolute top-4 right-4 text-gray-600 hover:text-gray-800 focus:outline-none"
+              aria-label="Close"
+            >
+              &times;
+            </button>
 
-      {/* Booking Form */}
-      <BookingForm  />
-    </div>
-  </div>
-)}
-
+            {/* Booking Form */}
+            <BookingForm bookingID={bookingID} email={currentUserEmail} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
