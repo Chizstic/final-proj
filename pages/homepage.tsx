@@ -1,11 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Footer from './footer';
 import BookingForm from './bookingform';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Bookings } from './api/type'; // Adjust the import based on your project structure
 
 function Homepage() {
   const [showBookingForm, setShowBookingForm] = useState(false);
+  const [booking, setBooking] = useState<Bookings | null>(null); // State to hold booking details
+
+  useEffect(() => {
+    // Retrieve booking details from localStorage or other source
+    const bookingData = localStorage.getItem('bookingDetails'); // Example: retrieving a string from localStorage
+    if (bookingData) {
+      setBooking(JSON.parse(bookingData)); // Assuming bookingDetails is a JSON string
+    }
+  }, []);
 
   const handleBookNowClick = () => {
     setShowBookingForm(true);
@@ -16,14 +26,13 @@ function Homepage() {
   };
 
   // Retrieve email from localStorage
-  const currentUserEmail = typeof window !== 'undefined' 
+  const currentUserEmail = typeof window !== 'undefined'
     ? localStorage.getItem('email') || ''
     : '';
 
-    const bookingID = typeof window !== 'undefined' && localStorage.getItem('bookingID') 
+  const bookingID = typeof window !== 'undefined' && localStorage.getItem('bookingID')
     ? Number(localStorage.getItem('bookingID'))
     : 0; // Default to 0 or another valid number
-  
 
   return (
     <div>
@@ -87,7 +96,11 @@ function Homepage() {
             </button>
 
             {/* Booking Form */}
-            <BookingForm bookingID={bookingID} email={currentUserEmail} />
+            <BookingForm
+              bookingID={bookingID}
+              email={currentUserEmail}
+              servicePrice={booking?.servicePrice} // Ensure this is available
+            />
           </div>
         </div>
       )}

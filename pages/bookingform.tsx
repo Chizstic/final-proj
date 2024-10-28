@@ -1,34 +1,40 @@
 import React, { useEffect, useState } from 'react';
-import BookingSummary from './bookingSummary'; // Ensure the import path is correct
+import BookingSummary from './bookingSummary';
 import { Bookings } from './api/type';
 
-interface BookingFormProps {
-  initialBookingDetails?: Bookings; // Make this optional
-  bookingID: number  ; // Correct the case here
-  email: string,
 
-}
+
+
 interface ServiceOption {
-  serviceid: string; // Assuming serviceid is a string
+  serviceid: string;
   servicename: string;
   price: number;
 }
 
 interface StaffOption {
-  staffid: string; // Assuming you have staff IDs
+  staffid: string;
   fname: string;
   lname: string;
   position: string;
 }
+
+// BookingForm.tsx
+interface BookingFormProps {
+  initialBookingDetails?: Bookings;
+  bookingID: number;
+  email: string;
+  servicePrice?: number; // Ensure this is optional
+}
+
 const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookingID }) => {
-  // Set default state for formDetails
   const [formDetails, setFormDetails] = useState<Bookings>({
-    bookingID, 
-    email: '',
-    date: '',
-    time: '',
-    services: '', // Changed to string
-    staffname: '', // Changed to string
+    bookingID,
+    email: initialBookingDetails?.email || '',
+    date: initialBookingDetails?.date || '',
+    time: initialBookingDetails?.time || '',
+    services: initialBookingDetails?.services || '',
+    servicePrice: 0, // Default value if not passed
+    staffname: initialBookingDetails?.staffname || '',
     paymentMethod: '',
   });
 
@@ -37,14 +43,11 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookin
   const [serviceOptions, setServiceOptions] = useState<ServiceOption[]>([]);
   const [staffOptions, setStaffOptions] = useState<StaffOption[]>([]);
 
-  // Fetching services
   useEffect(() => {
     const fetchServices = async () => {
       try {
         const response = await fetch('/api/services');
-        if (!response.ok) {
-          throw new Error('Failed to fetch services');
-        }
+        if (!response.ok) throw new Error('Failed to fetch services');
         const services = await response.json();
         setServiceOptions(services);
       } catch (error) {
@@ -55,14 +58,11 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookin
     fetchServices();
   }, []);
 
-  // Fetching staff members
   useEffect(() => {
     const fetchStaff = async () => {
       try {
         const response = await fetch('/api/staff');
-        if (!response.ok) {
-          throw new Error('Failed to fetch staff');
-        }
+        if (!response.ok) throw new Error('Failed to fetch staff');
         const staff = await response.json();
         setStaffOptions(staff);
       } catch (error) {
@@ -73,20 +73,26 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookin
     fetchStaff();
   }, []);
 
-  // Effect to update formDetails when initialBookingDetails changes
   useEffect(() => {
-    if (initialBookingDetails) {
-      setFormDetails(initialBookingDetails);
-    }
+    if (initialBookingDetails) setFormDetails(initialBookingDetails);
   }, [initialBookingDetails]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
 
-    setFormDetails((prevDetails) => ({
-      ...prevDetails,
-      [name]: value,
-    }));
+    if (name === 'services') {
+      const selectedService = serviceOptions.find((service) => service.servicename === value);
+      setFormDetails((prevDetails) => ({
+        ...prevDetails,
+        services: value,
+        servicePrice: selectedService ? selectedService.price : 0,
+      }));
+    } else {
+      setFormDetails((prevDetails) => ({
+        ...prevDetails,
+        [name]: value,
+      }));
+    }
   };
 
   const validateForm = () => {
@@ -101,7 +107,6 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookin
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     const errors = validateForm();
     if (errors.length > 0) {
       setErrorMessages(errors);
@@ -110,19 +115,12 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookin
     setErrorMessages([]);
 
     const bookingData = {
-      email: formDetails.email,
-      date: formDetails.date,
-      time: formDetails.time,
-      staffname: formDetails.staffname,     // This should be the staff name as a string
-      services: formDetails.services, // This should be the service name as a string
-      paymentMethod: formDetails.paymentMethod,
+      ...formDetails,
       created_at: new Date().toISOString(),
     };
-    
 
-    console.log('Booking data before submission:', bookingData); // Debugging line
+    console.log('Booking data before submission:', bookingData);
 
-    // Submit the booking
     try {
       const response = await fetch('/api/booking', {
         method: 'POST',
@@ -144,22 +142,14 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookin
     }
   };
 
-  const handleBackToForm = () => {
-    setShowSummary(false);
-  };
-
-  const handleProceedToPayment = () => {
-    // Implement your payment processing logic here
-  };
+  const handleBackToForm = () => setShowSummary(false);
 
   return (
     <div>
       {showSummary ? (
         <BookingSummary
-     
           booking={formDetails}
           onBack={handleBackToForm}
-          onProceedToPayment={handleProceedToPayment}
         />
       ) : (
         <div className="bg-white rounded-lg p-6 shadow-lg">
@@ -220,7 +210,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookin
                 <option value="">Select a service</option>
                 {serviceOptions.map((service) => (
                   <option key={service.serviceid} value={service.servicename}>
-                    {service.servicename} - ${service.price}
+                    {service.servicename} - ₱{service.price}
                   </option>
                 ))}
               </select>
@@ -252,9 +242,11 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookin
                 className="w-full p-2 border border-gray-300 rounded"
               >
                 <option value="">Select a payment method</option>
-                <option value="Credit Card">Gcash</option>
+                <option value="GCash">GCash</option>
+                <option value="Credit Card">Credit Card</option>
               </select>
             </div>
+
             <button type="submit" className="bg-blue-500 text-white p-2 rounded">
               Submit Booking
             </button>

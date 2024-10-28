@@ -12,6 +12,7 @@ export interface Bookings {
   date: string;
   time: string;
   services: string;
+  servicePrice:number;
   paymentMethod: string;
   staffname: string; // Assuming staffID is of type string
   created_at?: string; // Optional
