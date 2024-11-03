@@ -106,18 +106,27 @@ function Homepage() {
       </header>
 
       <main>
-      <div className="relative">
-    <div className="absolute inset-0 bg-black opacity-25"></div>
-    <Image src="/coverphoto1.jpg" alt="Cover Photo" layout="fill" objectFit="cover" className="w-full" />
-    <div className="absolute inset-0 flex flex-col items-center justify-center">
-      <h2 className="text-white text-3xl font-bold mb-4 ml-56 font-serif">&quot;ELEVATE YOUR LOOK,</h2>
-      <h2 className="text-white text-3xl font-bold mb-4 ml-56 font-serif">ELEVATE YOUR CONFIDENCE.&quot;</h2>
-      <h2 className="text-white text-xl mb-4 ml-56 font-thin">Get ready to be served what you deserve</h2>
-      <button onClick={handleBookNowClick} className="text-rose-600 font-semibold py-1 px-4 rounded-full ml-52 border-2 border-rose-600">
-        Book Now
-      </button>
-    </div>
+      <div className="relative w-full h-[500px]"> {/* Adjust the height as needed */}
+  {/* Overlay */}
+  <div className="absolute inset-0 bg-black opacity-25"></div>
+
+  {/* Background Image */}
+  <Image src="/coverphoto1.jpg" alt="Cover Photo" fill className="object-cover" />
+
+  {/* Text and Button */}
+  <div className="absolute inset-0 flex flex-col items-center justify-center">
+    <h2 className="text-white text-3xl font-bold mb-4 ml-56 font-serif">&quot;ELEVATE YOUR LOOK,</h2>
+    <h2 className="text-white text-3xl font-bold mb-4 ml-56 font-serif">ELEVATE YOUR CONFIDENCE.&quot;</h2>
+    <h2 className="text-white text-xl mb-4 ml-56 font-thin">Get ready to be served what you deserve</h2>
+    <button
+      onClick={handleBookNowClick}
+      className="text-rose-600 font-semibold py-1 px-4 rounded-full ml-52 border-2 border-rose-600"
+    >
+      Book Now
+    </button>
   </div>
+</div>
+
 
   <div className="relative -mt-9 px-4 sm:px-10 pb-20">
   <div className="flex justify-center space-x-6 flex-wrap">
@@ -150,7 +159,7 @@ function Homepage() {
       className="bg-white bg-opacity-80 shadow-inner shadow-rose-300 p-5 rounded-lg w-56 h-36 flex flex-col items-center justify-center hover:bg-rose-50 focus:outline-none"
       onClick={() => handleContainerClick('Nail Care')}
     >
-      <Image src="/Nail_Care.png" alt="Nail Care" width={120} height={120} className="object-cover rounded-full" />
+      <Image src="/Nail Care.png" alt="Nail Care" width={120} height={120} className="object-cover rounded-full" />
       <h1 className="text-2xl font-bold text-gray-800 text-center">Nail Care</h1>
     </button>
   </div>
