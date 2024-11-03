@@ -37,7 +37,7 @@ const AdminBookings: React.FC<AdminBookingsProps> = ({ email, deleteBooking, edi
   // Ensure bookings is an array before filtering
 const paidBookings = Array.isArray(bookings)
 ? bookings.filter(
-    (booking) => booking.paymentMethod?.toLowerCase() === 'paid'
+    (booking) => booking.paymentmethod?.toLowerCase() === 'paid'
   )
 : [];
 
@@ -75,7 +75,7 @@ const paidBookings = Array.isArray(bookings)
                   <td className="px-4 py-2">{booking.time}</td>
                   <td className="px-4 py-2">{booking.services}</td>
                   <td className="px-4 py-2">{booking.staffname}</td>
-                  <td className="px-4 py-2">{booking.paymentMethod}</td>
+                  <td className="px-4 py-2">{booking.paymentmethod}</td>
                   <td className="px-4 py-2">
                     <button
                       className="text-blue-500 mr-4 hover:underline"

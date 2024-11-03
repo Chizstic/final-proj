@@ -5,7 +5,8 @@ import { Staff, Bookings } from './api/type'; // Import both types
 
 const AdminPage: React.FC = () => {
   const [staffList, setStaffList] = useState<Staff[]>([]);
-  const [bookings, setBookings] = useState<Bookings[]>([]); // Initialize bookings state
+  const [bookings, setBookings] = useState<Bookings[]>([]);
+  const [userEmail, setUserEmail] = useState<string>(''); // State for user email
   const [activeTab, setActiveTab] = useState<'staff' | 'bookings'>('staff');
 
   useEffect(() => {
@@ -14,13 +15,26 @@ const AdminPage: React.FC = () => {
         const response = await fetch('/api/booking');
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
+        console.log('Fetched bookings:', data); // Check fetched data
         setBookings(data);
       } catch (error) {
         console.error('Error fetching bookings:', error);
       }
     };
 
+    const fetchUserEmail = async () => {
+      try {
+        const response = await fetch('/api/user'); // Replace with your user API endpoint
+        if (!response.ok) throw new Error('Network response was not ok');
+        const userData = await response.json();
+        setUserEmail(userData.email); // Assuming userData contains the email field
+      } catch (error) {
+        console.error('Error fetching user email:', error);
+      }
+    };
+
     fetchBookings();
+    fetchUserEmail(); // Fetch user email when the component mounts
   }, []);
 
   const handleAddStaff = (newStaff: Staff) => {
@@ -32,19 +46,16 @@ const AdminPage: React.FC = () => {
   };
 
   const deleteBooking = (bookingId: number) => {
-    setBookings((prev) => prev.filter((booking) => booking.bookingID !== bookingId)); // Update to use bookingID
+    setBookings((prev) => prev.filter((booking) => booking.bookingID !== bookingId));
   };
 
   const editBooking = (updatedBooking: Bookings) => {
     setBookings((prev) =>
       prev.map((booking) =>
-        booking.bookingID === updatedBooking.bookingID ? updatedBooking : booking // Update to use bookingID
+        booking.bookingID === updatedBooking.bookingID ? updatedBooking : booking
       )
     );
   };
-
-  // Placeholder for user email
-  const user_email = "example@example.com"; // Replace with actual user email logic
 
   return (
     <div className="flex">
@@ -73,10 +84,10 @@ const AdminPage: React.FC = () => {
           />
         ) : (
           <AdminBookings
-            bookings={bookings} // Pass the bookings to AdminBookings component
-            deleteBooking={deleteBooking} // Pass the deleteBooking function
-            editBooking={editBooking} // Pass the editBooking function
-            email={user_email} // Pass the user_email here
+            bookings={bookings} // Ensure this variable is defined and populated
+            deleteBooking={deleteBooking}
+            editBooking={editBooking}
+            email={userEmail} // Pass the userEmail to AdminBookings
           />
         )}
       </main>

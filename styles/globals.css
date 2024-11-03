@@ -40,3 +40,8 @@ body {
     background-color: #2779bd; /* Darker blue on hover */
   }
 }
+/* Add this to your global styles or component styles */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

@@ -11,10 +11,10 @@ export interface Bookings {
   email: string;
   date: string;
   time: string;
-  services: string;
+  services: string |string [];
   servicePrice:number;
-  paymentMethod: string;
-  staffname: string; // Assuming staffID is of type string
+  paymentmethod: string;
+  staffname: string |string[]; // Assuming staffID is of type string
   created_at?: string; // Optional
 }
 

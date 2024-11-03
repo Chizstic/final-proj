@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Bookings } from './api/type';
 
 interface BookingSummaryProps {
@@ -8,8 +8,9 @@ interface BookingSummaryProps {
 
 const BookingSummary: React.FC<BookingSummaryProps> = ({ booking, onBack }) => {
   const [isPaymentVisible, setIsPaymentVisible] = useState(false);
-  const [paymentMessage, setPaymentMessage] = useState('');
   const [amount, setAmount] = useState(0);
+  const [paymentMessage, setPaymentMessage] = useState('');
+  const [isSummaryVisible, setIsSummaryVisible] = useState(true); // Manage visibility of the summary
 
   useEffect(() => {
     if (booking) {
@@ -48,6 +49,8 @@ const BookingSummary: React.FC<BookingSummaryProps> = ({ booking, onBack }) => {
         if (redirectUrl) {
           window.open(redirectUrl, '_blank');
           setPaymentMessage('Payment link created successfully! Please pay 50% of the total service price.');
+          setIsSummaryVisible(false); // Close the booking summary
+          setIsPaymentVisible(false); // Close the payment section
         } else {
           setPaymentMessage('Payment link not found in the response.');
         }
@@ -66,30 +69,7 @@ const BookingSummary: React.FC<BookingSummaryProps> = ({ booking, onBack }) => {
 
   return (
     <div className="bg-white rounded-lg p-4 sm:p-6 shadow-lg border border-gray-300 max-w-xs sm:max-w-md mx-auto">
-      {isPaymentVisible ? (
-        <div>
-          <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-center text-blue-600">Proceed to Payment</h2>
-          <div className="mb-4">
-            <label className="block text-gray-600 mb-1">Amount (PHP):</label>
-            <input
-              type="number"
-              value={amount}
-              readOnly
-              className="w-full p-2 border border-gray-300 rounded bg-gray-100 focus:outline-none"
-            />
-          </div>
-          <p className="text-sm text-gray-500 mb-4">
-            Note: You are required to pay 50% of the total service price upfront. The remaining balance will be payable at the time of service.
-          </p>
-          <button
-            onClick={handlePaymentLink}
-            className="bg-green-500 hover:bg-green-600 text-white px-3 sm:px-4 py-1 rounded shadow-md transition duration-200 w-full"
-          >
-            Proceed to Payment
-          </button>
-          {paymentMessage && <p className="mt-4 text-center text-red-600">{paymentMessage}</p>}
-        </div>
-      ) : (
+      {isSummaryVisible && !isPaymentVisible ? (
         <>
           <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-center text-blue-600">Booking Summary</h2>
           <div className="space-y-2 sm:space-y-3">
@@ -103,12 +83,16 @@ const BookingSummary: React.FC<BookingSummaryProps> = ({ booking, onBack }) => {
               <p className="text-gray-700"><strong>Time:</strong> {booking.time}</p>
             </div>
             <div className="p-2 sm:p-3 border border-gray-200 rounded-md">
-              <p className="text-gray-700"><strong>Service:</strong> {booking.services}</p>
-              <p className="text-gray-700"><strong>Price:</strong> ₱{booking.servicePrice}</p>
-              <p className="text-gray-700"><strong>Amount to Pay (50%):</strong> ₱{amount}</p>
+              <p className="text-gray-700"><strong>Service:</strong> {Array.isArray(booking.services) ? booking.services.join(', ') : booking.services}</p>
+              <p className="text-gray-700">
+                <strong>Price:</strong> ₱{booking.servicePrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </p>
+              <p className="text-gray-700">
+                <strong>Amount to Pay (50%):</strong> ₱{amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </p>
             </div>
             <div className="p-2 sm:p-3 border border-gray-200 rounded-md">
-              <p className="text-gray-700"><strong>Staff:</strong> {booking.staffname}</p>
+              <p className="text-gray-700"><strong>Staff:</strong> {Array.isArray(booking.staffname) ? booking.staffname.join(', ') : booking.staffname}</p>
             </div>
           </div>
           <div className="flex flex-col sm:flex-row justify-center sm:justify-between mt-4">
@@ -120,7 +104,31 @@ const BookingSummary: React.FC<BookingSummaryProps> = ({ booking, onBack }) => {
             </button>
           </div>
         </>
-      )}
+      ) : isPaymentVisible ? (
+        <div>
+          <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-center text-blue-600">Payment</h2>
+          <div className="mb-4">
+            <label className="block text-gray-600 mb-1">Amount to Pay (50%):</label>
+            <input
+              type="number"
+              value={amount} // Set the raw amount here
+              readOnly
+              className="w-full p-2 border border-gray-300 rounded bg-gray-100 focus:outline-none"
+            />
+            <p className="text-gray-700">₱{amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+          </div>
+          <p className="text-sm text-gray-500 mb-4">
+            Note: You are required to pay 50% of the total service price upfront. The remaining balance will be payable at the time of service.
+          </p>
+          <button
+            onClick={handlePaymentLink}
+            className="bg-green-500 hover:bg-green-600 text-white px-3 sm:px-4 py-1 rounded shadow-md transition duration-200 w-full"
+          >
+            Proceed to Payment
+          </button>
+          {paymentMessage && <p className="mt-4 text-center text-red-600">{paymentMessage}</p>}
+        </div>
+      ) : null}
     </div>
   );
 };
