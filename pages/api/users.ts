@@ -20,24 +20,38 @@ const loginHandler = async (req: NextApiRequest, res: NextApiResponse) => {
       client = await pool.connect();
 
       // Fetch the user from the database
-      const result = await client.query(
+      const userResult = await client.query(
         'SELECT * FROM users WHERE email = $1',
         [email]
       );
 
-      if (result.rows.length === 0) {
+      if (userResult.rows.length === 0) {
         return res.status(401).json({ message: 'Invalid email or password.' });
       }
 
-      const user = result.rows[0];
+      const user = userResult.rows[0];
 
       // Check if the password matches directly (plaintext comparison)
-      if (password !== user.password) { // Compare plaintext passwords directly
+      if (password !== user.password) {
         return res.status(401).json({ message: 'Invalid email or password.' });
       }
 
-      // Return the user's information upon successful login
-      return res.status(200).json({ message: 'Login successful', user: { ...user, role: user.role } });
+      // Fetch the user's profile from user_profiles
+      const profileResult = await client.query(
+        'SELECT * FROM user_profiles WHERE email = $1',
+        [email]
+      );
+
+      let profile = null;
+      if (profileResult.rows.length > 0) {
+        profile = profileResult.rows[0];
+      }
+
+      // Return the user's information along with the profile upon successful login
+      return res.status(200).json({
+        message: 'Login successful',
+        user: { ...user, role: user.role, profile },
+      });
     } catch (error) {
       console.error('Error logging in:', error);
       return res.status(500).json({ message: 'Internal server error' });

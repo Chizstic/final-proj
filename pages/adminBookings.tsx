@@ -4,7 +4,7 @@ import { Bookings } from './api/type';
 // Update the AdminBookingsProps interface to include user_email
 interface AdminBookingsProps {
   bookings: Bookings[];
-  deleteBooking: (bookingId: number ) => void;
+  deleteBooking: (bookingId: number) => void;
   editBooking: (updatedBooking: Bookings) => void;
   email: string;
 }
@@ -14,7 +14,7 @@ const AdminBookings: React.FC<AdminBookingsProps> = ({ email, deleteBooking, edi
   const [loading, setLoading] = useState(true); // Add loading state
   const [error, setError] = useState<string | null>(null); // Add error state
 
-  // Fetch paid bookings when the component mounts
+  // Fetch all bookings when the component mounts
   useEffect(() => {
     const fetchBookings = async () => {
       try {
@@ -34,13 +34,6 @@ const AdminBookings: React.FC<AdminBookingsProps> = ({ email, deleteBooking, edi
     fetchBookings();
   }, [email]); // Include user_email as a dependency
 
-  // Ensure bookings is an array before filtering
-const paidBookings = Array.isArray(bookings)
-? bookings.filter(
-    (booking) => booking.paymentmethod?.toLowerCase() === 'paid'
-  )
-: [];
-
   if (loading) {
     return <div>Loading...</div>; // Show loading message
   }
@@ -56,7 +49,6 @@ const paidBookings = Array.isArray(bookings)
         <table className="w-full table-auto">
           <thead>
             <tr className="bg-gray-200">
-              <th className="px-4 py-2">Name</th>
               <th className="px-4 py-2">Email</th>
               <th className="px-4 py-2">Date</th>
               <th className="px-4 py-2">Time</th>
@@ -67,8 +59,8 @@ const paidBookings = Array.isArray(bookings)
             </tr>
           </thead>
           <tbody>
-            {paidBookings.length > 0 ? (
-              paidBookings.map((booking) => (
+            {bookings.length > 0 ? (
+              bookings.map((booking) => (
                 <tr key={booking.bookingID} className="border-t hover:bg-gray-100 transition">
                   <td className="px-4 py-2">{booking.email}</td>
                   <td className="px-4 py-2">{booking.date}</td>
@@ -89,14 +81,13 @@ const paidBookings = Array.isArray(bookings)
                     >
                       Delete
                     </button>
-
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
                 <td colSpan={8} className="text-center py-4 text-gray-500">
-                  No paid bookings found.
+                  No bookings found.
                 </td>
               </tr>
             )}

@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/router'; // Import useRouter from next/router
 import StaffList from './stafflist'; // Ensure the path is correct
 import AdminBookings from './adminBookings'; // Import the AdminBookings component
 import { Staff, Bookings } from './api/type'; // Import both types
 
 const AdminPage: React.FC = () => {
+  const router = useRouter(); // Initialize useRouter
   const [staffList, setStaffList] = useState<Staff[]>([]);
   const [bookings, setBookings] = useState<Bookings[]>([]);
   const [userEmail, setUserEmail] = useState<string>(''); // State for user email
@@ -57,6 +59,11 @@ const AdminPage: React.FC = () => {
     );
   };
 
+  const handleLogout = () => {
+    // Clear any user data here if necessary
+    router.push('/'); // Redirect to homepage on logout
+  };
+
   return (
     <div className="flex">
       <aside className="w-1/4 bg-gray-200 p-4">
@@ -72,6 +79,12 @@ const AdminPage: React.FC = () => {
           className={`w-full text-left p-2 rounded-lg ${activeTab === 'bookings' ? 'bg-blue-500 text-white' : 'bg-transparent'}`}
         >
           Bookings
+        </button>
+        <button
+          onClick={handleLogout}
+          className="w-full text-left p-2 rounded-lg bg-red-500 text-white mt-4"
+        >
+          Logout
         </button>
       </aside>
 

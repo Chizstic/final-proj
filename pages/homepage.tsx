@@ -1,20 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Footer from './footer';
+import Footer from './components/footer';
 import BookingForm from './bookingform';
 import Image from 'next/image';
-import Link from 'next/link';
 import { Bookings } from './api/type';
 import { FaUser, FaCheckCircle, FaShoppingCart  } from 'react-icons/fa';
-import SlideshowComp from './slideshowComp';
-import Services from './services'
+import Services from './services';
+import Cart from './cart'
 
 function Homepage() {
   const [showBookingForm, setShowBookingForm] = useState(false);
+  const [showCart, setShowCart] = useState(false); // New state to control cart overlay visibility
   const [booking, setBooking] = useState<Bookings | null>(null);
   const [dropdownVisible, setDropdownVisible] = useState(false);
-
-   // Create a ref for the services section
-   const servicesRef = useRef<HTMLDivElement | null>(null);
+  const servicesRef = useRef<HTMLDivElement | null>(null);
+  const [showNotice, setShowNotice] = useState(false);
 
 
   useEffect(() => {
@@ -22,13 +21,29 @@ function Homepage() {
     if (bookingData) {
       setBooking(JSON.parse(bookingData));
     }
+    
   }, []);
 
-  
+  const toggleCart = () => {
+    setShowCart((prev) => !prev);
+  };
+
+  useEffect(() => {
+    if (showNotice) {
+      const timer = setTimeout(() => {
+        setShowNotice(false);
+      }, 10000); // Hide notice after 10 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [showNotice]);
 
   const handleBookNowClick = () => {
-    setShowBookingForm(true);
+    if (servicesRef.current) {
+      servicesRef.current.scrollIntoView({ behavior: 'smooth' });
+      setShowNotice(true); // Show the notice message
+    }
   };
+
 
   const handleCloseBookingForm = () => {
     setShowBookingForm(false);
@@ -41,6 +56,7 @@ function Homepage() {
     if (servicesRef.current) {
       servicesRef.current.scrollIntoView({ behavior: 'smooth' });
     }
+    
   };
 
   const toggleDropdown = () => {
@@ -104,9 +120,10 @@ function Homepage() {
           </div>
         </nav>
       </header>
+      
 
       <main>
-      <div className="relative w-full h-[500px]"> {/* Adjust the height as needed */}
+      <div className="relative w-full h-[680px]"> {/* Adjust the height as needed */}
   {/* Overlay */}
   <div className="absolute inset-0 bg-black opacity-25"></div>
 
@@ -128,6 +145,8 @@ function Homepage() {
 </div>
 
 
+
+
   <div className="relative -mt-9 px-4 sm:px-10 pb-20">
   <div className="flex justify-center space-x-6 flex-wrap">
     {/* Service Category */}
@@ -135,7 +154,7 @@ function Homepage() {
       className="bg-white bg-opacity-80 shadow-inner shadow-rose-300 p-5 rounded-lg w-56 h-36 flex flex-col items-center justify-center hover:bg-rose-50 focus:outline-none"
       onClick={() => handleContainerClick('Hair Care')}
     >
-      <Image src="/Hair_Care.png" alt="Hair Care" width={120} height={120} className="object-cover rounded-full" />
+      <Image src="/Hair_Care.png" alt="Hair Care" width={180} height={120} className="object-cover rounded-full" />
       <h1 className="text-2xl -mt-4 font-bold text-gray-800 text-center">Hair Care</h1>
     </button>
 
@@ -166,7 +185,7 @@ function Homepage() {
 </div>
       </main>
 
-      <div className="flex items-center space-x-8 ml-14">
+      <div className="flex items-center space-x-8 ml-16 mt-10">
   <Image 
     src="/desc.png" 
     alt="Description Image" 
@@ -225,9 +244,7 @@ function Homepage() {
 </div>
 
       
-      <div className="-mt-20">
-      <SlideshowComp/>
-      </div>
+     
 
       <div className="text-center mt-10 text-gray-600 w-9/12 ml-48 border rounded">
             <p>Note: Prices are quoted at a minimum and may vary depending on hair length. Please consult with your stylist for possible additional charges.</p>
@@ -237,6 +254,14 @@ function Homepage() {
       <div ref={servicesRef}>
         <Services/>
       </div>
+
+       {/* Notice Message */}
+      {showNotice && (
+        <div className="fixed bottom-24 right-8 bg-rose-600 text-white px-4 py-2 rounded shadow-lg z-50">
+        Please select a service first.
+      </div>
+      
+      )}
 
       <Footer/>
       
@@ -255,22 +280,42 @@ function Homepage() {
 
             {/* Booking Form */}
             <BookingForm
-  bookingID={bookingID}
-  email={currentUserEmail}
-  servicePrice={booking?.servicePrice || 0} // Provide a default value (like 0) if it's undefined
-/>
+              bookingID={bookingID}
+              email={currentUserEmail}
+              servicePrice={booking?.servicePrice || 0} // Provide a default value (like 0) if it's undefined
+            />
           </div>
         </div>
       )}
 
       {/* Cart Icon */}
       <div className="fixed bottom-4 right-4 z-50">
-        <Link 
-          href="/cart" 
-          className="bg-rose-600 p-4 rounded-full shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center justify-center">
+        <button
+          onClick={toggleCart}
+          className="bg-rose-600 p-4 rounded-full shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center justify-center"
+        >
           <FaShoppingCart size={30} className="text-white" />
-        </Link>
+        </button>
       </div>
+
+      {/* Cart Overlay */}
+      {showCart && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="relative bg-white rounded-lg p-6 shadow-lg">
+            {/* Close Button */}
+            <button
+              onClick={toggleCart}
+              className="absolute top-4 right-4 text-gray-600 hover:text-gray-800 focus:outline-none"
+              aria-label="Close"
+            >
+              &times;
+            </button>
+
+            {/* Render the Cart component here */}
+            <Cart />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

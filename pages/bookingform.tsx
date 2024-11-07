@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import BookingSummary from './bookingSummary';
+import { useRouter } from 'next/router';
 import { Bookings } from './api/type';
 import Select, { MultiValue } from 'react-select';
 
@@ -26,6 +27,11 @@ interface BookingFormProps {
   email: string; 
   servicePrice: number; 
 }
+interface CartItem {
+  title: string;
+  price: number;
+}
+
 
 const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookingID, email}) => {
   const [formDetails, setFormDetails] = useState<Bookings>({
@@ -44,7 +50,27 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookin
   const [serviceOptions, setServiceOptions] = useState<ServiceOption[]>([]);
   const [staffOptions, setStaffOptions] = useState<StaffOption[]>([]);
   const [bookedDates, setBookedDates] = useState<string[]>([]);
+  const router = useRouter();
+  const { cartItems } = router.query;
 
+  useEffect(() => {
+    if (cartItems) {
+      const parsedCartItems: CartItem[] = JSON.parse(cartItems as string); // Define parsedCartItems as an array of CartItem
+      const selectedServices = parsedCartItems.map((item: CartItem) => item.title); // Specify item as CartItem
+      const totalPrice = parsedCartItems.reduce((total: number, item: CartItem) => total + item.price, 0); // Specify item as CartItem
+
+      console.log("Parsed cart items:", parsedCartItems);
+      console.log("Selected services:", selectedServices);
+      console.log("Total price:", totalPrice);
+
+      setFormDetails((prevDetails) => ({
+        ...prevDetails,
+        services: selectedServices,
+        servicePrice: totalPrice,
+      }));
+    }
+  }, [cartItems]);
+  
   // Fetch booked dates
   useEffect(() => {
     const fetchBookedDates = async () => {
@@ -62,27 +88,26 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookin
     fetchBookedDates();
   }, []);
 
-  // Fetch services
-  // Fetch services
-useEffect(() => {
-  const fetchServices = async () => {
-    try {
-      const response = await fetch('/api/services');
-      if (!response.ok) throw new Error('Failed to fetch services');
-      const services = await response.json();
-      const formattedServices = services.map((service: ServiceOption) => ({
-        value: service.servicename,
-        label: `${service.servicename} - ₱${service.price}`,
-        price: Number(service.price), // Ensure price is a number
-      }));
-      setServiceOptions(formattedServices);
-    } catch (error) {
-      console.error('Error fetching services:', error);
-    }
-  };
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await fetch('/api/services');
+        if (!response.ok) throw new Error('Failed to fetch services');
+        const services = await response.json();
+        const formattedServices = services.map((service: ServiceOption) => ({
+          value: service.servicename,
+          label: `${service.servicename} - ₱${service.price}`,
+          price: Number(service.price), // This should ensure price is numeric
+        }));
+        setServiceOptions(formattedServices);
+      } catch (error) {
+        console.error('Error fetching services:', error);
+      }
+    };
 
-  fetchServices();
-}, []);
+    fetchServices();
+  }, []);
+
 
   // Fetch staff members
   useEffect(() => {
@@ -108,28 +133,40 @@ useEffect(() => {
     fetchStaff();
   }, []);
 
+  // When setting the formDetails state for date
   useEffect(() => {
-    if (initialBookingDetails) setFormDetails(initialBookingDetails);
+    if (initialBookingDetails) {
+      const localDate = new Date(initialBookingDetails.date).toLocaleDateString('en-CA');
+      setFormDetails({
+        ...initialBookingDetails,
+        date: localDate,
+      });
+    }
   }, [initialBookingDetails]);
 
+  
   const handleServiceChange = (selectedOptions: MultiValue<ServiceOption>) => {
-    const selectedServices = selectedOptions.map(option => option.value);
-    const totalPrice = selectedOptions.reduce((total, option) => total + option.price, 0); // Sum the prices of selected options
+    // Calculate total price by summing the price of each selected option
+    const totalPrice = selectedOptions.reduce((total, option) => total + Number(option.price), 0);
+  
+    console.log("Calculated totalPrice:", totalPrice); // Check if it's a valid number
+  
     setFormDetails(prevDetails => ({
       ...prevDetails,
-      services: selectedServices,
-      servicePrice: totalPrice, // Set total price here
+      services: selectedOptions.map(option => option.value), // Update services with selected values
+      servicePrice: totalPrice, // Ensure servicePrice is numeric
     }));
   };
   
   
   const handleStaffChange = (selectedOptions: MultiValue<StaffOption>) => {
-    const selectedStaff = selectedOptions.map(option => option.value);
+    const selectedStaff = selectedOptions.map(option => option.value).join(', '); // Join selected staff names into a single string
     setFormDetails(prevDetails => ({
       ...prevDetails,
-      staffname: selectedStaff, 
+      staffname: selectedStaff, // Set staffname to a single string
     }));
   };
+  
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -158,14 +195,13 @@ useEffect(() => {
     }
     setErrorMessages([]);
   
+    const formattedDate = new Date(formDetails.date).toISOString();
+  
     const bookingData = {
       ...formDetails,
-      created_at: new Date().toISOString(),
+      created_at: formattedDate,
     };
-  
-    // Log booking data to see the total price
-    console.log('Booking data before submission:', bookingData);
-  
+
     try {
       const response = await fetch('/api/booking', {
         method: 'POST',
@@ -187,17 +223,15 @@ useEffect(() => {
     }
   };
   
+  
 
   const handleBackToForm = () => setShowSummary(false);
 
 
   return (
-    <div className="max-w-lg mx-auto p-4">
+     <div className="max-w-lg mx-auto p-4">
       {showSummary ? (
-        <BookingSummary
-          booking={formDetails}
-          onBack={handleBackToForm}
-        />
+        <BookingSummary booking={formDetails} onBack={handleBackToForm} />
       ) : (
         <div className="bg-white rounded-lg p-6 shadow-lg">
           <h2 className="text-xl font-semibold mb-4">Booking Form</h2>
@@ -217,12 +251,11 @@ useEffect(() => {
                 type="email"
                 name="email"
                 value={formDetails.email}
-                onChange={handleInputChange} 
+                onChange={handleInputChange}
                 required
                 className="w-full p-2 border border-gray-300 rounded"
               />
             </div>
-
             <div className="mb-4">
               <label className="block text-gray-700">Date:</label>
               <input
@@ -261,13 +294,14 @@ useEffect(() => {
             <div className="mb-4">
               <label className="block text-gray-700">Service:</label>
               <Select
-                options={serviceOptions}
-                isMulti
-                onChange={handleServiceChange}
-                className="basic-multi-select"
-                classNamePrefix="select"
-                placeholder="Select services..."
-              />
+  options={serviceOptions}
+  isMulti
+  onChange={handleServiceChange}
+  value={serviceOptions.filter((option) => formDetails.services.includes(option.value))} // Pre-select services from the form details
+  className="basic-multi-select"
+  classNamePrefix="select"
+  placeholder="Select services..."
+/>
             </div>
             <div className="mb-4">
               <label className="block text-gray-700">Staff:</label>

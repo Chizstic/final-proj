@@ -21,21 +21,25 @@ const bookingHandler = async (req: NextApiRequest, res: NextApiResponse) => {
         return res.status(400).json({ message: 'All booking fields are required' });
       }
 
-      // Ensure services is an array and convert to JSON string if necessary
-      const servicesJson = JSON.stringify(services); 
+      const serviceToStore = Array.isArray(services) ? services.join(', ') : services; // Join services into a single string
+
+      // Combine date and time for storage in UTC
+      const [year, month, day] = date.split('-');
+      const [hours, minutes] = time.split(':');
+      const combinedDateTime = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day) +1, Number(hours), Number(minutes)));
 
       const insertQuery = `
         INSERT INTO bookings (email, date, time, services, staffname, paymentmethod, created_at)
-        VALUES ($1, $2, $3, $4, $5, $6, NOW()) RETURNING *;
+        VALUES ($1, $2, $3::TIME, $4, $5, $6, NOW()) RETURNING *;
       `;
 
       const insertResult = await client.query(insertQuery, [
         email,
-        date,
-        time,
-        servicesJson, // Store as JSON
-        staffname, // String value representing the staff name
-        paymentmethod.trim(), // Ensures no leading/trailing spaces
+        combinedDateTime.toISOString().split('T')[0], // Store the date part only in YYYY-MM-DD format
+        time, // Store the time directly
+        serviceToStore,
+        staffname,
+        paymentmethod.trim(),
       ]);
 
       const insertedBooking = insertResult.rows[0];
@@ -47,9 +51,13 @@ const bookingHandler = async (req: NextApiRequest, res: NextApiResponse) => {
       const selectQuery = 'SELECT * FROM bookings ORDER BY created_at DESC'; // Get all bookings
 
       const result = await client.query(selectQuery);
-      const bookings = result.rows;
 
-      // Send the response with the list of bookings
+      const bookings = result.rows.map(booking => ({
+        ...booking,
+        date: new Date(booking.date).toISOString().split('T')[0], // Format date to YYYY-MM-DD
+        time: new Date(`1970-01-01T${booking.time}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) // Format time to 12-hour format
+      }));
+
       return res.status(200).json(bookings);
 
     } else {

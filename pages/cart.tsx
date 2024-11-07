@@ -1,37 +1,45 @@
 import React, { useState } from "react";
 import { useCart } from "../context/CartContext";
+import { useRouter } from 'next/router';
 
 const Cart: React.FC = () => {
   const { cart, addToCart } = useCart();
   const [isEditing, setIsEditing] = useState(false);
   const [tempCart, setTempCart] = useState(cart);
-
-  const calculateTotal = () => {
-    return tempCart.reduce((total, item) => total + parseFloat(item.price.replace("₱", "")), 0);
-  };
+  const router = useRouter();
 
   const handleEditToggle = () => {
     if (isEditing) {
-      // Save changes from temporary cart to actual cart
       tempCart.forEach(item => addToCart(item));
     } else {
-      // Initialize tempCart with current cart items for editing
       setTempCart([...cart]);
     }
     setIsEditing(!isEditing);
   };
 
   const handleCancelEdit = () => {
-    // Discard changes by resetting tempCart to initial cart state
     setTempCart([...cart]);
     setIsEditing(false);
   };
 
   const handleRemoveItem = (id: number) => {
-    // Remove item from tempCart during editing mode
     setTempCart(tempCart.filter((item) => item.id !== id));
   };
 
+  const handleCheckout = () => {
+    // Pass the cart items as state to the booking form
+    router.push({
+      pathname: '/bookingform',
+      query: { 
+        cartItems: JSON.stringify(
+          tempCart.map(item => ({
+            ...item,
+            price: Number(item.price.toString().replace(/[^\d.-]/g, '')), // Remove any currency symbols, keep as number
+          }))
+        )
+      },
+    });
+  };
   return (
     <div className="p-8 bg-gray-100 rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold mb-5 text-gray-800">Your Cart</h2>
@@ -55,10 +63,6 @@ const Cart: React.FC = () => {
               </li>
             ))}
           </ul>
-          <div className="mt-4 flex justify-between">
-            <span className="font-bold text-gray-700">Total:</span>
-            <span className="font-bold text-gray-700">₱{calculateTotal().toFixed(2)}</span>
-          </div>
           <div className="mt-5 flex justify-between">
             {isEditing ? (
               <>
@@ -85,7 +89,7 @@ const Cart: React.FC = () => {
                 </button>
                 <button
                   className="py-2 px-4 bg-rose-600 text-white rounded-full font-semibold hover:bg-rose-700"
-                  onClick={() => alert("Proceeding to checkout with selected items.")}
+                  onClick={handleCheckout} 
                 >
                   Checkout
                 </button>

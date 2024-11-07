@@ -1,4 +1,3 @@
-// components/Services.tsx
 import React from "react";
 import Image from "next/image";
 import { useCart } from "../context/CartContext";
@@ -24,126 +23,126 @@ const services: Service[] = [
     title: "Hair Trim",
     description: "Professional haircuts for a fresh look.",
     image: "/SO_img1.png",
-    price: "₱40",
+    price: "₱500",
   },
   {
     id: 2,
     title: "Hair Color",
     description: "Vibrant hair color tailored to you.",
     image: "/SO_img2.png",
-    price: "₱70",
+    price: "₱1500",
   },
   {
     id: 3,
     title: "Hot Oil",
     description: "Nourishing treatment for shiny, healthy hair.",
     image: "/SO_img3.png",
-    price: "₱60",
+    price: "₱600",
   },
   {
     id: 4,
     title: "Balayage",
     description: "Natural, hand-painted highlights.",
     image: "/SO_img4.png",
-    price: "₱30",
+    price: "₱2500",
   },
   {
     id: 5,
     title: "Hair Rebond",
     description: "Straighten and smoothen frizzy hair.",
     image: "/SO_img5.png",
-    price: "₱30",
+    price: "₱3500",
   },
   {
     id: 6,
     title: "Hair Botox",
     description: "Revitalize hair with deep conditioning.",
     image: "/SO_img6.png",
-    price: "₱30",
+    price: "₱2000",
   },
   {
     id: 7,
     title: "Keratin",
     description: "Silky, frizz-free hair treatment.",
     image: "/SO_img7.png",
-    price: "₱30",
+    price: "₱1800",
   },
   {
     id: 8,
     title: "Highlights",
     description: "Accentuate with natural-looking highlights.",
     image: "/SO_img8.png",
-    price: "₱30",
+    price: "₱2200",
   },
   {
     id: 9,
     title: "Foot Spa",
     description: "Relax and rejuvenate your feet.",
     image: "/SO_img9.png",
-    price: "₱30",
+    price: "₱800",
   },
   {
     id: 10,
     title: "Foot Massage",
     description: "Relaxing massage to relieve foot tension.",
     image: "/SO_img10.png",
-    price: "₱30",
+    price: "₱1000",
   },
   {
     id: 11,
     title: "Waxing (Armpit & Legs)",
     description: "Smooth and hair-free skin.",
     image: "/SO_img11.png",
-    price: "₱30",
+    price: "₱500",
   },
   {
     id: 12,
     title: "Hair Styling",
     description: "Glamorous styles for any occasion.",
     image: "/SO_img12.png",
-    price: "₱30",
+    price: "₱1200",
   },
   {
     id: 13,
     title: "Makeup",
     description: "Flawless makeup for special events.",
     image: "/SO_img13.png",
-    price: "₱30",
+    price: "₱2000",
   },
   {
     id: 14,
     title: "Manicure",
     description: "Elegant nail shaping and polish.",
     image: "/SO_img14.png",
-    price: "₱30",
+    price: "₱400",
   },
   {
     id: 15,
     title: "Pedicure",
     description: "Relaxing nail and foot care.",
     image: "/SO_img15.png",
-    price: "₱30",
+    price: "₱500",
   },
   {
     id: 16,
     title: "Nail Gel",
     description: "Glossy, durable nail coating.",
     image: "/SO_img16.png",
-    price: "₱30",
+    price: "₱900",
   },
   {
     id: 17,
     title: "Gel Polish",
     description: "Long-lasting, chip-resistant polish.",
     image: "/SO_img17.png",
-    price: "₱30",
+    price: "₱800",
   },
   {
     id: 18,
     title: "Soft Gel Nail Extension",
     description: "Extend nails with natural-looking gel.",
     image: "/SO_img18.png",
-    price: "₱30",
+    price: "₱1500",
   },
 ];
 
@@ -188,7 +187,7 @@ const combo: Combo[] = [
   },
   {
     id: 7,
-    title: "Balayage",
+    title: "Balayage Plus",
     description: "Enhance your look with natural, sun-kissed balayage highlights.",
     price: "₱1,499",
   },
@@ -223,7 +222,7 @@ const Services: React.FC = () => {
             </div>
             <p className="text-gray-600 text-sm flex-grow">{service.description}</p>
             <button
-              className="py-1 px-3 text-rose-600 text-sm border-2 border-rose-600 rounded-full font-semibold hover:bg-rose-100 transition-colors duration-300 mt-auto"
+              className="py-1 px-3 text-rose-600 w-28 text-sm border-2 border-rose-600 rounded-full font-semibold hover:bg-rose-100 transition-colors duration-300 mt-4"
               onClick={() => addToCart({ id: service.id, title: service.title, price: service.price, type: "service" })}
             >
               Add to Cart
@@ -242,7 +241,7 @@ const Services: React.FC = () => {
             </div>
             <p className="text-gray-600 text-sm mb-4">{comboItem.description}</p>
             <button
-              className="py-1 px-3 text-rose-600 text-sm border-2 border-rose-600 rounded-full font-semibold hover:bg-rose-100 transition-colors duration-300"
+              className="py-1 px-3 w-28 text-rose-600 text-sm border-2 border-rose-600 rounded-full font-semibold hover:bg-rose-100 transition-colors duration-300"
               onClick={() => addToCart({ id: comboItem.id, title: comboItem.title, price: comboItem.price, type: "combo" })}
             >
               Add to Cart
