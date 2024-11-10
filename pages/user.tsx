@@ -94,11 +94,24 @@ const UserProfile: React.FC = () => {
   const handleProfileClick = () => {
     window.location.href = '/user';
   };
+ 
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+  };
+  
 
   const handleEditProfile = () => {
+    if (profileInfo) {
+      // Initialize form fields with current profile information
+      setName(profileInfo.name);
+      setAge(profileInfo.age);
+      setSex(profileInfo.sex);
+      setAddress(profileInfo.address);
+      setContactNumber(profileInfo.contact_number);
+    }
     setIsEditing(true);
   };
-
+  
   const handleSaveProfile = async () => {
     const profileData = {
       email,
@@ -109,36 +122,28 @@ const UserProfile: React.FC = () => {
       contact_number: contactNumber,
     };
   
-    // Check if the profile already exists
-    const response = await fetch(`/api/profile?email=${email}`);
-    const data = await response.json();
+    try {
+      const response = await fetch(`/api/profile?email=${email}`);
+      const data = await response.json();
+      
+      const method = data && data.profile ? 'PUT' : 'POST'; // Use PUT if profile exists, POST otherwise
+      const endpoint = `/api/profile`;
   
-    if (data && data.profile) {
-      // If profile exists, update it using PUT
-      const updateResponse = await fetch(`/api/profile`, {
-        method: 'PUT',
+      const saveResponse = await fetch(endpoint, {
+        method: method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(profileData),
       });
-      if (updateResponse.ok) {
-        const updatedProfile = await updateResponse.json();
-        setProfileInfo(updatedProfile.profile);
+  
+      if (saveResponse.ok) {
+        const savedProfile = await saveResponse.json();
+        setProfileInfo(savedProfile.profile);
+        setIsEditing(false); // Exit edit mode after saving
       } else {
-        console.error('Failed to update profile');
+        console.error('Failed to save profile');
       }
-    } else {
-      // If profile doesn't exist, create it using POST
-      const createResponse = await fetch('/api/profile', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(profileData),
-      });
-      if (createResponse.ok) {
-        const newProfile = await createResponse.json();
-        setProfileInfo(newProfile.profile);
-      } else {
-        console.error('Failed to create profile');
-      }
+    } catch (error) {
+      console.error('Error saving profile:', error);
     }
   };  
   
@@ -210,111 +215,118 @@ const UserProfile: React.FC = () => {
           </div>
 
           <div className="p-10">
-            {isEditing ? (
-              <div>
-                <h3 className="text-2xl font-semibold mb-6 text-pink-600">Edit Profile</h3>
-                <div className="space-y-4">
-                  <input
-                    type="text"
-                    placeholder="Name"
-                    value={name || ''}
-                    onChange={(e) => setName(e.target.value)}
-                    className="border p-2 w-full"
-                  />
-                  <input
-                    type="number"
-                    placeholder="Age"
-                    value={age || ''}
-                    onChange={(e) => setAge(Number(e.target.value))}
-                    className="border p-2 w-full"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Sex"
-                    value={sex || ''}
-                    onChange={(e) => setSex(e.target.value)}
-                    className="border p-2 w-full"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Address"
-                    value={address || ''}
-                    onChange={(e) => setAddress(e.target.value)}
-                    className="border p-2 w-full"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Contact Number"
-                    value={contactNumber || ''}
-                    onChange={(e) => setContactNumber(e.target.value)}
-                    className="border p-2 w-full"
-                  />
-                  <button onClick={handleSaveProfile} className="bg-pink-600 text-white p-2 rounded">Save</button>
-                </div>
-              </div>
-            ) : (
-              <div>
-              <h3 className="text-2xl font-semibold text-pink-600">Profile Information</h3>
-              <div className="space-y-4">
-                <div className="flex items-center">
-                  <Users size={24} className="text-pink-600 mr-2" />
-                  <span className="font-medium">Name:</span> {profileInfo?.name}
-                </div>
-                <div className="flex items-center">
-                  <Clock size={24} className="text-pink-600 mr-2" />
-                  <span className="font-medium">Age:</span> {profileInfo?.age}
-                </div>
-                <div className="flex items-center">
-                  <BsGenderAmbiguous size={24} className="text-pink-600 mr-2" />
-                  <span className="font-medium">Sex:</span> {profileInfo?.sex}
-                </div>
-                <div className="flex items-center">
-                  <BiWorld size={24} className="text-pink-600 mr-2" />
-                  <span className="font-medium">Address:</span> {profileInfo?.address}
-                </div>
-                <div className="flex items-center">
-                  <HiHashtag size={24} className="text-pink-600 mr-2" />
-                  <span className="font-medium">Contact Number:</span> {profileInfo?.contact_number}
-                </div>
-              </div>
-            </div>
-            )}
+  {isEditing ? (
+    <div>
+      <h3 className="text-2xl font-semibold mb-6 text-pink-600">Edit Profile</h3>
+      <div className="space-y-4">
+        <input
+          type="text"
+          placeholder="Name"
+          value={name || ''}
+          onChange={(e) => setName(e.target.value)}
+          className="border p-2 w-full"
+        />
+        <input
+          type="number"
+          placeholder="Age"
+          value={age || ''}
+          onChange={(e) => setAge(Number(e.target.value))}
+          className="border p-2 w-full"
+        />
+        <input
+          type="text"
+          placeholder="Sex"
+          value={sex || ''}
+          onChange={(e) => setSex(e.target.value)}
+          className="border p-2 w-full"
+        />
+        <input
+          type="text"
+          placeholder="Address"
+          value={address || ''}
+          onChange={(e) => setAddress(e.target.value)}
+          className="border p-2 w-full"
+        />
+        <input
+          type="text"
+          placeholder="Contact Number"
+          value={contactNumber || ''}
+          onChange={(e) => setContactNumber(e.target.value)}
+          className="border p-2 w-full"
+        />
+        <div className="flex space-x-4">
+          <button onClick={handleSaveProfile} className="bg-pink-600 text-white p-2 rounded">Save</button>
+          <button onClick={handleCancelEdit} className="bg-gray-300 text-gray-800 p-2 rounded">Cancel</button>
+        </div>
+      </div>
+    </div>
+  ) : (
+    <div>
+      <h3 className="text-2xl font-semibold text-pink-600">Profile Information</h3>
+      <div className="space-y-4">
+        <div className="flex items-center">
+          <Users size={24} className="text-pink-600 mr-2" />
+          <span className="font-medium">Name:</span> {profileInfo?.name}
+        </div>
+        <div className="flex items-center">
+          <Clock size={24} className="text-pink-600 mr-2" />
+          <span className="font-medium">Age:</span> {profileInfo?.age}
+        </div>
+        <div className="flex items-center">
+          <BsGenderAmbiguous size={24} className="text-pink-600 mr-2" />
+          <span className="font-medium">Sex:</span> {profileInfo?.sex}
+        </div>
+        <div className="flex items-center">
+          <BiWorld size={24} className="text-pink-600 mr-2" />
+          <span className="font-medium">Address:</span> {profileInfo?.address}
+        </div>
+        <div className="flex items-center">
+          <HiHashtag size={24} className="text-pink-600 mr-2" />
+          <span className="font-medium">Contact Number:</span> {profileInfo?.contact_number}
+        </div>
+      </div>
+    </div>
+  )}
+</div>
+
+        </div>
+        <div className="p-10">
+  <h3 className="text-2xl font-semibold mb-6 text-pink-600">Your Bookings</h3>
+  {bookings.length > 0 ? (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {bookings.map((booking) => (
+        <div key={booking.bookingID} className="bg-gray-50 p-6 rounded-lg shadow hover:shadow-md transition duration-300">
+          <div className="flex items-center mb-4">
+            <Calendar size={20} className="text-pink-600 mr-2" />
+            <span>{booking.date}</span>
+          </div>
+          <div className="flex items-center mb-4">
+            <Clock size={20} className="text-pink-600 mr-2" />
+            <span>{booking.time}</span>
+          </div>
+          <div className="flex items-center mb-4">
+            <Briefcase size={20} className="text-pink-600 mr-2" />
+            <span>{booking.services}</span>
+          </div>
+          <div className="flex items-center mb-4">
+            <Users size={20} className="text-pink-600 mr-2" />
+            <span>{booking.staffname}</span>
+          </div>
+          <div className="flex items-center mb-4">
+            <CreditCard size={20} className="text-pink-600 mr-2" />
+            <span>{booking.paymentmethod}</span>
+          </div>
+          <div className="flex items-center mb-4">
+            <Clock size={20} className="text-pink-600 mr-2" />
+            <span>Created at: {new Date(booking.created_at).toLocaleString()}</span>
           </div>
         </div>
-
-        <div className="p-10">
-          <h3 className="text-2xl font-semibold mb-6 text-pink-600">Your Bookings</h3>
-          {bookings.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {bookings.map((booking) => (
-                <div key={booking.bookingID} className="bg-gray-50 p-6 rounded-lg shadow hover:shadow-md transition duration-300">
-                  <div className="flex items-center mb-4">
-                    <Calendar size={20} className="text-pink-600 mr-2" />
-                    <span>{booking.date}</span>
-                  </div>
-                  <div className="flex items-center mb-4">
-                    <Clock size={20} className="text-pink-600 mr-2" />
-                    <span>{booking.time}</span>
-                  </div>
-                  <div className="flex items-center mb-4">
-                    <Briefcase size={20} className="text-pink-600 mr-2" />
-                    <span>{booking.services}</span>
-                  </div>
-                  <div className="flex items-center mb-4">
-                    <Users size={20} className="text-pink-600 mr-2" />
-                    <span>{booking.staffname}</span>
-                  </div>
-                  <div className="flex items-center mb-4">
-                    <CreditCard size={20} className="text-pink-600 mr-2" />
-                    <span>{booking.paymentmethod}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-center text-gray-500 text-xl">No bookings found.</p>
-          )}
-        </div>
+      ))}
+    </div>
+  ) : (
+    <p className="text-center text-gray-500 text-xl">No bookings found.</p>
+  )}
+</div>
       </main>
       <Footer />
     </div>

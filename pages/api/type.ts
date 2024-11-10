@@ -15,7 +15,7 @@ export interface Bookings {
   servicePrice:number;
   paymentmethod: string;
   staffname: string |string[]; // Assuming staffID is of type string
-  created_at?: string; // Optional
+  created_at: string; // Optional
 }
 
 

@@ -1,15 +1,39 @@
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/router'; // Import useRouter from next/router
-import StaffList from './stafflist'; // Ensure the path is correct
-import AdminBookings from './adminBookings'; // Import the AdminBookings component
-import { Staff, Bookings } from './api/type'; // Import both types
+import React, { useEffect, useState, useContext } from 'react';
+import { useRouter } from 'next/router';
+import StaffList from './stafflist';
+import AdminBookings from './Bookings';
+import { Staff, Bookings } from './api/type';
+import { AiOutlineUser, AiOutlineSchedule, AiOutlineLogout } from 'react-icons/ai';
+import { useAuth } from '../context/AuthContext'; // Use the custom hook
 
 const AdminPage: React.FC = () => {
-  const router = useRouter(); // Initialize useRouter
+  const router = useRouter();
+  const { user } = useAuth(); // UseAuth hook to get user from context
   const [staffList, setStaffList] = useState<Staff[]>([]);
   const [bookings, setBookings] = useState<Bookings[]>([]);
-  const [userEmail, setUserEmail] = useState<string>(''); // State for user email
+  const [userEmail, setUserEmail] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'staff' | 'bookings'>('staff');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Prevent search engines from indexing the page
+    const metaTag = document.createElement('meta');
+    metaTag.name = 'robots';
+    metaTag.content = 'noindex, nofollow';
+    document.head.appendChild(metaTag);
+
+    // Clean up the meta tag when the component unmounts
+    return () => {
+      document.head.removeChild(metaTag);
+    };
+  }, []);
+
+  // Redirect if the user is not authenticated
+  useEffect(() => {
+    if (!user) {
+      router.push('/login');  // Redirect to the login page if not authenticated
+    }
+  }, [user, router]);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -17,90 +41,90 @@ const AdminPage: React.FC = () => {
         const response = await fetch('/api/booking');
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
-        console.log('Fetched bookings:', data); // Check fetched data
         setBookings(data);
       } catch (error) {
         console.error('Error fetching bookings:', error);
       }
+      setLoading(false);
     };
 
     const fetchUserEmail = async () => {
       try {
-        const response = await fetch('/api/user'); // Replace with your user API endpoint
+        const response = await fetch('/api/user');
         if (!response.ok) throw new Error('Network response was not ok');
         const userData = await response.json();
-        setUserEmail(userData.email); // Assuming userData contains the email field
+        setUserEmail(userData.email);
       } catch (error) {
         console.error('Error fetching user email:', error);
       }
     };
 
     fetchBookings();
-    fetchUserEmail(); // Fetch user email when the component mounts
+    fetchUserEmail();
   }, []);
 
-  const handleAddStaff = (newStaff: Staff) => {
-    setStaffList((prev) => [...prev, newStaff]);
-  };
-
-  const handleDeleteStaff = (staffId: number) => {
-    setStaffList((prev) => prev.filter((staff) => staff.staffid !== staffId));
-  };
-
-  const deleteBooking = (bookingId: number) => {
-    setBookings((prev) => prev.filter((booking) => booking.bookingID !== bookingId));
-  };
-
-  const editBooking = (updatedBooking: Bookings) => {
-    setBookings((prev) =>
-      prev.map((booking) =>
-        booking.bookingID === updatedBooking.bookingID ? updatedBooking : booking
-      )
-    );
-  };
-
   const handleLogout = () => {
-    // Clear any user data here if necessary
-    router.push('/'); // Redirect to homepage on logout
+    router.push('/'); // Logout and redirect to home page
   };
 
   return (
-    <div className="flex">
-      <aside className="w-1/4 bg-gray-200 p-4">
-        <h2 className="font-bold text-lg mb-4">Admin Panel</h2>
+    <div className="flex min-h-screen bg-gray-100">
+      <aside className="w-1/4 bg-gradient-to-br from-blue-500 to-indigo-600 p-6 text-white shadow-lg">
+        <h2 className="text-2xl font-semibold mb-6 text-center">Admin Panel</h2>
         <button
           onClick={() => setActiveTab('staff')}
-          className={`w-full text-left p-2 rounded-lg ${activeTab === 'staff' ? 'bg-blue-500 text-white' : 'bg-transparent'}`}
+          className={`flex items-center w-full px-4 py-2 mb-2 rounded-lg text-lg font-medium hover:bg-blue-700 transition-all ${
+            activeTab === 'staff' ? 'bg-blue-700' : 'bg-transparent'
+          }`}
         >
+          <AiOutlineUser className="mr-3" />
           Staff
         </button>
         <button
           onClick={() => setActiveTab('bookings')}
-          className={`w-full text-left p-2 rounded-lg ${activeTab === 'bookings' ? 'bg-blue-500 text-white' : 'bg-transparent'}`}
+          className={`flex items-center w-full px-4 py-2 mb-2 rounded-lg text-lg font-medium hover:bg-blue-700 transition-all ${
+            activeTab === 'bookings' ? 'bg-blue-700' : 'bg-transparent'
+          }`}
         >
+          <AiOutlineSchedule className="mr-3" />
           Bookings
         </button>
         <button
           onClick={handleLogout}
-          className="w-full text-left p-2 rounded-lg bg-red-500 text-white mt-4"
+          className="flex items-center w-full px-4 py-2 mt-6 rounded-lg text-lg font-medium bg-red-600 hover:bg-red-700 transition-all"
         >
+          <AiOutlineLogout className="mr-3" />
           Logout
         </button>
       </aside>
 
       <main className="flex-1 p-6">
-        {activeTab === 'staff' ? (
+        {loading ? (
+          <div className="flex justify-center items-center h-full">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-600"></div>
+          </div>
+        ) : activeTab === 'staff' ? (
           <StaffList
             staffList={staffList}
-            handleAddStaff={handleAddStaff}
-            handleDeleteStaff={handleDeleteStaff}
+            handleAddStaff={(newStaff) => setStaffList((prev) => [...prev, newStaff])}
+            handleDeleteStaff={(staffId) =>
+              setStaffList((prev) => prev.filter((staff) => staff.staffid !== staffId))
+            }
           />
         ) : (
           <AdminBookings
-            bookings={bookings} // Ensure this variable is defined and populated
-            deleteBooking={deleteBooking}
-            editBooking={editBooking}
-            email={userEmail} // Pass the userEmail to AdminBookings
+            bookings={bookings}
+            deleteBooking={(bookingId) =>
+              setBookings((prev) => prev.filter((booking) => booking.bookingID !== bookingId))
+            }
+            editBooking={(updatedBooking) =>
+              setBookings((prev) =>
+                prev.map((booking) =>
+                  booking.bookingID === updatedBooking.bookingID ? updatedBooking : booking
+                )
+              )
+            }
+            email={userEmail}
           />
         )}
       </main>
