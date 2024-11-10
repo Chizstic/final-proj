@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'; 
 import { Bookings } from './api/type';
+import { FaEdit, FaTrashAlt } from 'react-icons/fa'; // Importing icons for action buttons
 
-// Update the AdminBookingsProps interface to include user_email
 interface AdminBookingsProps {
   bookings: Bookings[];
   deleteBooking: (bookingId: number) => void;
@@ -10,11 +10,10 @@ interface AdminBookingsProps {
 }
 
 const AdminBookings: React.FC<AdminBookingsProps> = ({ email, deleteBooking, editBooking }) => {
-  const [bookings, setBookings] = useState<Bookings[]>([]); // State to hold all bookings
-  const [loading, setLoading] = useState(true); // Add loading state
-  const [error, setError] = useState<string | null>(null); // Add error state
+  const [bookings, setBookings] = useState<Bookings[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Fetch all bookings when the component mounts
   useEffect(() => {
     const fetchBookings = async () => {
       try {
@@ -32,70 +31,73 @@ const AdminBookings: React.FC<AdminBookingsProps> = ({ email, deleteBooking, edi
     };
 
     fetchBookings();
-  }, [email]); // Include user_email as a dependency
+  }, [email]);
 
   if (loading) {
-    return <div>Loading...</div>; // Show loading message
+    return <div>Loading...</div>;
   }
 
   if (error) {
-    return <div className="text-red-500">Error: {error}</div>; // Show error message
+    return <div className="text-red-500">Error: {error}</div>;
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <h2 className="text-2xl font-semibold mb-6 text-purple-600">Manage Bookings</h2>
-      <div className="bg-white shadow-md rounded-lg p-4">
-        <table className="w-full table-auto">
-  <thead>
-    <tr className="bg-gray-200">
-      <th className="px-4 py-2">Email</th>
-      <th className="px-4 py-2">Date</th>
-      <th className="px-4 py-2">Time</th>
-      <th className="px-4 py-2">Service</th>
-      <th className="px-4 py-2">Staff</th>
-      <th className="px-4 py-2">Payment</th>
-      <th className="px-4 py-2">Created At</th> {/* New Column */}
-      <th className="px-4 py-2">Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    {bookings.length > 0 ? (
-      bookings.map((booking) => (
-        <tr key={booking.bookingID} className="border-t hover:bg-gray-100 transition">
-          <td className="px-4 py-2">{booking.email}</td>
-          <td className="px-4 py-2">{booking.date}</td>
-          <td className="px-4 py-2">{booking.time}</td>
-          <td className="px-4 py-2">{booking.services}</td>
-          <td className="px-4 py-2">{booking.staffname}</td>
-          <td className="px-4 py-2">{booking.paymentmethod}</td>
-          <td className="px-4 py-2">{new Date(booking.created_at).toLocaleString()}</td> {/* Display created_at */}
-          <td className="px-4 py-2">
-            <button
-              className="text-blue-500 mr-4 hover:underline"
-              onClick={() => editBooking(booking)}
-            >
-              Edit
-            </button>
-            <button
-              className="text-red-500 hover:underline"
-              onClick={() => booking.bookingID ? deleteBooking(booking.bookingID) : null}
-            >
-              Delete
-            </button>
-          </td>
-        </tr>
-      ))
-    ) : (
-      <tr>
-        <td colSpan={8} className="text-center py-4 text-gray-500">
-          No bookings found.
-        </td>
-      </tr>
-    )}
-  </tbody>
-</table>
-
+    <div className="min-h-screen bg-gray-100 py-8">
+      <div className="max-w-7xl mx-auto px-6">
+        <h2 className="text-3xl font-semibold text-purple-600 mb-6">Manage Bookings</h2>
+        <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+          <table className="w-full table-auto">
+            <thead className="bg-gray-200">
+              <tr>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Email</th>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Date</th>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Time</th>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Service</th>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Staff</th>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Payment</th>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Created At</th>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bookings.length > 0 ? (
+                bookings.map((booking) => (
+                  <tr key={booking.bookingID} className="border-t hover:bg-gray-100 transition duration-200">
+                    <td className="px-6 py-4 text-sm text-gray-600">{booking.email}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600">{booking.date}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600">{booking.time}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600">{booking.services}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600">{booking.staffname}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600">{booking.paymentmethod}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600">{new Date(booking.created_at).toLocaleString()}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      <div className="flex space-x-3">
+                        <button
+                          className="text-blue-600 hover:text-blue-800"
+                          onClick={() => editBooking(booking)}
+                        >
+                          <FaEdit size={18} />
+                        </button>
+                        <button
+                          className="text-red-600 hover:text-red-800"
+                          onClick={() => booking.bookingID ? deleteBooking(booking.bookingID) : null}
+                        >
+                          <FaTrashAlt size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={8} className="text-center py-4 text-gray-500">
+                    No bookings found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

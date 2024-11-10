@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import StaffList from './stafflist';
 import AdminBookings from './Bookings';
 import { Staff, Bookings } from './api/type';
-import { AiOutlineUser, AiOutlineSchedule, AiOutlineLogout } from 'react-icons/ai';
+import { AiOutlineUser, AiOutlineSchedule, AiOutlineLogout, AiOutlineMenu } from 'react-icons/ai';
 
 const AdminPage: React.FC = () => {
   const router = useRouter();
@@ -12,6 +12,7 @@ const AdminPage: React.FC = () => {
   const [userEmail, setUserEmail] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'staff' | 'bookings'>('staff');
   const [loading, setLoading] = useState(true);
+  const [isSidebarVisible, setIsSidebarVisible] = useState(true);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -42,44 +43,55 @@ const AdminPage: React.FC = () => {
   }, []);
 
   const handleLogout = () => {
-    router.push('/');
+    router.push('/'); // Logout and redirect to home page
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <aside className="w-1/4 bg-gradient-to-br from-blue-500 to-indigo-600 p-6 text-white shadow-lg">
-        <h2 className="text-2xl font-semibold mb-6 text-center">Admin Panel</h2>
-        <button
-          onClick={() => setActiveTab('staff')}
-          className={`flex items-center w-full px-4 py-2 mb-2 rounded-lg text-lg font-medium hover:bg-blue-700 transition-all ${
-            activeTab === 'staff' ? 'bg-blue-700' : 'bg-transparent'
-          }`}
-        >
-          <AiOutlineUser className="mr-3" />
-          Staff
-        </button>
-        <button
-          onClick={() => setActiveTab('bookings')}
-          className={`flex items-center w-full px-4 py-2 mb-2 rounded-lg text-lg font-medium hover:bg-blue-700 transition-all ${
-            activeTab === 'bookings' ? 'bg-blue-700' : 'bg-transparent'
-          }`}
-        >
-          <AiOutlineSchedule className="mr-3" />
-          Bookings
-        </button>
-        <button
-          onClick={handleLogout}
-          className="flex items-center w-full px-4 py-2 mt-6 rounded-lg text-lg font-medium bg-red-600 hover:bg-red-700 transition-all"
-        >
-          <AiOutlineLogout className="mr-3" />
-          Logout
-        </button>
-      </aside>
+    <div className="flex min-h-screen bg-gray-50">
+      {/* Menu Icon in the Top Left Corner */}
+      <div className="absolute top-6 left-6 z-10">
+        <AiOutlineMenu 
+          className="text-3xl cursor-pointer text-gray-600" 
+          onClick={() => setIsSidebarVisible(!isSidebarVisible)} 
+        />
+      </div>
 
-      <main className="flex-1 p-6">
+      {/* Sidebar */}
+      {isSidebarVisible && (
+        <aside className="w-1/4 bg-white shadow-lg rounded-lg p-6">
+          <button
+            onClick={() => setActiveTab('staff')}
+            className={`flex items-center w-full px-4 mt-12 py-3 mb-4 rounded-lg text-lg font-medium text-gray-800 hover:bg-gray-100 transition-all ${
+              activeTab === 'staff' ? 'bg-gray-100' : ''
+            }`}
+          >
+            <AiOutlineUser className="mr-3 text-xl text-gray-600" />
+            Manage Staff
+          </button>
+          <button
+            onClick={() => setActiveTab('bookings')}
+            className={`flex items-center w-full px-4 py-3 mb-4 rounded-lg text-lg font-medium text-gray-800 hover:bg-gray-100 transition-all ${
+              activeTab === 'bookings' ? 'bg-gray-100' : ''
+            }`}
+          >
+            <AiOutlineSchedule className="mr-3 text-xl text-gray-600" />
+            View Bookings
+          </button>
+          <button
+            onClick={handleLogout}
+            className="flex items-center w-full px-4 py-3 mt-6 rounded-lg text-lg font-medium bg-red-500 text-white hover:bg-red-600 transition-all"
+          >
+            <AiOutlineLogout className="mr-3 text-xl" />
+            Logout
+          </button>
+        </aside>
+      )}
+
+      {/* Main Content */}
+      <main className={`flex-1 p-8 transition-all ${isSidebarVisible ? 'ml-1/4' : ''}`}>
         {loading ? (
           <div className="flex justify-center items-center h-full">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-gray-400"></div>
           </div>
         ) : activeTab === 'staff' ? (
           <StaffList

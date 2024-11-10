@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Staff } from './api/type';
+import { FaEdit, FaTrashAlt } from 'react-icons/fa'; // Importing icons from react-icons
 import AddingStaff from './staffForm'; // Ensure this import path is correct
 
 interface StaffListProps {
@@ -57,6 +58,11 @@ const StaffList: React.FC<StaffListProps> = ({ initialStaffList = [] }) => {
     setStaffList([...staffList, newStaff]);
   };
 
+  // Handle canceling the edit
+  const handleCancelEdit = () => {
+    setStaffToEdit(undefined); // Reset the staff being edited
+  };
+
   // Update a staff member in the list
   const handleUpdateStaff = (updatedStaff: Staff) => {
     setStaffList((prevStaffList) =>
@@ -76,65 +82,76 @@ const StaffList: React.FC<StaffListProps> = ({ initialStaffList = [] }) => {
   }, []);
 
   return (
-    <div className="staff-list">
-      <h1 className="text-2xl font-bold mb-4">Staff List</h1>
+    <div className="staff-list container mx-auto px-6 py-10">
+      <h1 className="text-3xl font-semibold text-gray-800 mb-6">Manage Staff</h1>
 
       <AddingStaff
         handleAddStaff={handleAddStaff}
         staffToEdit={staffToEdit}
         handleUpdateStaff={handleUpdateStaff}
+        handleCancelEdit={handleCancelEdit} // Pass cancel handler here
       />
 
       {loading ? (
-        <p>Loading staff members...</p>
+        <p className="text-center text-gray-500">Loading staff members...</p>
       ) : error ? (
-        <p className="text-red-600">{error}</p>
+        <p className="text-center text-red-600">{error}</p>
       ) : (
-        <table className="min-w-full border-collapse border border-gray-200">
+        <table className="w-full table-auto border-separate border-spacing-2">
           <thead>
             <tr>
-              <th className="border border-gray-300 p-2">Staff ID</th>
-              <th className="border border-gray-300 p-2">First Name</th>
-              <th className="border border-gray-300 p-2">Last Name</th>
-              <th className="border border-gray-300 p-2">Position</th>
-              <th className="border border-gray-300 p-2">Actions</th>
+              <th className="p-4 text-left text-gray-700 font-medium bg-gray-100">Staff ID</th>
+              <th className="p-4 text-left text-gray-700 font-medium bg-gray-100">First Name</th>
+              <th className="p-4 text-left text-gray-700 font-medium bg-gray-100">Last Name</th>
+              <th className="p-4 text-left text-gray-700 font-medium bg-gray-100">Position</th>
+              <th className="p-4 text-left text-gray-700 font-medium bg-gray-100">Actions</th>
             </tr>
           </thead>
           <tbody>
             {staffList.length > 0 ? (
-              staffList.map((staffMember) => (
-                <tr key={staffMember.staffid}>
-                  <td className="border border-gray-300 p-2">{staffMember.staffid}</td>
-                  <td className="border border-gray-300 p-2">{staffMember.fname}</td>
-                  <td className="border border-gray-300 p-2">{staffMember.lname}</td>
-                  <td className="border border-gray-300 p-2">{staffMember.position}</td>
-                  <td className="border border-gray-300 p-2">
+              staffList.map((staffMember, index) => (
+                <tr
+                  key={staffMember.staffid}
+                  className={`border-b  border-gray-200 hover:bg-gray-100 transition duration-300 ${
+                    index % 2 === 0 ? 'bg-white' : 'bg-white'
+                  }`}
+                >
+                  <td className="p-4 text-gray-600">{staffMember.staffid}</td>
+                  <td className="p-4 text-gray-600">{staffMember.fname}</td>
+                  <td className="p-4 text-gray-600">{staffMember.lname}</td>
+                  <td className="p-4 text-gray-600">{staffMember.position}</td>
+                  <td className="p-4">
+                    <div className="flex space-x-4">
+
                     <button
-                      onClick={() => handleEditStaff(staffMember)}
-                      className="bg-yellow-500 text-white py-1 px-2 rounded hover:bg-yellow-600 mr-2"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => {
-                        if (staffMember.staffid !== undefined) {
-                          if (window.confirm(`Are you sure you want to delete staff ID: ${staffMember.staffid}?`)) {
-                            handleDeleteStaff(staffMember.staffid);
+                        onClick={() => handleEditStaff(staffMember)}
+                        className="text-gray-500 hover:text-teal-700  focus:outline-none transition duration-200"
+                      >
+                        <FaEdit size={20} />
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (staffMember.staffid !== undefined) {
+                            if (window.confirm(`Are you sure you want to delete staff ID: ${staffMember.staffid}?`)) {
+                              handleDeleteStaff(staffMember.staffid);
+                            }
+                          } else {
+                            console.error('Staff ID is undefined');
                           }
-                        } else {
-                          console.error('Staff ID is undefined');
-                        }
-                      }}
-                      className="bg-red-600 text-white py-1 px-2 rounded hover:bg-red-700"
-                    >
-                      Delete
-                    </button>
+                        }}
+                        className="text-gray-500 hover:text-red-500 focus:outline-none transition duration-200"
+                      >
+                        <FaTrashAlt size={20} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={5} className="text-center p-4">No staff members found.</td>
+                <td colSpan={5} className="text-center text-gray-500 p-4">
+                  No staff members found.
+                </td>
               </tr>
             )}
           </tbody>

@@ -5,9 +5,10 @@ interface AddingStaffProps {
   handleAddStaff: (newStaff: Staff) => void;
   staffToEdit?: Staff; // Optional staff prop for editing
   handleUpdateStaff?: (updatedStaff: Staff) => void; // Optional handler for updating staff
+  handleCancelEdit?: () => void; // Optional cancel handler
 }
 
-const AddingStaff: React.FC<AddingStaffProps> = ({ handleAddStaff, staffToEdit, handleUpdateStaff }) => {
+const AddingStaff: React.FC<AddingStaffProps> = ({ handleAddStaff, staffToEdit, handleUpdateStaff, handleCancelEdit }) => {
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
   const [position, setPosition] = useState<string>('');
@@ -78,6 +79,17 @@ const AddingStaff: React.FC<AddingStaffProps> = ({ handleAddStaff, staffToEdit, 
     }
   };
 
+  const handleCancel = () => {
+    // Reset the form and exit edit mode
+    setFirstName('');
+    setLastName('');
+    setPosition('');
+    setEditMode(false);
+    if (handleCancelEdit) {
+      handleCancelEdit(); // Notify parent to handle cancel
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="mb-4">
       <input
@@ -104,9 +116,20 @@ const AddingStaff: React.FC<AddingStaffProps> = ({ handleAddStaff, staffToEdit, 
         required
         className="border p-2 rounded mr-2"
       />
-      <button type="submit" className="bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-600">
-        {editMode ? 'Update Staff' : 'Add Staff'}
-      </button>
+      <div className="flex items-center space-x-2 mt-2">
+        <button type="submit" className="bg-teal-500 text-white py-1 px-2 rounded hover:bg-teal-600">
+          {editMode ? 'Update Staff' : 'Add Staff'}
+        </button>
+        {editMode && (
+          <button
+            type="button"
+            onClick={handleCancel}
+            className="bg-gray-300 text-black py-1 px-2 rounded hover:bg-gray-400"
+          >
+            Cancel
+          </button>
+        )}
+      </div>
     </form>
   );
 };
