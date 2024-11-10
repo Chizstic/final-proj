@@ -8,7 +8,7 @@ const pool = createPool({
 
 const registerHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
-    const { email, password, role } = req.body;
+    const { email, password, role, name, age, sex, address, contact_number } = req.body; // Added profile fields
 
     let client; // Declare the client variable here
 
@@ -31,8 +31,14 @@ const registerHandler = async (req: NextApiRequest, res: NextApiResponse) => {
         [email, password, role] // Store the plaintext password directly
       );
 
+      // Create a default profile entry for the new user in the user_profiles table
+      await client.query(
+        'INSERT INTO user_profiles (email, name, age, sex, address, contact_number) VALUES ($1, $2, $3, $4, $5, $6)',
+        [email, name || '', age || null, sex || '', address || '', contact_number || ''] // Create a default profile with some optional fields
+      );
+
       // Send back a success response
-      res.status(201).json({ message: 'User registered successfully' });
+      res.status(201).json({ message: 'User registered successfully, profile created.' });
     } catch (error) {
       console.error('Error registering user:', error);
       res.status(500).json({ message: 'Internal server error' });

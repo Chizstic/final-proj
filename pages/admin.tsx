@@ -1,39 +1,17 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import StaffList from './stafflist';
 import AdminBookings from './Bookings';
 import { Staff, Bookings } from './api/type';
 import { AiOutlineUser, AiOutlineSchedule, AiOutlineLogout } from 'react-icons/ai';
-import { useAuth } from '../context/AuthContext'; // Use the custom hook
 
 const AdminPage: React.FC = () => {
   const router = useRouter();
-  const { user } = useAuth(); // UseAuth hook to get user from context
   const [staffList, setStaffList] = useState<Staff[]>([]);
   const [bookings, setBookings] = useState<Bookings[]>([]);
   const [userEmail, setUserEmail] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'staff' | 'bookings'>('staff');
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Prevent search engines from indexing the page
-    const metaTag = document.createElement('meta');
-    metaTag.name = 'robots';
-    metaTag.content = 'noindex, nofollow';
-    document.head.appendChild(metaTag);
-
-    // Clean up the meta tag when the component unmounts
-    return () => {
-      document.head.removeChild(metaTag);
-    };
-  }, []);
-
-  // Redirect if the user is not authenticated
-  useEffect(() => {
-    if (!user) {
-      router.push('/login');  // Redirect to the login page if not authenticated
-    }
-  }, [user, router]);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -64,7 +42,7 @@ const AdminPage: React.FC = () => {
   }, []);
 
   const handleLogout = () => {
-    router.push('/'); // Logout and redirect to home page
+    router.push('/');
   };
 
   return (

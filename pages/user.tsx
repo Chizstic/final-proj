@@ -94,24 +94,11 @@ const UserProfile: React.FC = () => {
   const handleProfileClick = () => {
     window.location.href = '/user';
   };
- 
-  const handleCancelEdit = () => {
-    setIsEditing(false);
-  };
-  
 
   const handleEditProfile = () => {
-    if (profileInfo) {
-      // Initialize form fields with current profile information
-      setName(profileInfo.name);
-      setAge(profileInfo.age);
-      setSex(profileInfo.sex);
-      setAddress(profileInfo.address);
-      setContactNumber(profileInfo.contact_number);
-    }
     setIsEditing(true);
   };
-  
+
   const handleSaveProfile = async () => {
     const profileData = {
       email,
@@ -122,30 +109,51 @@ const UserProfile: React.FC = () => {
       contact_number: contactNumber,
     };
   
-    try {
-      const response = await fetch(`/api/profile?email=${email}`);
-      const data = await response.json();
-      
-      const method = data && data.profile ? 'PUT' : 'POST'; // Use PUT if profile exists, POST otherwise
-      const endpoint = `/api/profile`;
+    const response = await fetch(`/api/profile?email=${email}`);
+    const data = await response.json();
   
-      const saveResponse = await fetch(endpoint, {
-        method: method,
+    if (data && data.profile) {
+      const updateResponse = await fetch(`/api/profile`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(profileData),
       });
-  
-      if (saveResponse.ok) {
-        const savedProfile = await saveResponse.json();
-        setProfileInfo(savedProfile.profile);
-        setIsEditing(false); // Exit edit mode after saving
+      if (updateResponse.ok) {
+        const updatedProfile = await updateResponse.json();
+        setProfileInfo(updatedProfile.profile);
       } else {
-        console.error('Failed to save profile');
+        console.error('Failed to update profile');
       }
-    } catch (error) {
-      console.error('Error saving profile:', error);
+    } else {
+      const createResponse = await fetch('/api/profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(profileData),
+      });
+      if (createResponse.ok) {
+        const newProfile = await createResponse.json();
+        setProfileInfo(newProfile.profile);
+      } else {
+        console.error('Failed to create profile');
+      }
+      if (contactNumber && contactNumber.length !== 11) {
+        alert("Contact number must be exactly 11 digits.");
+      }
     }
+
+    // Close the edit form after saving
+    setIsEditing(false);
   };  
+  const handleCancelEdit = () => {
+    // Close the edit form and reset the inputs to original profile data
+    setName(profileInfo?.name || '');
+    setAge(profileInfo?.age || 0);
+    setSex(profileInfo?.sex || '');
+    setAddress(profileInfo?.address || '');
+    setContactNumber(profileInfo?.contact_number || '');
+    setIsEditing(false);
+  };
+
   
   if (loading) {
     return (
@@ -215,80 +223,78 @@ const UserProfile: React.FC = () => {
           </div>
 
           <div className="p-10">
-  {isEditing ? (
-    <div>
-      <h3 className="text-2xl font-semibold mb-6 text-pink-600">Edit Profile</h3>
-      <div className="space-y-4">
-        <input
-          type="text"
-          placeholder="Name"
-          value={name || ''}
-          onChange={(e) => setName(e.target.value)}
-          className="border p-2 w-full"
-        />
-        <input
-          type="number"
-          placeholder="Age"
-          value={age || ''}
-          onChange={(e) => setAge(Number(e.target.value))}
-          className="border p-2 w-full"
-        />
-        <input
-          type="text"
-          placeholder="Sex"
-          value={sex || ''}
-          onChange={(e) => setSex(e.target.value)}
-          className="border p-2 w-full"
-        />
-        <input
-          type="text"
-          placeholder="Address"
-          value={address || ''}
-          onChange={(e) => setAddress(e.target.value)}
-          className="border p-2 w-full"
-        />
-        <input
-          type="text"
-          placeholder="Contact Number"
-          value={contactNumber || ''}
-          onChange={(e) => setContactNumber(e.target.value)}
-          className="border p-2 w-full"
-        />
-        <div className="flex space-x-4">
-          <button onClick={handleSaveProfile} className="bg-pink-600 text-white p-2 rounded">Save</button>
-          <button onClick={handleCancelEdit} className="bg-gray-300 text-gray-800 p-2 rounded">Cancel</button>
-        </div>
-      </div>
-    </div>
-  ) : (
-    <div>
-      <h3 className="text-2xl font-semibold text-pink-600">Profile Information</h3>
-      <div className="space-y-4">
-        <div className="flex items-center">
-          <Users size={24} className="text-pink-600 mr-2" />
-          <span className="font-medium">Name:</span> {profileInfo?.name}
-        </div>
-        <div className="flex items-center">
-          <Clock size={24} className="text-pink-600 mr-2" />
-          <span className="font-medium">Age:</span> {profileInfo?.age}
-        </div>
-        <div className="flex items-center">
-          <BsGenderAmbiguous size={24} className="text-pink-600 mr-2" />
-          <span className="font-medium">Sex:</span> {profileInfo?.sex}
-        </div>
-        <div className="flex items-center">
-          <BiWorld size={24} className="text-pink-600 mr-2" />
-          <span className="font-medium">Address:</span> {profileInfo?.address}
-        </div>
-        <div className="flex items-center">
-          <HiHashtag size={24} className="text-pink-600 mr-2" />
-          <span className="font-medium">Contact Number:</span> {profileInfo?.contact_number}
-        </div>
-      </div>
-    </div>
-  )}
-</div>
-
+            {isEditing ? (
+              <div>
+                <h3 className="text-2xl font-semibold mb-6 text-pink-600">Edit Profile</h3>
+                <div className="space-y-4">
+                  <input
+                    type="text"
+                    placeholder="Name"
+                    value={name || ''}
+                    onChange={(e) => setName(e.target.value)}
+                    className="border p-2 w-full"
+                  />
+                  <input
+                    type="number"
+                    placeholder="Age"
+                    value={age || ''}
+                    onChange={(e) => setAge(Number(e.target.value))}
+                    className="border p-2 w-full"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Sex"
+                    value={sex || ''}
+                    onChange={(e) => setSex(e.target.value)}
+                    className="border p-2 w-full"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Address"
+                    value={address || ''}
+                    onChange={(e) => setAddress(e.target.value)}
+                    className="border p-2 w-full"
+                  />
+                 <input
+                  type="text"
+                  value={contactNumber || ''}
+                  onChange={(e) => setContactNumber(e.target.value)}
+                  className="border border-gray-300 p-2 rounded w-full"
+                  maxLength={11} // Limit the input to 11 characters
+                  placeholder="Enter 11-digit contact number"
+                />
+                  <button onClick={handleSaveProfile} className="bg-pink-600 text-white p-2 rounded">Save</button>
+                  <button onClick={handleCancelEdit} className="bg-gray-300 text-white p-2 rounded ml-3">Cancel</button>
+                </div>
+              </div>
+            ) : (
+              <div>
+              <h3 className="text-2xl font-semibold text-pink-600">Profile Information</h3>
+              <div className="space-y-4">
+                <div className="flex items-center">
+                  <Users size={24} className="text-pink-600 mr-2" />
+                  <span className="font-medium">Name:</span> {profileInfo?.name}
+                </div>
+                <div className="flex items-center">
+                  <Clock size={24} className="text-pink-600 mr-2" />
+                  <span className="font-medium">Age:</span> {profileInfo?.age}
+                </div>
+                <div className="flex items-center">
+                  <BsGenderAmbiguous size={24} className="text-pink-600 mr-2" />
+                  <span className="font-medium">Sex:</span> {profileInfo?.sex}
+                </div>
+                <div className="flex items-center">
+                  <BiWorld size={24} className="text-pink-600 mr-2" />
+                  <span className="font-medium">Address:</span> {profileInfo?.address}
+                </div>
+                <div className="flex items-center">
+                  <HiHashtag size={24} className="text-pink-600 mr-2" />
+                  <span className="font-medium">Contact Number:</span> {profileInfo?.contact_number}
+                </div>
+              </div>
+            </div>
+            )}
+          </div>
         </div>
         <div className="p-10">
   <h3 className="text-2xl font-semibold mb-6 text-pink-600">Your Bookings</h3>
