@@ -118,7 +118,7 @@ const BookingSummary: React.FC<BookingSummaryProps> = ({ booking, onBack }) => {
             <p className="text-gray-700">₱{amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
           </div>
           <p className="text-sm text-gray-500 mb-4">
-            Note: You are required to pay 50% of the total service price upfront. The remaining balance will be payable at the time of service.
+            Note: You are required to pay 50% of the total service price . The remaining balance will be payable at the time of service.
           </p>
           <button
             onClick={handlePaymentLink}
