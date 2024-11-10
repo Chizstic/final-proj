@@ -26,7 +26,7 @@ const bookingHandler = async (req: NextApiRequest, res: NextApiResponse) => {
       // Combine date and time for storage in UTC
       const [year, month, day] = date.split('-');
       const [hours, minutes] = time.split(':');
-      const combinedDateTime = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day) +1, Number(hours), Number(minutes)));
+      const combinedDateTime = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day), Number(hours), Number(minutes)));
 
       const insertQuery = `
         INSERT INTO bookings (email, date, time, services, staffname, paymentmethod, created_at)

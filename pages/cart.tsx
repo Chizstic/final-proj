@@ -1,45 +1,55 @@
 import React, { useState } from "react";
-import { useCart } from "../context/CartContext";
+import { useCart } from "../context/CartContext"; // Assuming you have a CartContext to manage global cart state
 import { useRouter } from 'next/router';
 
 const Cart: React.FC = () => {
-  const { cart, addToCart } = useCart();
+  const { cart, addToCart, removeFromCart } = useCart(); // Make sure `removeFromCart` is available in your context
   const [isEditing, setIsEditing] = useState(false);
   const [tempCart, setTempCart] = useState(cart);
   const router = useRouter();
 
+  // Toggle edit mode
   const handleEditToggle = () => {
     if (isEditing) {
-      tempCart.forEach(item => addToCart(item));
+      tempCart.forEach(item => addToCart(item)); // Sync back any temporary changes to the cart
     } else {
       setTempCart([...cart]);
     }
     setIsEditing(!isEditing);
   };
 
+  // Cancel editing and restore the original cart state
   const handleCancelEdit = () => {
     setTempCart([...cart]);
     setIsEditing(false);
   };
 
+  // Remove an item from the cart
   const handleRemoveItem = (id: number) => {
-    setTempCart(tempCart.filter((item) => item.id !== id));
+    // Remove from tempCart
+    const updatedTempCart = tempCart.filter((item) => item.id !== id);
+    setTempCart(updatedTempCart);
+
+    // Remove from the global cart state and localStorage
+    removeFromCart(id); // Assuming this is a method in your context to update global cart
+    localStorage.setItem("cart", JSON.stringify(updatedTempCart)); // Update localStorage
   };
 
+  // Checkout handler
   const handleCheckout = () => {
-    // Pass the cart items as state to the booking form
     router.push({
       pathname: '/bookingform',
-      query: { 
+      query: {
         cartItems: JSON.stringify(
           tempCart.map(item => ({
             ...item,
-            price: Number(item.price.toString().replace(/[^\d.-]/g, '')), // Remove any currency symbols, keep as number
+            price: Number(item.price.toString().replace(/[^\d.-]/g, '')), // Clean price if needed
           }))
         )
       },
     });
   };
+
   return (
     <div className="p-8 bg-gray-100 rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold mb-5 text-gray-800">Your Cart</h2>
@@ -89,7 +99,7 @@ const Cart: React.FC = () => {
                 </button>
                 <button
                   className="py-2 px-4 bg-rose-600 text-white rounded-full font-semibold hover:bg-rose-700"
-                  onClick={handleCheckout} 
+                  onClick={handleCheckout}
                 >
                   Checkout
                 </button>

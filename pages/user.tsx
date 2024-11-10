@@ -30,11 +30,27 @@ const UserProfile: React.FC = () => {
     contact_number: string;
   }
   
-  useEffect(() => {
+  const fetchProfile = async (email: string) => {
+    try {
+      const response = await fetch(`/api/profile?email=${email}`);
+      if (response.ok) {
+        const data = await response.json();
+        setProfileInfo(data.profile);  // Assuming the response contains the profile data
+      } else {
+        throw new Error('Profile fetch failed');
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      setError('Failed to load profile');
+    }
+  };
+
+ useEffect(() => {
     const storedEmail = localStorage.getItem('userEmail');
     if (storedEmail) {
       setEmail(storedEmail);
-      fetchBookings(storedEmail); // Pass the email here
+      fetchBookings(storedEmail);  // Pass the email here
+      fetchProfile(storedEmail);    // Fetch the profile using the email
     }
   }, []);
 
@@ -101,40 +117,30 @@ const UserProfile: React.FC = () => {
       // If profile exists, update it using PUT
       const updateResponse = await fetch(`/api/profile`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(profileData),
       });
-  
       if (updateResponse.ok) {
         const updatedProfile = await updateResponse.json();
         setProfileInfo(updatedProfile.profile);
-        setIsEditing(false);
       } else {
-        const errorMessage = await updateResponse.text();
-        setError(errorMessage);
+        console.error('Failed to update profile');
       }
     } else {
       // If profile doesn't exist, create it using POST
       const createResponse = await fetch('/api/profile', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(profileData),
       });
-  
       if (createResponse.ok) {
         const newProfile = await createResponse.json();
         setProfileInfo(newProfile.profile);
-        setIsEditing(false);
       } else {
-        const errorMessage = await createResponse.text();
-        setError(errorMessage);
+        console.error('Failed to create profile');
       }
     }
-  };
+  };  
   
   if (loading) {
     return (
@@ -248,30 +254,30 @@ const UserProfile: React.FC = () => {
               </div>
             ) : (
               <div>
-                <h3 className="text-2xl font-semibold mb-6 text-pink-600">Profile Information</h3>
-                <div className="space-y-4">
-                  <div className="flex items-center">
-                    <Users size={24} className="text-pink-600 mr-2" />
-                    <span className="font-medium">Name:</span> {profileInfo?.name}
-                  </div>
-                  <div className="flex items-center">
-                    <Clock size={24} className="text-pink-600 mr-2" />
-                    <span className="font-medium">Age:</span> {profileInfo?.age}
-                  </div>
-                  <div className="flex items-center">
-                    <BsGenderAmbiguous size={24} className="text-pink-600 mr-2" />
-                    <span className="font-medium">Sex:</span> {profileInfo?.sex}
-                  </div>
-                  <div className="flex items-center">
-                    <BiWorld size={24} className="text-pink-600 mr-2" />
-                    <span className="font-medium">Address:</span> {profileInfo?.address}
-                  </div>
-                  <div className="flex items-center">
-                    <HiHashtag size={24} className="text-pink-600 mr-2" />
-                    <span className="font-medium">Contact Number:</span> {profileInfo?.contact_number}
-                  </div>
+              <h3 className="text-2xl font-semibold text-pink-600">Profile Information</h3>
+              <div className="space-y-4">
+                <div className="flex items-center">
+                  <Users size={24} className="text-pink-600 mr-2" />
+                  <span className="font-medium">Name:</span> {profileInfo?.name}
+                </div>
+                <div className="flex items-center">
+                  <Clock size={24} className="text-pink-600 mr-2" />
+                  <span className="font-medium">Age:</span> {profileInfo?.age}
+                </div>
+                <div className="flex items-center">
+                  <BsGenderAmbiguous size={24} className="text-pink-600 mr-2" />
+                  <span className="font-medium">Sex:</span> {profileInfo?.sex}
+                </div>
+                <div className="flex items-center">
+                  <BiWorld size={24} className="text-pink-600 mr-2" />
+                  <span className="font-medium">Address:</span> {profileInfo?.address}
+                </div>
+                <div className="flex items-center">
+                  <HiHashtag size={24} className="text-pink-600 mr-2" />
+                  <span className="font-medium">Contact Number:</span> {profileInfo?.contact_number}
                 </div>
               </div>
+            </div>
             )}
           </div>
         </div>
