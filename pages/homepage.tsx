@@ -3,7 +3,7 @@ import Footer from './components/footer';
 import BookingForm from './bookingform';
 import Image from 'next/image';
 import { Bookings } from './api/type';
-import { FaUser, FaCheckCircle, FaShoppingCart  } from 'react-icons/fa';
+import { FaBars, FaCheckCircle, FaShoppingCart  } from 'react-icons/fa';
 import Services from './services';
 import Cart from './cart'
 
@@ -130,7 +130,7 @@ function Homepage() {
                 onClick={toggleDropdown}
                 className="flex items-center text-rose-600 text-lg sm:text-xl py-2 px-4 rounded-md font-semibold hover:text-rose-500 transition duration-300"
               >
-                <FaUser size={24} className="mr-2" />
+                <FaBars size={24} className="mr-2" />
               </button>
 
               {dropdownVisible && (
@@ -173,7 +173,7 @@ function Homepage() {
     {/* Text and Button */}
     <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 sm:px-6 md:px-8 lg:px-10">
       <h2 className="text-white text-base sm:text-lg lg:text-2xl font-bold mb-2 font-serif">
-       `ELEVATE YOUR LOOK,
+        `ELEVATE YOUR LOOK,
       </h2>
       <h2 className="text-white text-base sm:text-lg lg:text-2xl font-bold mb-4 font-serif">
         ELEVATE YOUR CONFIDENCE.`
@@ -356,6 +356,7 @@ function Homepage() {
         </button>
       </div>
 
+
       {/* Cart Overlay */}
       {showCart && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -369,7 +370,6 @@ function Homepage() {
               &times;
             </button>
 
-            {/* Render the Cart component here */}
             <Cart />
           </div>
         </div>
