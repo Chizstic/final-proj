@@ -63,17 +63,39 @@ const StaffList: React.FC<StaffListProps> = ({ initialStaffList = [] }) => {
     setStaffToEdit(undefined); // Reset the staff being edited
   };
 
-  // Update a staff member in the list
-  const handleUpdateStaff = (updatedStaff: Staff) => {
-    setStaffList((prevStaffList) =>
-      prevStaffList.map((staff) => (staff.staffid === updatedStaff.staffid ? updatedStaff : staff))
-    );
-    setStaffToEdit(undefined); // Clear the edit state after updating
+  // Handle the update of a staff member
+  const handleUpdateStaff = async (updatedStaff: Staff) => {
+    try {
+      // Send the updated staff data to the backend
+      const response = await fetch('/api/staff', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fname: updatedStaff.fname,
+          lname: updatedStaff.lname,
+          position: updatedStaff.position,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update staff member');
+      }
+
+      // Update the local state with the new staff data
+      setStaffList((prevStaffList) =>
+        prevStaffList.map((staff) => (staff.staffid === updatedStaff.staffid ? updatedStaff : staff))
+      );
+      setStaffToEdit(undefined); // Clear the edit mode
+    } catch (error) {
+      console.error('Error updating staff:', error);
+    }
   };
 
   // Edit a staff member
   const handleEditStaff = (staff: Staff) => {
-    setStaffToEdit(staff);
+    setStaffToEdit(staff); // Set the staff member to edit
   };
 
   // Fetch staff data when the component mounts
@@ -83,11 +105,9 @@ const StaffList: React.FC<StaffListProps> = ({ initialStaffList = [] }) => {
 
   return (
     <div className="staff-list container mx-auto px-6 py-10">
-      <h1 className="text-3xl font-semibold text-gray-800 mb-6">Manage Staff</h1>
-
       <AddingStaff
         handleAddStaff={handleAddStaff}
-        staffToEdit={staffToEdit}
+        staffToEdit={staffToEdit} // Pass the staff to edit here
         handleUpdateStaff={handleUpdateStaff}
         handleCancelEdit={handleCancelEdit} // Pass cancel handler here
       />
@@ -100,7 +120,6 @@ const StaffList: React.FC<StaffListProps> = ({ initialStaffList = [] }) => {
         <table className="w-full table-auto border-separate border-spacing-2">
           <thead>
             <tr>
-              <th className="p-4 text-left text-gray-700 font-medium bg-gray-100">Staff ID</th>
               <th className="p-4 text-left text-gray-700 font-medium bg-gray-100">First Name</th>
               <th className="p-4 text-left text-gray-700 font-medium bg-gray-100">Last Name</th>
               <th className="p-4 text-left text-gray-700 font-medium bg-gray-100">Position</th>
@@ -112,20 +131,16 @@ const StaffList: React.FC<StaffListProps> = ({ initialStaffList = [] }) => {
               staffList.map((staffMember, index) => (
                 <tr
                   key={staffMember.staffid}
-                  className={`border-b  border-gray-200 hover:bg-gray-100 transition duration-300 ${
-                    index % 2 === 0 ? 'bg-white' : 'bg-white'
-                  }`}
+                  className={`border-b  border-gray-200 hover:bg-gray-100 transition duration-300 ${index % 2 === 0 ? 'bg-white' : 'bg-white'}`}
                 >
-                  <td className="p-4 text-gray-600">{staffMember.staffid}</td>
                   <td className="p-4 text-gray-600">{staffMember.fname}</td>
                   <td className="p-4 text-gray-600">{staffMember.lname}</td>
                   <td className="p-4 text-gray-600">{staffMember.position}</td>
                   <td className="p-4">
                     <div className="flex space-x-4">
-
-                    <button
-                        onClick={() => handleEditStaff(staffMember)}
-                        className="text-gray-500 hover:text-teal-700  focus:outline-none transition duration-200"
+                      <button
+                        onClick={() => handleEditStaff(staffMember)} // Edit the staff member
+                        className="text-gray-500 hover:text-teal-600 focus:outline-none transition duration-200"
                       >
                         <FaEdit size={20} />
                       </button>
@@ -133,7 +148,7 @@ const StaffList: React.FC<StaffListProps> = ({ initialStaffList = [] }) => {
                         onClick={() => {
                           if (staffMember.staffid !== undefined) {
                             if (window.confirm(`Are you sure you want to delete staff ID: ${staffMember.staffid}?`)) {
-                              handleDeleteStaff(staffMember.staffid);
+                              handleDeleteStaff(staffMember.staffid); // Delete the staff member
                             }
                           } else {
                             console.error('Staff ID is undefined');

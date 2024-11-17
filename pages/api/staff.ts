@@ -31,34 +31,44 @@ const staffHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
       case 'POST':
         // Add a new staff member
-        const { first_name, last_name, position } = req.body;
-        if (!first_name || !last_name || !position) {
-          return res.status(400).json({ message: 'Missing required fields: first_name, last_name, position' });
+        const { fname, lname, position } = req.body;
+        if (!fname || !lname || !position) {
+          return res.status(400).json({ message: 'Missing required fields: fname, lname, position' });
         }
 
         const { rows: newStaffRows } = await client.query(
-          'INSERT INTO staff (first_name, last_name, position) VALUES ($1, $2, $3) RETURNING *',
-          [first_name, last_name, position]
+          'INSERT INTO staff (fname, lname, position) VALUES ($1, $2, $3) RETURNING *',
+          [fname, lname, position]
         );
         res.status(201).json({ message: 'Staff member added successfully', staff: newStaffRows[0] });
         break;
 
-      case 'PUT':
-        // Update an existing staff member
-        const { id, first_name: updateFirstName, last_name: updateLastName, position: updatePosition } = req.body;
-        if (!id || !updateFirstName || !updateLastName || !updatePosition) {
-          return res.status(400).json({ message: 'Missing required fields: id, first_name, last_name, position' });
-        }
+        case 'PUT':
+  // Update an existing staff member
+  const { staffid, fname: updateFname, lname: updateLname, position: updatePosition } = req.body;
 
-        const { rowCount: updatedRowCount } = await client.query(
-          'UPDATE staff SET first_name = $1, last_name = $2, position = $3 WHERE id = $4',
-          [updateFirstName, updateLastName, updatePosition, id]
-        );
-        if (updatedRowCount === 0) {
-          return res.status(404).json({ message: 'Staff member not found' });
-        }
-        res.status(200).json({ message: 'Staff member updated successfully' });
-        break;
+  if (!staffid || !updateFname || !updateLname || !updatePosition) {
+    return res.status(400).json({ message: 'Missing required fields: staffid, fname, lname, position' });
+  }
+
+  try {
+    // Update the staff in the database
+    const { rowCount: updatedRowCount } = await client.query(
+      'UPDATE staff SET fname = $1, lname = $2, position = $3 WHERE staffID = $4',
+      [updateFname, updateLname, updatePosition, staffid] // Using the correct staffID
+    );
+
+    if (updatedRowCount === 0) {
+      return res.status(404).json({ message: 'Staff member not found' });
+    }
+
+    res.status(200).json({ message: 'Staff member updated successfully' });
+  } catch  {
+    res.status(500).json({ message: 'Internal server error' });
+  }
+  break;
+
+        
 
       case 'DELETE':
         // Delete a staff member
@@ -67,7 +77,7 @@ const staffHandler = async (req: NextApiRequest, res: NextApiResponse) => {
           return res.status(400).json({ message: 'Missing required field: id' });
         }
 
-        const { rowCount: deletedRowCount } = await client.query('DELETE FROM staff WHERE id = $1', [deleteId]);
+        const { rowCount: deletedRowCount } = await client.query('DELETE FROM staff WHERE staffID = $1', [deleteId]);
         if (deletedRowCount === 0) {
           return res.status(404).json({ message: 'Staff member not found' });
         }

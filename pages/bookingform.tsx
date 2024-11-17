@@ -23,7 +23,7 @@ interface StaffOption {
 // BookingForm Props
 interface BookingFormProps {
   initialBookingDetails?: Bookings;
-  bookingID: number;
+  bookingid: number;
   email: string; 
   servicePrice: number; 
 }
@@ -33,9 +33,9 @@ interface CartItem {
 }
 
 
-const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookingID, email}) => {
+const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookingid, email}) => {
   const [formDetails, setFormDetails] = useState<Bookings>({
-    bookingID,
+    bookingid,
     email: email || initialBookingDetails?.email || '',
     date: initialBookingDetails?.date || '',
     time: initialBookingDetails?.time || '',

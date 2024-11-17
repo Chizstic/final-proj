@@ -7,69 +7,93 @@ const pool = createPool({
 });
 
 const bookingHandler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const client = await pool.connect(); // Ensure a client is connected
+  const client = await pool.connect();
 
   try {
     if (req.method === 'POST') {
       const { email, date, time, services, staffname, paymentmethod } = req.body;
 
-      // Log the incoming request body
       console.log('Received booking data:', req.body);
 
-      // Validate incoming booking data
+      // Validate required fields
       if (!email || !date || !time || !services || !staffname || !paymentmethod) {
         return res.status(400).json({ message: 'All booking fields are required' });
       }
 
-      const serviceToStore = Array.isArray(services) ? services.join(', ') : services; // Join services into a single string
+      try {
+        const serviceToStore = Array.isArray(services) ? services.join(', ') : services;
 
-      // Combine date and time for storage in UTC
-      const [year, month, day] = date.split('-');
-      const [hours, minutes] = time.split(':');
-      const combinedDateTime = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day), Number(hours), Number(minutes)));
+        const [year, month, day] = date.split('-');
+        const [hours, minutes] = time.split(':');
+        const combinedDateTime = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day), Number(hours), Number(minutes)));
 
-      const insertQuery = `
-        INSERT INTO bookings (email, date, time, services, staffname, paymentmethod, created_at)
-        VALUES ($1, $2, $3::TIME, $4, $5, $6, NOW()) RETURNING *;
-      `;
+        const insertQuery = `
+          INSERT INTO bookings (email, date, time, services, staffname, paymentmethod, created_at)
+          VALUES ($1, $2, $3::TIME, $4, $5, $6, NOW()) RETURNING *;
+        `;
 
-      const insertResult = await client.query(insertQuery, [
-        email,
-        combinedDateTime.toISOString().split('T')[0], // Store the date part only in YYYY-MM-DD format
-        time, // Store the time directly
-        serviceToStore,
-        staffname,
-        paymentmethod.trim(),
-      ]);
+        const insertResult = await client.query(insertQuery, [
+          email,
+          combinedDateTime.toISOString().split('T')[0],
+          time,
+          serviceToStore,
+          staffname,
+          paymentmethod.trim(),
+        ]);
 
-      const insertedBooking = insertResult.rows[0];
+        const insertedBooking = insertResult.rows[0];
+        console.log('Inserted Booking:', insertedBooking);
 
-      // Send the response with the inserted booking
-      return res.status(201).json({ message: 'Booking created successfully', booking: insertedBooking });
-
+        return res.status(201).json({ message: 'Booking created successfully', booking: insertedBooking });
+      } catch (err) {
+        if (err instanceof Error) {
+          console.error('Database error:', err.message);
+          return res.status(500).json({ message: 'Internal server error during booking creation' });
+        }
+        console.error('Unexpected error:', err);
+        return res.status(500).json({ message: 'An unexpected error occurred' });
+      }
     } else if (req.method === 'GET') {
-      const selectQuery = 'SELECT * FROM bookings ORDER BY created_at DESC'; // Get all bookings
-
+      const selectQuery = 'SELECT * FROM bookings ORDER BY created_at DESC';
       const result = await client.query(selectQuery);
 
-      const bookings = result.rows.map(booking => ({
+      const bookings = result.rows.map((booking) => ({
         ...booking,
-        date: new Date(booking.date).toISOString().split('T')[0], // Format date to YYYY-MM-DD
-        time: new Date(`1970-01-01T${booking.time}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) // Format time to 12-hour format
+        date: new Date(booking.date).toISOString().split('T')[0],
+        time: new Date(`1970-01-01T${booking.time}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }),
       }));
 
       return res.status(200).json(bookings);
+    } else if (req.method === 'DELETE') {
+      const bookingID = parseInt(req.query.bookingID as string, 10);
 
+      if (isNaN(bookingID)) {
+        console.error('Invalid booking ID:', req.query.bookingID);
+        return res.status(400).json({ message: 'A valid Booking ID is required' });
+      }
+
+      const deleteQuery = 'DELETE FROM bookings WHERE bookingID = $1';
+      const deleteResult = await client.query(deleteQuery, [bookingID]);
+
+      if (deleteResult.rowCount === 0) {
+        console.error('Booking not found for ID:', bookingID);
+        return res.status(404).json({ message: 'Booking not found' });
+      }
+
+      return res.status(200).json({ message: 'Booking deleted successfully' });
     } else {
-      // Allow only POST and GET methods
-      res.setHeader('Allow', ['POST', 'GET']);
+      res.setHeader('Allow', ['POST', 'GET', 'DELETE']);
       return res.status(405).end(`Method ${req.method} Not Allowed`);
     }
-  } catch (error) {
-    console.error('Unexpected error:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error('Unexpected server error:', err.message);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+    console.error('Unexpected non-Error object:', err);
+    return res.status(500).json({ message: 'An unexpected error occurred' });
   } finally {
-    client.release(); // Ensure client is released back to the pool
+    client.release();
   }
 };
 

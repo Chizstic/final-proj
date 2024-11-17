@@ -301,7 +301,7 @@ const UserProfile: React.FC = () => {
   {bookings.length > 0 ? (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {bookings.map((booking) => (
-        <div key={booking.bookingID} className="bg-gray-50 p-6 rounded-lg shadow hover:shadow-md transition duration-300">
+        <div key={booking.bookingid} className="bg-gray-50 p-6 rounded-lg shadow hover:shadow-md transition duration-300">
           <div className="flex items-center mb-4">
             <Calendar size={20} className="text-pink-600 mr-2" />
             <span>{booking.date}</span>

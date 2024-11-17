@@ -9,10 +9,10 @@ const AdminPage: React.FC = () => {
   const router = useRouter();
   const [staffList, setStaffList] = useState<Staff[]>([]);
   const [bookings, setBookings] = useState<Bookings[]>([]);
-  const [userEmail, setUserEmail] = useState<string>('');
+  const [userEmail, ] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'staff' | 'bookings'>('staff');
   const [loading, setLoading] = useState(true);
-  const [isSidebarVisible, setIsSidebarVisible] = useState(true);
+  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -27,41 +27,36 @@ const AdminPage: React.FC = () => {
       setLoading(false);
     };
 
-    const fetchUserEmail = async () => {
-      try {
-        const response = await fetch('/api/user');
-        if (!response.ok) throw new Error('Network response was not ok');
-        const userData = await response.json();
-        setUserEmail(userData.email);
-      } catch (error) {
-        console.error('Error fetching user email:', error);
-      }
-    };
+  
 
     fetchBookings();
-    fetchUserEmail();
   }, []);
 
   const handleLogout = () => {
     router.push('/'); // Logout and redirect to home page
   };
 
-  return (
-    <div className="flex min-h-screen bg-gray-50">
-      {/* Menu Icon in the Top Left Corner */}
-      <div className="absolute top-6 left-6 z-10">
-        <AiOutlineMenu 
-          className="text-3xl cursor-pointer text-gray-600" 
-          onClick={() => setIsSidebarVisible(!isSidebarVisible)} 
-        />
-      </div>
+  const pageTitle = activeTab === 'staff' ? 'Manage Staff' : 'Manage Bookings';
 
-      {/* Sidebar */}
+  return (
+    <div className="flex flex-col min-h-screen bg-gray-50">
+      {/* Header with Sidebar Toggle and Page Title */}
+      <header className="flex items-center bg-white shadow-lg px-6 py-4 z-10">
+        <button onClick={() => setIsSidebarVisible(!isSidebarVisible)} className="text-3xl text-gray-600 mr-4">
+          {isSidebarVisible ? <AiOutlineMenu /> : <AiOutlineMenu />}
+        </button>
+        <h1 className="text-2xl font-bold text-gray-800">{pageTitle}</h1>
+      </header>
+
+      {/* Sidebar - Position it absolutely so it slides over content, without covering the header */}
       {isSidebarVisible && (
-        <aside className="w-1/4 bg-white shadow-lg rounded-lg p-6">
+        <aside
+          className="fixed top-0 left-0 h-full w-64 bg-white shadow-lg p-6 z-20 transition-transform transform"
+          style={{ marginTop: '4rem' }} // Adjust to match header height so it starts just below the header
+        >
           <button
             onClick={() => setActiveTab('staff')}
-            className={`flex items-center w-full px-4 mt-12 py-3 mb-4 rounded-lg text-lg font-medium text-gray-800 hover:bg-gray-100 transition-all ${
+            className={`flex items-center w-full px-4 py-3 mb-4 rounded-lg text-lg font-medium text-gray-800 hover:bg-gray-100 transition-all ${
               activeTab === 'staff' ? 'bg-gray-100' : ''
             }`}
           >
@@ -88,7 +83,7 @@ const AdminPage: React.FC = () => {
       )}
 
       {/* Main Content */}
-      <main className={`flex-1 p-8 transition-all ${isSidebarVisible ? 'ml-1/4' : ''}`}>
+      <main className={`flex-1 p-8 transition-all ${isSidebarVisible ? 'ml-64' : ''}`}>
         {loading ? (
           <div className="flex justify-center items-center h-full">
             <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-gray-400"></div>
@@ -103,15 +98,12 @@ const AdminPage: React.FC = () => {
           />
         ) : (
           <AdminBookings
-            bookings={bookings}
-            deleteBooking={(bookingId) =>
-              setBookings((prev) => prev.filter((booking) => booking.bookingID !== bookingId))
-            }
-            editBooking={(updatedBooking) =>
-              setBookings((prev) =>
-                prev.map((booking) =>
-                  booking.bookingID === updatedBooking.bookingID ? updatedBooking : booking
-                )
+  bookings={bookings}
+  editBooking={(updatedBooking): void =>
+    setBookings((prev) =>
+      prev.map((booking) =>
+        booking.bookingid === updatedBooking.bookingid ? updatedBooking : booking
+      )
               )
             }
             email={userEmail}

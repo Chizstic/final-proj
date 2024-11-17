@@ -47,67 +47,89 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex h-screen justify-center items-center bg-slate-100">
-      <div className="flex flex-col items-center justify-center w-1/2 p-8 ml-48">
-        <h1 className="text-6xl font-bold mb-4">
-          <span style={{ color: '#D20062', fontFamily: 'Serif'}}>Guys & Gals</span>
-          <span style={{ color: '#D6589F', fontFamily: 'Serif'}}> Salon</span>
-        </h1>
-        <p className="text-2xl text-black mb-8 ml-2">Get ready to be served what you deserve.</p>
+    <div className="flex flex-col md:flex-row h-screen justify-center items-center bg-slate-100 px-4">
+  {/* Left Section (Text) - Hidden on mobile devices */}
+  <div className="hidden md:flex flex-col items-center justify-center w-full md:w-1/2 p-6 md:p-8 text-center md:text-left">
+    <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4">
+      <span className="text-[#D20062] font-serif">Guys & Gals</span>
+      <span className="text-[#D6589F] font-serif"> Salon</span>
+    </h1>
+    <p className="text-base sm:text-lg md:text-2xl text-black mb-6 sm:mb-8">
+      Get ready to be served what you deserve.
+    </p>
+  </div>
+
+  {/* Right Section (Login Form) */}
+  <div className="flex items-center justify-center w-full md:w-1/2">
+    <div className="w-full max-w-xs sm:max-w-sm md:max-w-md bg-pink-300 bg-opacity-30 p-6 sm:p-8 md:p-12 rounded-lg shadow-md">
+      <div className="flex flex-col mb-6">
+        <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-2 text-center">
+          <span className="bg-gradient-to-r from-pink-400 to-pink-600 text-transparent bg-clip-text">
+            Login
+          </span>
+        </h3>
       </div>
-
-      <div className="flex items-center justify-center w-1/2 mr-48">
-        <div className="w-full max-w-md bg-pink-300 bg-opacity-30 p-12 rounded-lg shadow-md">
-          <div className='w-full flex flex-col mb-10'>
-            <h3 className='text-4xl font-extrabold mb-2 text-center'>
-              <span className="bg-gradient-to-r from-pink-400 to-pink-600 text-transparent bg-clip-text">Login</span>
-            </h3>
-          </div>
-          <form onSubmit={handleLogin}>
-            <div className="mb-4 opacity-95">
-              <label htmlFor="email" className="block text-sm font-semibold mb-2">Email</label>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                placeholder="Enter your email"
-                required
-              />
-            </div>
-            
-            <div className="mb-4 opacity-95">
-              <label htmlFor="password" className="block text-sm font-semibold mb-2">Password</label>
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                placeholder="********"
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full bg-pink-500 bg-opacity-80 text-white py-2 px-4 rounded-md font-semibold hover:bg-pink-600 transition duration-300 flex items-center justify-center" // Added flex and alignment classes
-              disabled={loading} // Disable button when loading
-            >
-              {loading ? 'Logging in...' : 'Login'} {/* Changed to text instead of spinner */}
-            </button>
-
-            {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
-          </form>
-          <p className="mt-4 text-center">
-  Don&apos;t have an account?{' '}
-  <Link href="/signup" className="text-pink-500 hover:text-pink-700">
-    Sign up for free!
-  </Link>
-          </p>
+      <form onSubmit={handleLogin}>
+        <div className="mb-4">
+          <label
+            htmlFor="email"
+            className="block text-sm font-semibold mb-2"
+          >
+            Email
+          </label>
+          <input
+            type="email"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-pink-400 focus:outline-none"
+            placeholder="Enter your email"
+            required
+          />
         </div>
-      </div>
+
+        <div className="mb-4">
+          <label
+            htmlFor="password"
+            className="block text-sm font-semibold mb-2"
+          >
+            Password
+          </label>
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-pink-400 focus:outline-none"
+            placeholder="********"
+            required
+          />
+        </div>
+        <button
+          type="submit"
+          className="w-full bg-pink-500 bg-opacity-80 text-white py-2 px-4 rounded-md font-semibold hover:bg-pink-600 transition duration-300"
+          disabled={loading}
+        >
+          {loading ? 'Logging in...' : 'Login'}
+        </button>
+
+        {error && (
+          <p className="text-red-500 mt-4 text-center">{error}</p>
+        )}
+      </form>
+      <p className="mt-4 text-center">
+        Don&apos;t have an account?{' '}
+        <Link
+          href="/signup"
+          className="text-pink-500 hover:text-pink-700 transition duration-200"
+        >
+          Sign up for free!
+        </Link>
+      </p>
     </div>
+  </div>
+</div>
+
   );
 };
 

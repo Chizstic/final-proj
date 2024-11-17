@@ -211,45 +211,72 @@ const Services: React.FC = () => {
 
   return (
     <div className="p-8 bg-white">
-      <h2 className="text-2xl font-bold mb-10 text-gray-800">All Services For You!</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        {services.map((service) => (
-          <div key={service.id} className="p-6 rounded-lg shadow-inner shadow-slate-200 hover:shadow-lg transition-shadow duration-300 flex flex-col h-[380px]">
-            <Image src={service.image} alt={service.title} width={300} height={200} className="rounded-md mb-4 object-cover h-48 w-full" />
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="text-lg font-semibold text-gray-700">{service.title}</h3>
-              <span className="text-lg font-semibold text-gray-700">{service.price}</span>
-            </div>
-            <p className="text-gray-600 text-sm flex-grow">{service.description}</p>
-            <button
-              className="py-1 px-3 text-rose-600 w-28 text-sm border-2 border-rose-600 rounded-full font-semibold hover:bg-rose-100 transition-colors duration-300 mt-4"
-              onClick={() => addToCart({ id: service.id, title: service.title, price: service.price, type: "service" })}
-            >
-              Add to Cart
-            </button>
+    <h2 className="text-2xl font-bold mb-10 text-gray-800">All Services For You!</h2>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {services.map((service) => (
+        <div
+          key={service.id}
+          className="p-6 rounded-lg shadow-inner shadow-slate-200 hover:shadow-lg transition-shadow duration-300 flex flex-col h-[380px]"
+        >
+          <Image
+            src={service.image}
+            alt={service.title}
+            width={300}
+            height={200}
+            className="rounded-md mb-4 object-cover h-48 w-full"
+          />
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="text-lg font-semibold text-gray-700">{service.title}</h3>
+            <span className="text-lg font-semibold text-gray-700">{service.price}</span>
           </div>
-        ))}
-      </div>
-
-      <h2 className="text-2xl font-bold mt-16 mb-10 text-gray-800">Combo Rates</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {combo.map((comboItem) => (
-          <div key={comboItem.id} className="p-6 rounded-lg shadow-inner mt-1 shadow-slate-200 hover:shadow-lg transition-shadow duration-300 flex flex-col justify-between">
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="text-lg font-semibold text-gray-700">{comboItem.title}</h3>
-              <span className="text-lg font-semibold text-gray-700">{comboItem.price}</span>
-            </div>
-            <p className="text-gray-600 text-sm mb-4">{comboItem.description}</p>
-            <button
-              className="py-1 px-3 w-28 text-rose-600 text-sm border-2 border-rose-600 rounded-full font-semibold hover:bg-rose-100 transition-colors duration-300"
-              onClick={() => addToCart({ id: comboItem.id, title: comboItem.title, price: comboItem.price, type: "combo" })}
-            >
-              Add to Cart
-            </button>
-          </div>
-        ))}
-      </div>
+          <p className="text-gray-600 text-sm flex-grow">{service.description}</p>
+          <button
+            className="py-1 px-3 text-rose-600 w-28 text-sm border-2 border-rose-600 rounded-full font-semibold hover:bg-rose-100 transition-colors duration-300 mt-4"
+            onClick={() =>
+              addToCart({
+                id: service.id,
+                title: service.title,
+                price: service.price,
+                type: "service",
+              })
+            }
+          >
+            Add to Cart
+          </button>
+        </div>
+      ))}
     </div>
+  
+    <h2 className="text-2xl font-bold mt-16 mb-10 text-gray-800">Combo Rates</h2>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {combo.map((comboItem) => (
+        <div
+          key={comboItem.id}
+          className="p-6 rounded-lg shadow-inner shadow-slate-200 hover:shadow-lg transition-shadow duration-300 flex flex-col justify-between"
+        >
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="text-lg font-semibold text-gray-700">{comboItem.title}</h3>
+            <span className="text-lg font-semibold text-gray-700">{comboItem.price}</span>
+          </div>
+          <p className="text-gray-600 text-sm mb-4">{comboItem.description}</p>
+          <button
+            className="py-1 px-3 w-28 text-rose-600 text-sm border-2 border-rose-600 rounded-full font-semibold hover:bg-rose-100 transition-colors duration-300"
+            onClick={() =>
+              addToCart({
+                id: comboItem.id,
+                title: comboItem.title,
+                price: comboItem.price,
+                type: "combo",
+              })
+            }
+          >
+            Add to Cart
+          </button>
+        </div>
+      ))}
+    </div>
+  </div>
+  
   );
 };
 
