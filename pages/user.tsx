@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Bookings } from './api/type';
 import Footer from './components/footer';
 import Image from 'next/image';
@@ -7,6 +7,7 @@ import { Calendar, Clock, Briefcase, Users, CreditCard } from 'lucide-react';
 import { HiHashtag } from 'react-icons/hi';
 import { BiWorld } from 'react-icons/bi';
 import { BsGenderAmbiguous } from 'react-icons/bs';
+import Link from 'next/link';
 
 
 const UserProfile: React.FC = () => {
@@ -32,7 +33,6 @@ const UserProfile: React.FC = () => {
     contact_number: string;
   }
 
-  const servicesRef = useRef<HTMLDivElement>(null);
 
   
   const fetchProfile = async (email: string) => {
@@ -197,9 +197,10 @@ const UserProfile: React.FC = () => {
 
     <div className="flex items-center space-x-4 relative">
       <div className="hidden sm:flex space-x-6 text-lg sm:text-xl">
-        <a href="/homepage" className="text-rose-600 hover:text-rose-500 font-semibold transition duration-300">
-          Home
-        </a>
+      <Link href="/homepage" className="text-rose-600 hover:text-rose-500 font-semibold transition duration-300">
+  Home
+</Link>
+
       </div>
 
       <button onClick={toggleDropdown} className="flex items-center text-rose-600 text-lg sm:text-xl py-2 px-4 rounded-md font-semibold hover:text-rose-500 transition duration-300">
@@ -303,23 +304,23 @@ const UserProfile: React.FC = () => {
             <div className="space-y-4">
               <div className="flex items-center">
                 <Users size={24} className="text-pink-600 mr-2" />
-                <span className="font-medium">Name:</span> {profileInfo?.name}
+                <span className="font-medium">Name: </span>  {profileInfo?.name}
               </div>
               <div className="flex items-center">
                 <Clock size={24} className="text-pink-600 mr-2" />
-                <span className="font-medium">Age:</span> {profileInfo?.age}
+                <span className="font-medium">Age: </span> {profileInfo?.age}
               </div>
               <div className="flex items-center">
                 <BsGenderAmbiguous size={24} className="text-pink-600 mr-2" />
-                <span className="font-medium">Sex:</span> {profileInfo?.sex}
+                <span className="font-medium">Sex: </span> {profileInfo?.sex}
               </div>
               <div className="flex items-center">
                 <BiWorld size={24} className="text-pink-600 mr-2" />
-                <span className="font-medium">Address:</span> {profileInfo?.address}
+                <span className="font-medium">Address: </span> {profileInfo?.address}
               </div>
               <div className="flex items-center">
                 <HiHashtag size={24} className="text-pink-600 mr-2" />
-                <span className="font-medium">Contact Number:</span> {profileInfo?.contact_number}
+                <span className="font-medium">Contact Number: </span> {profileInfo?.contact_number}
               </div>
             </div>
           </div>

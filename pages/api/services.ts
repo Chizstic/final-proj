@@ -34,7 +34,7 @@ const servicesHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   } else {
     res.setHeader('Allow', ['GET']);
     res.status(405).end(`Method ${req.method} Not Allowed`);
-  }
+  } 
 };
 
 export default servicesHandler;
