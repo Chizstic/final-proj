@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import router, { useRouter } from 'next/router';
 import { Bookings } from './api/type';
 
 interface BookingSummaryProps {
@@ -32,7 +33,7 @@ const BookingSummary: React.FC<BookingSummaryProps> = ({ booking, onBack }) => {
         },
       },
     };
-
+  
     try {
       const response = await fetch('/api/payment', {
         method: 'POST',
@@ -41,92 +42,107 @@ const BookingSummary: React.FC<BookingSummaryProps> = ({ booking, onBack }) => {
         },
         body: JSON.stringify(requestBody),
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         const redirectUrl = data.data?.attributes?.checkout_url;
-
+  
         if (redirectUrl) {
+          // Open the payment link in a new tab
           window.open(redirectUrl, '_blank');
+  
+          // Set messages and update UI states
           setPaymentMessage('Payment link created successfully! Please pay 50% of the total service price.');
           setIsSummaryVisible(false); // Close the booking summary
           setIsPaymentVisible(false); // Close the payment section
+  
+          // Redirect to homepage after a brief delay to ensure the user has opened the payment link
+          setTimeout(() => {
+            router.push('/homepage');
+          }, 2000); // Adjust the delay time if needed
         } else {
           setPaymentMessage('Payment link not found in the response.');
         }
       } else {
         const errorData = await response.json();
-        setPaymentMessage('Failed to create payment link: ' + JSON.stringify(errorData));
+        setPaymentMessage('Failed to create payment link: ' + (errorData.message || 'Unknown error.'));
       }
-    } catch  {
+    } catch (error) {
+      console.error('Error during payment request:', error);
       setPaymentMessage('Error: Unable to create payment link.');
     }
   };
-
+  
+  // Placeholder UI for undefined booking
   if (!booking) {
-    return <div>Loading...</div>; // Handle loading or undefined case
-  }
-
+    return <div>Loading...</div>;
+  };
   return (
-    <div className="bg-white rounded-lg p-4 sm:p-6 shadow-lg border border-gray-300 max-w-xs sm:max-w-md mx-auto">
+    <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-xl border border-gray-300 max-w-xs sm:max-w-md mx-auto">
       {isSummaryVisible && !isPaymentVisible ? (
         <>
-          <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-center text-blue-600">Booking Summary</h2>
-          <div className="space-y-2 sm:space-y-3">
-            <div className="p-2 sm:p-3 border border-gray-200 rounded-md">
-              <p className="text-gray-700"><strong>Email:</strong> {booking.email}</p>
+          <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-center text-blue-600">Booking Summary</h2>
+          <div className="space-y-4">
+            <div className="p-4 border border-gray-200 rounded-lg shadow-sm">
+              <p className="text-gray-700 font-medium"><strong>Email:</strong> {booking.email}</p>
             </div>
-            <div className="p-2 sm:p-3 border border-gray-200 rounded-md">
-              <p className="text-gray-700"><strong>Date:</strong> {booking.date}</p>
+            <div className="p-4 border border-gray-200 rounded-lg shadow-sm">
+              <p className="text-gray-700 font-medium"><strong>Date:</strong> {booking.date}</p>
             </div>
-            <div className="p-2 sm:p-3 border border-gray-200 rounded-md">
-              <p className="text-gray-700"><strong>Time:</strong> {booking.time}</p>
+            <div className="p-4 border border-gray-200 rounded-lg shadow-sm">
+              <p className="text-gray-700 font-medium"><strong>Time:</strong> {booking.time}</p>
             </div>
-            <div className="p-2 sm:p-3 border border-gray-200 rounded-md">
-              <p className="text-gray-700"><strong>Service:</strong> {Array.isArray(booking.services) ? booking.services.join(', ') : booking.services}</p>
-              <p className="text-gray-700">
+            <div className="p-4 border border-gray-200 rounded-lg shadow-sm">
+              <p className="text-gray-700 font-medium"><strong>Service:</strong> {Array.isArray(booking.services) ? booking.services.join(', ') : booking.services}</p>
+              <p className="text-gray-700 font-medium">
                 <strong>Price:</strong> ₱{booking.servicePrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </p>
-              <p className="text-gray-700">
+              <p className="text-gray-700 font-medium">
                 <strong>Amount to Pay (50%):</strong> ₱{amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </p>
             </div>
-            <div className="p-2 sm:p-3 border border-gray-200 rounded-md">
-              <p className="text-gray-700"><strong>Staff:</strong> {Array.isArray(booking.staffname) ? booking.staffname.join(', ') : booking.staffname}</p>
+            <div className="p-4 border border-gray-200 rounded-lg shadow-sm">
+              <p className="text-gray-700 font-medium"><strong>Staff:</strong> {Array.isArray(booking.staffname) ? booking.staffname.join(', ') : booking.staffname}</p>
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row justify-center sm:justify-between mt-4">
-            <button onClick={onBack} className="bg-blue-500 hover:bg-blue-600 text-white px-3 sm:px-4 py-1 rounded shadow-md transition duration-200 mb-2 sm:mb-0 sm:mr-2">
+          <div className="flex flex-col sm:flex-row justify-center sm:justify-between mt-6 space-y-4 sm:space-y-0">
+            <button
+              onClick={onBack}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+            >
               Back to Booking Form
             </button>
-            <button onClick={handleProceedToPayment} className="bg-green-500 hover:bg-green-600 text-white px-3 sm:px-4 py-1 rounded shadow-md transition duration-200">
+            <button
+              onClick={handleProceedToPayment}
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+            >
               Proceed to Payment
             </button>
           </div>
         </>
       ) : isPaymentVisible ? (
         <div>
-          <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-center text-blue-600">Payment</h2>
-          <div className="mb-4">
-            <label className="block text-gray-600 mb-1">Amount to Pay (50%):</label>
+          <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-center text-blue-600">Payment</h2>
+          <div className="mb-6">
+            <label className="block text-gray-600 font-medium mb-2">Amount to Pay (50%):</label>
             <input
               type="number"
               value={amount} // Set the raw amount here
               readOnly
-              className="w-full p-2 border border-gray-300 rounded bg-gray-100 focus:outline-none"
+              className="w-full p-4 border-2 border-gray-300 rounded-lg bg-gray-100 focus:outline-none shadow-sm text-gray-800"
             />
-            <p className="text-gray-700">₱{amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+            <p className="text-gray-700 mt-2">₱{amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
           </div>
-          <p className="text-sm text-gray-500 mb-4">
+          <p className="text-sm text-gray-500 mb-6">
             Note: You are required to pay 50% of the total service price upfront. The remaining balance will be payable at the time of service.
           </p>
           <button
             onClick={handlePaymentLink}
-            className="bg-green-500 hover:bg-green-600 text-white px-3 sm:px-4 py-1 rounded shadow-md transition duration-200 w-full"
+            className="w-full py-3 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold rounded-lg shadow-md hover:from-green-600 hover:to-green-700 transition duration-300 ease-in-out"
           >
             Proceed to Payment
           </button>
-          {paymentMessage && <p className="mt-4 text-center text-red-600">{paymentMessage}</p>}
+          {paymentMessage && <p className="mt-6 text-center text-red-600">{paymentMessage}</p>}
         </div>
       ) : null}
     </div>

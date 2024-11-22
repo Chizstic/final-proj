@@ -228,101 +228,111 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookin
 
   const handleBackToForm = () => setShowSummary(false);
 
-
   return (
-     <div className="max-w-lg mx-auto p-4">
+    <div className="max-w-4xl mx-auto p-8">
       {showSummary ? (
         <BookingSummary booking={formDetails} onBack={handleBackToForm} />
       ) : (
-        <div className="bg-white rounded-lg p-6 shadow-lg">
-          <h2 className="text-xl font-semibold mb-4">Booking Form</h2>
+        <div className="bg-rose-400 rounded-2xl p-10 shadow-xl border border-gray-200">
+          <h2 className="text-3xl font-extrabold text-white mb-8 text-center">Book Your Appointment</h2>
+  
           {errorMessages.length > 0 && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-              <ul>
+            <div className="bg-red-50 border-l-4 border-red-500 text-red-700 px-6 py-4 rounded-lg mb-8 shadow-md">
+              <h3 className="font-semibold text-lg">Oops! Something went wrong:</h3>
+              <ul className="list-disc pl-5 mt-3">
                 {errorMessages.map((error, index) => (
                   <li key={index}>{error}</li>
                 ))}
               </ul>
             </div>
           )}
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label className="block text-gray-700">Email:</label>
+  
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+            {/* Email */}
+            <div className="col-span-1">
+              <label className="block text-lg font-medium text-gray-800 mb-2">Email Address</label>
               <input
                 type="email"
                 name="email"
                 value={formDetails.email}
                 onChange={handleInputChange}
                 required
-                className="w-full p-2 border border-gray-300 rounded"
+                placeholder="Enter your email address"
+                className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out hover:shadow-lg"
               />
             </div>
-            <div className="mb-4">
-              <label className="block text-gray-700">Date:</label>
-              <input
-                type="date"
-                name="date"
-                value={formDetails.date}
-                onChange={handleInputChange} 
-                required
-                className="w-full p-2 border border-gray-300 rounded"
-                min={new Date().toISOString().split("T")[0]} 
-              />
-              {bookedDates.map((date) => (
-                <style key={date}>
-                  {`
-                    [type="date"]::-webkit-calendar-picker-indicator {
-                      display: none;
-                    }
-                    [type="date"][value="${date}"] {
-                      color: #c00;
-                    }
-                  `}
-                </style>
-              ))}
+  
+            {/* Date and Time beside each other */}
+            <div className="col-span-1 sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-8">
+              {/* Date */}
+              <div>
+                <label className="block text-lg font-medium text-gray-800 mb-2">Date of Appointment</label>
+                <input
+                  type="date"
+                  name="date"
+                  value={formDetails.date}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out hover:shadow-lg"
+                  min={new Date().toISOString().split("T")[0]}
+                />
+              </div>
+  
+              {/* Time */}
+              <div>
+                <label className="block text-lg font-medium text-gray-800 mb-2">Preferred Time</label>
+                <input
+                  type="time"
+                  name="time"
+                  value={formDetails.time}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out hover:shadow-lg"
+                />
+              </div>
             </div>
-            <div className="mb-4">
-              <label className="block text-gray-700">Time:</label>
-              <input
-                type="time"
-                name="time"
-                value={formDetails.time}
-                onChange={handleInputChange} 
-                required
-                className="w-full p-2 border border-gray-300 rounded"
-              />
+  
+            {/* Services and Staff beside each other */}
+            <div className="col-span-1 sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-8">
+              {/* Services */}
+              <div>
+                <label className="block text-lg font-medium text-gray-800 mb-2">Select Services</label>
+                <Select
+                  options={serviceOptions}
+                  isMulti
+                  onChange={handleServiceChange}
+                  value={serviceOptions.filter((option) =>
+                    formDetails.services.includes(option.value)
+                  )}
+                  className="mt-2"
+                  classNamePrefix="select"
+                  placeholder="Select one or more services..."
+                />
+              </div>
+  
+              {/* Staff */}
+              <div>
+                <label className="block text-lg font-medium text-gray-800 mb-2">Select Staff Members</label>
+                <Select
+                  options={staffOptions}
+                  isMulti
+                  onChange={handleStaffChange}
+                  className="mt-2"
+                  classNamePrefix="select"
+                  placeholder="Select staff members..."
+                />
+              </div>
             </div>
-            <div className="mb-4">
-              <label className="block text-gray-700">Service:</label>
-              <Select
-  options={serviceOptions}
-  isMulti
-  onChange={handleServiceChange}
-  value={serviceOptions.filter((option) => formDetails.services.includes(option.value))} // Pre-select services from the form details
-  className="basic-multi-select"
-  classNamePrefix="select"
-  placeholder="Select services..."
-/>
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700">Staff:</label>
-              <Select
-                options={staffOptions}
-                isMulti
-                onChange={handleStaffChange}
-                className="basic-multi-select"
-                classNamePrefix="select"
-                placeholder="Select staff members..."
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700">Payment Method:</label>
+  
+            {/* Payment Method */}
+            <div className="col-span-1">
+              <label className="block text-lg font-medium text-gray-800 mb-2">Payment Method</label>
               <select
                 name="paymentmethod"
-                value={formDetails.paymentmethod || ''}
-                onChange={handleInputChange} 
+                value={formDetails.paymentmethod || ""}
+                onChange={handleInputChange}
                 required
-                className="w-full p-2 border border-gray-300 rounded"
+                className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out hover:shadow-lg"
               >
                 <option value="">Select a payment method</option>
                 <option value="GCash">GCash</option>
@@ -331,15 +341,21 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookin
                 <option value="PayMaya">PayMaya</option>
               </select>
             </div>
-
-            <button type="submit" className="bg-blue-500 text-white p-2 rounded w-full">
-              Submit Booking
-            </button>
+  
+            {/* Submit Button */}
+            <div className="col-span-1 sm:col-span-2">
+              <button
+                type="submit"
+                className="w-full py-4 bg-gradient-to-r from-rose-500 to-rose-600 text-white font-semibold rounded-lg shadow-xl hover:from-rose-600 hover:to-rose-700 focus:outline-none focus:ring-4 focus:ring-rose-300 transition duration-300 ease-in-out"
+              >
+                Submit Booking
+              </button>
+            </div>
           </form>
         </div>
       )}
     </div>
-  );
+  ); 
 };
 
 export default BookingForm;

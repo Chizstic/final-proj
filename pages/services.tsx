@@ -193,7 +193,7 @@ const combo: Combo[] = [
   },
   {
     id: 8,
-    title: "Highlights",
+    title: "Highlights Plus",
     description: "Add dimension with customized, radiant hair highlights.",
     price: "₱499",
   },
