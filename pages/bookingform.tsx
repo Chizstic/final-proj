@@ -50,7 +50,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookin
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const [serviceOptions, setServiceOptions] = useState<ServiceOption[]>([]);
   const [staffOptions, setStaffOptions] = useState<StaffOption[]>([]);
-  const [bookedDates, setBookedDates] = useState<string[]>([]);
+  const [, setBookedDates] = useState<string[]>([]);
   const router = useRouter();
   const { cartItems } = router.query;
 

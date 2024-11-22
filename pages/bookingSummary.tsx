@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import router, { useRouter } from 'next/router';
+import router, { } from 'next/router';
 import { Bookings } from './api/type';
 
 interface BookingSummaryProps {
