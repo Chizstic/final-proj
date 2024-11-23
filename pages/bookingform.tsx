@@ -44,6 +44,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookin
     staffname: [],
     paymentmethod: '',
     created_at:'',
+    status:'',
   });
 
   const [showSummary, setShowSummary] = useState(false);

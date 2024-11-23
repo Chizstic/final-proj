@@ -16,8 +16,8 @@ export interface Bookings {
   paymentmethod: string;
   staffname: string | string[];
   created_at: string;
+  status: string;
 }
-
 
 
 

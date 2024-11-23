@@ -367,6 +367,10 @@ const UserProfile: React.FC = () => {
               <CreditCard size={20} className="text-pink-600 mr-2" />
               <span>{booking.paymentmethod}</span>
             </div>
+            <div className="flex items-center mb-4 text-slate-700">
+              <CreditCard size={20} className="text-pink-600 mr-2" />
+              <span>{booking.status}</span> 
+            </div>
           </div>
         ))}
       </div>

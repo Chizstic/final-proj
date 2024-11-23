@@ -76,19 +76,63 @@ const bookingHandler = async (req: NextApiRequest, res: NextApiResponse) => {
       return res.status(200).json({
         message: `Successfully deleted ${deleteResult.rowCount} past bookings.`,
       });
+
+    } else if (req.method === 'PUT') {
+      // Update booking status
+      const { bookingId, status } = req.body;
+    
+      console.log('Updating booking status for:', bookingId, 'with status:', status);  // Log incoming data
+    
+      if (!bookingId || !status) {
+        console.log('Missing bookingId or status');  // Log error condition
+        return res.status(400).json({ message: 'Booking ID and status are required' });
+      }
+    
+      const validStatuses = ['Pending', 'Ongoing', 'Completed'];
+      if (!validStatuses.includes(status)) {
+        console.log('Invalid status:', status);  // Log invalid status condition
+        return res.status(400).json({ message: 'Invalid status' });
+      }
+    
+      try {
+        // Update the status in the database
+        const updateQuery = `
+          UPDATE bookings
+          SET status = $1
+          WHERE bookingid = $2
+          RETURNING *;
+        `;
+        
+        const updateResult = await client.query(updateQuery, [status, bookingId]);
+    
+        if (updateResult.rowCount === 0) {
+          console.log('Booking not found for ID:', bookingId);  // Log if booking is not found
+          return res.status(404).json({ message: 'Booking not found' });
+        }
+    
+        const updatedBooking = updateResult.rows[0];
+        console.log('Booking updated:', updatedBooking);  // Log updated booking
+    
+        return res.status(200).json({ message: 'Booking status updated successfully', booking: updatedBooking });
+      } catch (err) {
+        console.error('Database error:', err);  // Log database error
+        return res.status(500).json({ message: 'Failed to update booking status' });
+      }
+    
+    
+    } else if (req.method === 'DELETE' && req.query.past) {
+      // Delete past bookings logic (no changes needed)
+      // ... existing DELETE logic ...
     } else {
-      res.setHeader('Allow', ['POST', 'GET', 'DELETE']);
+      res.setHeader('Allow', ['POST', 'GET', 'DELETE', 'PUT']);
       return res.status(405).end(`Method ${req.method} Not Allowed`);
     }
-  } catch (err) {
-    if (err instanceof Error) {
-      console.error('Unexpected server error:', err.message);
-      return res.status(500).json({ message: 'Internal server error' });
-    }
-    console.error('Unexpected non-Error object:', err);
+  } catch  {
+    console.error('Unexpected error:');
     return res.status(500).json({ message: 'An unexpected error occurred' });
   } finally {
     client.release();
   }
 };
+
 export default bookingHandler;
