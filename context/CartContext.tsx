@@ -9,6 +9,7 @@ interface CartItem {
 
 interface CartContextProps {
   cart: CartItem[];
+  cartCount: number; // Add cartCount to track the number of items in the cart
   addToCart: (item: CartItem) => void;
   removeFromCart: (id: number) => void;
   clearCart: () => void;
@@ -18,6 +19,9 @@ const CartContext = createContext<CartContextProps | undefined>(undefined);
 
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
+
+  // Calculate the cart count
+  const cartCount = cart.length;
 
   const addToCart = (item: CartItem) => {
     setCart((prevCart) => [...prevCart, item]);
@@ -30,7 +34,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const clearCart = () => setCart([]);
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart }}>
+    <CartContext.Provider value={{ cart, cartCount, addToCart, removeFromCart, clearCart }}>
       {children}
     </CartContext.Provider>
   );

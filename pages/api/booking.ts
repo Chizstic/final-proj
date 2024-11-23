@@ -64,23 +64,18 @@ const bookingHandler = async (req: NextApiRequest, res: NextApiResponse) => {
       }));
 
       return res.status(200).json(bookings);
-    } else if (req.method === 'DELETE') {
-      const bookingID = parseInt(req.query.bookingID as string, 10);
+    } else if (req.method === 'DELETE' && req.query.past) {
+      // Delete past bookings handler
+      const deletePastBookingsQuery = `
+        DELETE FROM bookings
+        WHERE date < CURRENT_DATE;
+      `;
 
-      if (isNaN(bookingID)) {
-        console.error('Invalid booking ID:', req.query.bookingID);
-        return res.status(400).json({ message: 'A valid Booking ID is required' });
-      }
+      const deleteResult = await client.query(deletePastBookingsQuery);
 
-      const deleteQuery = 'DELETE FROM bookings WHERE bookingID = $1';
-      const deleteResult = await client.query(deleteQuery, [bookingID]);
-
-      if (deleteResult.rowCount === 0) {
-        console.error('Booking not found for ID:', bookingID);
-        return res.status(404).json({ message: 'Booking not found' });
-      }
-
-      return res.status(200).json({ message: 'Booking deleted successfully' });
+      return res.status(200).json({
+        message: `Successfully deleted ${deleteResult.rowCount} past bookings.`,
+      });
     } else {
       res.setHeader('Allow', ['POST', 'GET', 'DELETE']);
       return res.status(405).end(`Method ${req.method} Not Allowed`);
@@ -96,5 +91,4 @@ const bookingHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     client.release();
   }
 };
-
 export default bookingHandler;

@@ -81,7 +81,7 @@ function Homepage() {
     : 0;
 
   return (
-    <div>
+    <div className="bg-white">
       <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
       <div className="bg-[#cd668855] p-2 scroll-smooth">
         <div className="text-xs md:text-sm font-semibold text-center text-gray-600">

@@ -72,7 +72,7 @@ const SignUpPage = () => {
             </h3>
           </div>
           <form onSubmit={handleSignUp}>
-            <div className="mb-4 opacity-95">
+            <div className="mb-4 opacity-95 text-slate-700">
               <label htmlFor="email" className="block text-sm font-semibold mb-2">Email</label>
               <input
                 type="email"
@@ -84,7 +84,7 @@ const SignUpPage = () => {
                 required
               />
             </div>
-            <div className="mb-4 opacity-95">
+            <div className="mb-4 opacity-95 text-slate-700">
               <label htmlFor="password" className="block text-sm font-semibold mb-2">Password</label>
               <input
                 type="password"
@@ -96,7 +96,7 @@ const SignUpPage = () => {
                 required
               />
             </div>
-            <div className="mb-4 opacity-95">
+            <div className="mb-4 opacity-95 text-slate-700">
               <label htmlFor="confirmPassword" className="block text-sm font-semibold mb-2">Confirm Password</label>
               <input
                 type="password"
@@ -116,7 +116,7 @@ const SignUpPage = () => {
             </button>
             {/* {success && <p className="text-green-500 mt-4 text-center">{success}</p>} */}
           </form>
-          <p className="mt-4 text-center">
+          <p className="mt-4 text-center text-slate-700">
             Already have an account? <Link href="/login" className="text-pink-500 hover:text-pink-700">Login</Link>
           </p>
         </div>

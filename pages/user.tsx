@@ -180,7 +180,7 @@ const UserProfile: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-200 to-pink-500">
+    <div className="min-h-screen bg-gradient-to-br bg-slate-100">
       <header className="sticky top-0 z-50 shadow-md" style={{ backgroundColor: 'rgba(251, 207, 232, 0.2)' }}>
   <nav className="flex items-center justify-between flex-wrap p-6 h-24">
     <div className="header-background flex items-center flex-shrink-0 text-white mr-6">
@@ -299,7 +299,7 @@ const UserProfile: React.FC = () => {
         </div>
       ) : (
         showDetails && (
-          <div className="bg-white w-full p-10">
+          <div className="bg-white w-full p-10 ">
             <h3 className="text-2xl font-semibold text-pink-600">Profile Information</h3>
             <div className="space-y-4">
               <div className="flex items-center">
@@ -334,7 +334,7 @@ const UserProfile: React.FC = () => {
     {bookings.length > 0 ? (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
         {bookings.map((booking) => (
-          <div key={booking.bookingid} className="bg-gray-50 p-6 rounded-lg shadow hover:shadow-md transition duration-300">
+          <div key={booking.bookingid} className="bg-gray-50 p-6 rounded-lg shadow-inner shadow-rose-100">
             <div className="flex items-center mb-4">
               <span className="ml-2 text-gray-600 text-sm">
                 {new Date(booking.created_at).toLocaleString('en-US', {
@@ -347,23 +347,23 @@ const UserProfile: React.FC = () => {
             </div>
             {/* Separator Line */}
             <div className="border-t-2 border-gray-300 my-4"></div>
-            <div className="flex items-center mb-4">
+            <div className="flex items-center mb-4 text-slate-700">
               <Calendar size={20} className="text-pink-600 mr-2" />
               <span>{booking.date}</span>
             </div>
-            <div className="flex items-center mb-4">
+            <div className="flex items-center mb-4 text-slate-700">
               <Clock size={20} className="text-pink-600 mr-2" />
               <span>{booking.time}</span>
             </div>
-            <div className="flex items-center mb-4">
+            <div className="flex items-center mb-4 text-slate-700">
               <Briefcase size={20} className="text-pink-600 mr-2" />
               <span>{booking.services}</span>
             </div>
-            <div className="flex items-center mb-4">
+            <div className="flex items-center mb-4 text-slate-700">
               <Users size={20} className="text-pink-600 mr-2" />
               <span>{booking.staffname}</span>
             </div>
-            <div className="flex items-center mb-4">
+            <div className="flex items-center mb-4 text-slate-700">
               <CreditCard size={20} className="text-pink-600 mr-2" />
               <span>{booking.paymentmethod}</span>
             </div>

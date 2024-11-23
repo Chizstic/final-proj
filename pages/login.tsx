@@ -70,10 +70,10 @@ const LoginPage = () => {
         </h3>
       </div>
       <form onSubmit={handleLogin}>
-        <div className="mb-4">
+        <div className="mb-4 text-slate-700">
           <label
             htmlFor="email"
-            className="block text-sm font-semibold mb-2"
+            className="block text-sm font-semibold mb-2  "
           >
             Email
           </label>
@@ -88,7 +88,7 @@ const LoginPage = () => {
           />
         </div>
 
-        <div className="mb-4">
+        <div className="mb-4 text-slate-700">
           <label
             htmlFor="password"
             className="block text-sm font-semibold mb-2"
@@ -117,7 +117,7 @@ const LoginPage = () => {
           <p className="text-red-500 mt-4 text-center">{error}</p>
         )}
       </form>
-      <p className="mt-4 text-center">
+      <p className="mt-4 text-center text-slate-700">
         Don&apos;t have an account?{' '}
         <Link
           href="/signup"
