@@ -131,6 +131,7 @@ const Services: React.FC = () => {
                 title: service.title,
                 price: service.price,
                 type: "service",
+                quantity:1,
               })
             }
           >
@@ -160,6 +161,7 @@ const Services: React.FC = () => {
                 title: comboItem.title,
                 price: comboItem.price,
                 type: "combo",
+                quantity:1,
               })
             }
           >

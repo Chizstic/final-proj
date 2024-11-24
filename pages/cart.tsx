@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext"; // Assuming you have a CartContext to manage global cart state
 import { useRouter } from 'next/router';
+import { useAuth } from "../context/AuthContext"; // Importing AuthContext
 
 const Cart: React.FC = () => {
   const { cart, addToCart, removeFromCart } = useCart(); // Make sure `removeFromCart` is available in your context
+  const { user } = useAuth(); // Access the logged-in user from AuthContext
   const [isEditing, setIsEditing] = useState(false);
   const [tempCart, setTempCart] = useState(cart);
   const [cartCount, setCartCount] = useState(0); // To hold the count of items in the cart
-  const [showCartCount, ] = useState(true); // State to manage visibility of cart count notification
+  const [showCartCount] = useState(true); // State to manage visibility of cart count notification
   const router = useRouter();
 
   // Sync cart with localStorage on changes
   useEffect(() => {
     const storedCart = localStorage.getItem("cart");
+
     if (storedCart) {
       const parsedCart = JSON.parse(storedCart);
       setTempCart(parsedCart);
@@ -25,6 +28,20 @@ const Cart: React.FC = () => {
     localStorage.setItem("cart", JSON.stringify(tempCart));
     setCartCount(tempCart.length); // Update the cart count notification
   }, [tempCart]);
+
+  // Sync back the cart to the global state and localStorage when the user logs in
+  useEffect(() => {
+    if (user) {
+      const storedCart = localStorage.getItem("cart");
+      if (storedCart) {
+        const parsedCart = JSON.parse(storedCart);
+        setTempCart(parsedCart);
+        setCartCount(parsedCart.length);
+      } else {
+        // Optionally, fetch cart data from server based on user's email if needed
+      }
+    }
+  }, [user]);
 
   // Toggle edit mode
   const handleEditToggle = () => {

@@ -1,21 +1,30 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/router';
 import Footer from './components/footer';
 import BookingForm from './bookingform';
 import Image from 'next/image';
 import { Bookings } from './api/type';
-import { FaBars, FaCheckCircle, FaShoppingCart  } from 'react-icons/fa';
+import { FaBars, FaCheckCircle, FaShoppingCart } from 'react-icons/fa';
 import Services from './services';
-import Cart from './cart'
+import Cart from './cart';
+import { useAuth } from '../context/AuthContext';
+
 
 function Homepage() {
   const [showBookingForm, setShowBookingForm] = useState(false);
-  const [showCart, setShowCart] = useState(false); // New state to control cart overlay visibility
+  const [showCart, setShowCart] = useState(false);
   const [booking, setBooking] = useState<Bookings | null>(null);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const servicesRef = useRef<HTMLDivElement | null>(null);
   const [showNotice, setShowNotice] = useState(false);
+  const { user, loading, logout } = useAuth(); // Access user and loading states from AuthContext
+  const router = useRouter();
 
-
+  useEffect(() => {
+    if (!user) {
+      router.push("/");
+    } 
+  }, [loading, user, router]);
   useEffect(() => {
     const bookingData = localStorage.getItem('bookingDetails');
     if (bookingData) {
@@ -68,8 +77,8 @@ function Homepage() {
   };
 
   const handleLogoutClick = () => {
-    localStorage.clear();
-    window.location.href = '/login';
+   logout();
+
   };
 
   const currentUserEmail = typeof window !== 'undefined'

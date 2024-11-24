@@ -1,15 +1,15 @@
 import { useState } from 'react';
-import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { useAuth } from '../context/AuthContext';
 
 
 
 const LoginPage = () => {
-  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const {login} = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,16 +26,8 @@ const LoginPage = () => {
       const data = await response.json();
 
       if (response.ok) {
-        const { role, userId } = data.user; // Assume the API response contains userId
-
-        // Store user-specific information in local storage
-        localStorage.setItem('userEmail', email);
-        localStorage.setItem('userRole', role);
-        localStorage.setItem('userId', userId);
-
-        setTimeout(() => {
-          router.push(role === 'admin' ? '/admin' : '/homepage');
-        }, 2000);
+      login(data.user)
+      
       } else {
         setError('Invalid email or password');
       }

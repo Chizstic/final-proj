@@ -4,6 +4,8 @@ import StaffList from './stafflist';
 import AdminBookings from './Bookings';
 import { Staff, Bookings } from './api/type';
 import { AiOutlineUser, AiOutlineSchedule, AiOutlineLogout, AiOutlineMenu } from 'react-icons/ai';
+import { useAuth } from "@/context/AuthContext";
+
 
 const AdminPage: React.FC = () => {
   const router = useRouter();
@@ -13,6 +15,18 @@ const AdminPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'staff' | 'bookings'>('staff');
   const [loading, setLoading] = useState(true);
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+   const { user, logout } = useAuth();
+ 
+
+  useEffect(() => {
+      if (!loading) {
+          if (!user) {
+              router.push("/login");
+          } else if (user.role !== "admin") {
+              router.push("/unauthorized");
+          }
+      }
+  }, [user, loading, router]);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -33,7 +47,7 @@ const AdminPage: React.FC = () => {
   }, []);
 
   const handleLogout = () => {
-    router.push('/'); // Logout and redirect to home page
+   logout();
   };
 
   const pageTitle = activeTab === 'staff' ? 'Manage Staff' : 'Manage Bookings';

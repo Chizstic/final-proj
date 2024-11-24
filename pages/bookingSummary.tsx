@@ -78,7 +78,7 @@ const BookingSummary: React.FC<BookingSummaryProps> = ({ booking, onBack }) => {
     return <div>Loading...</div>;
   };
   return (
-    <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-xl border border-gray-300 max-w-xs sm:max-w-md mx-auto">
+    <div className="bg-rose-400  rounded-2xl p-6 sm:p-8 shadow-xl border border-gray-200 max-w-xs sm:max-w-md mx-auto">
       {isSummaryVisible && !isPaymentVisible ? (
         <>
           <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-center text-blue-600">Booking Summary</h2>

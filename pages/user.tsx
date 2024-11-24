@@ -3,7 +3,7 @@ import { Bookings } from './api/type';
 import Footer from './components/footer';
 import Image from 'next/image';
 import { FaUser } from 'react-icons/fa';
-import { Calendar, Clock, Briefcase, Users, CreditCard } from 'lucide-react';
+import { Calendar, Clock, Briefcase, Users, CreditCard, StampIcon } from 'lucide-react';
 import { HiHashtag } from 'react-icons/hi';
 import { BiWorld } from 'react-icons/bi';
 import { BsGenderAmbiguous } from 'react-icons/bs';
@@ -51,11 +51,11 @@ const UserProfile: React.FC = () => {
   };
 
  useEffect(() => {
-    const storedEmail = localStorage.getItem('userEmail');
-    if (storedEmail) {
-      setEmail(storedEmail);
-      fetchBookings(storedEmail);  // Pass the email here
-      fetchProfile(storedEmail);    // Fetch the profile using the email
+    const storedClient = localStorage.getItem('client');
+    if (storedClient) {
+      setEmail(JSON.parse(storedClient).email);
+      fetchBookings(JSON.parse(storedClient).email);  // Pass the email here
+      fetchProfile(JSON.parse(storedClient).email);    // Fetch the profile using the email
     }
   }, []);
 
@@ -368,7 +368,7 @@ const UserProfile: React.FC = () => {
               <span>{booking.paymentmethod}</span>
             </div>
             <div className="flex items-center mb-4 text-slate-700">
-              <CreditCard size={20} className="text-pink-600 mr-2" />
+              <StampIcon size={20} className="text-pink-600 mr-2" />
               <span>{booking.status}</span> 
             </div>
           </div>
