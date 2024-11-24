@@ -103,38 +103,31 @@ const bookingHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     } else if (req.method === 'PUT') {
       // Update booking status
       const { bookingId, status } = req.body;
-
+    
       if (!bookingId || !status) {
         return res.status(400).json({ message: 'Booking ID and status are required' });
       }
-
+    
       const validStatuses = ['Pending', 'Ongoing', 'Completed'];
       if (!validStatuses.includes(status)) {
         return res.status(400).json({ message: 'Invalid status' });
       }
-
+    
       try {
         const updateQuery = `
-          UPDATE bookings
-          SET status = $1
-          WHERE bookingid = $2
-          RETURNING *;
+          CALL update_booking_status($1, $2);
         `;
-        const updateResult = await client.query(updateQuery, [status, bookingId]);
-
-        if (updateResult.rowCount === 0) {
-          return res.status(404).json({ message: 'Booking not found' });
-        }
-
-        const updatedBooking = updateResult.rows[0];
+        const updateResult = await client.query(updateQuery, [bookingId, status]);
+    
+        // The procedure doesn't directly return the updated row to the client
         return res.status(200).json({
           message: 'Booking status updated successfully',
-          booking: updatedBooking,
         });
       } catch (err) {
         console.error('Database error:', err);
         return res.status(500).json({ message: 'Failed to update booking status' });
       }
+        
     } else {
       res.setHeader('Allow', ['POST', 'GET', 'DELETE', 'PUT']);
       return res.status(405).end(`Method ${req.method} Not Allowed`);

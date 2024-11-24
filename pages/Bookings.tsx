@@ -42,11 +42,16 @@ const AdminBookings: React.FC<AdminBookingsProps> = ({ email }) => {
         },
         body: JSON.stringify({ bookingId, status: newStatus }),
       });
+  
       if (response.ok) {
         const updatedBooking = await response.json();
+  
+        // Ensure the structure is as expected (check if updatedBooking.status exists)
         setBookings((prevBookings) =>
           prevBookings.map((booking) =>
-            booking.bookingid === bookingId ? { ...booking, status: updatedBooking.booking.status } : booking
+            booking.bookingid === bookingId
+              ? { ...booking, status: updatedBooking.status }  // Access updatedBooking.status directly
+              : booking
           )
         );
       } else {
