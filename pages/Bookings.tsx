@@ -157,7 +157,6 @@ const AdminBookings: React.FC<AdminBookingsProps> = ({ email }) => {
               </div>
             </div>
           )}
-
 <table className="w-full table-auto">
 <thead className="bg-gray-200">
   <tr>
@@ -199,7 +198,8 @@ const AdminBookings: React.FC<AdminBookingsProps> = ({ email }) => {
                       </select>
                     </td>
                     <td>
-                      <button
+                    <button
+                        className="text-gray-500 hover:text-red-500"
                         onClick={() => handleDelete(booking.bookingid)}
                         disabled={loading}
                       >
@@ -222,4 +222,5 @@ const AdminBookings: React.FC<AdminBookingsProps> = ({ email }) => {
 };
 
 export default AdminBookings;
+
 
