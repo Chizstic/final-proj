@@ -8,8 +8,7 @@ const Cart: React.FC = () => {
   const { user } = useAuth(); // Access the logged-in user from AuthContext
   const [isEditing, setIsEditing] = useState(false);
   const [tempCart, setTempCart] = useState(cart);
-  const [cartCount, setCartCount] = useState(0); // To hold the count of items in the cart
-  const [showCartCount] = useState(true); // State to manage visibility of cart count notification
+
   const router = useRouter();
 
   // Sync cart with localStorage on changes
@@ -19,14 +18,14 @@ const Cart: React.FC = () => {
     if (storedCart) {
       const parsedCart = JSON.parse(storedCart);
       setTempCart(parsedCart);
-      setCartCount(parsedCart.length); // Set the number of items in cart
+     
     }
   }, []);
 
   useEffect(() => {
     // Update the cart count in localStorage when tempCart is updated
     localStorage.setItem("cart", JSON.stringify(tempCart));
-    setCartCount(tempCart.length); // Update the cart count notification
+  
   }, [tempCart]);
 
   // Sync back the cart to the global state and localStorage when the user logs in
@@ -36,7 +35,7 @@ const Cart: React.FC = () => {
       if (storedCart) {
         const parsedCart = JSON.parse(storedCart);
         setTempCart(parsedCart);
-        setCartCount(parsedCart.length);
+      
       } else {
         // Optionally, fetch cart data from server based on user's email if needed
       }
@@ -87,13 +86,8 @@ const Cart: React.FC = () => {
 
   return (
     <div className="relative">
-      {/* Cart Count Notification */}
-      {showCartCount && (
-        <div className="absolute top-0 right-0 p-2 flex items-center bg-red-600 text-white rounded-full px-2 py-2 text-lg cursor-pointer">
-          {cartCount} {cartCount === 1 ? 'item' : 'items'}
-        </div>
-      )}
-
+   
+     
       <div className="p-8 bg-gray-100 rounded-lg shadow-lg max-w-lg mx-auto">
         <h2 className="text-3xl font-bold mb-5 text-gray-800">Your Cart</h2>
         

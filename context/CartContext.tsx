@@ -20,14 +20,24 @@ interface CartContextProps {
 const CartContext = createContext<CartContextProps | undefined>(undefined);
 
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { user, logout } = useAuth(); // Get the logout function and user data from AuthContext
+  const { user} = useAuth(); // Get the logout function and user data from AuthContext
   const [cart, setCart] = useState<CartItem[]>([]);
   
   // Calculate the cart count
   const cartCount = cart.length;
 
   const addToCart = (item: CartItem) => {
-    setCart((prevCart) => [...prevCart, item]);
+    setCart((prevCart) => {
+      const existingItem = prevCart.find((cartItem) => cartItem.id === item.id);
+      if (existingItem) {
+        return prevCart.map((cartItem) =>
+          cartItem.id === item.id
+            ? { ...cartItem, quantity: cartItem.quantity + 1 }
+            : cartItem
+        );
+      }
+      return [...prevCart, { ...item, quantity: 1 }];
+    });
   };
 
   const removeFromCart = (id: number) => {
@@ -41,10 +51,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const storedCart = localStorage.getItem("cart");
 
     // If a user is logged in, fetch their cart from the database
-    if (user) {
-      // Fetch the cart from the server based on user email
-      fetchCartFromDatabase(user.email);
-    } else if (storedCart) {
+    if (storedCart) {
       // If no user is logged in, use cart from localStorage
       const parsedCart = JSON.parse(storedCart);
       setCart(parsedCart);
@@ -68,20 +75,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, [user]);
 
   // Function to fetch cart data from database
-  const fetchCartFromDatabase = async (email: string) => {
-    try {
-      const response = await fetch(`/api/cart?email=${email}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch cart data');
-      }
-      const result = await response.json();
-      const fetchedCart = result.cart || [];
-      setCart(fetchedCart);
-      localStorage.setItem("cart", JSON.stringify(fetchedCart)); // Store in localStorage
-    } catch (error) {
-      console.error('Error fetching cart from database:', error);
-    }
-  };
+
 
   return (
     <CartContext.Provider value={{ cart, cartCount, addToCart, removeFromCart, clearCart }}>

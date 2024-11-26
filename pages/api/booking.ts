@@ -117,7 +117,7 @@ const bookingHandler = async (req: NextApiRequest, res: NextApiResponse) => {
         const updateQuery = `
           CALL update_booking_status($1, $2);
         `;
-        const updateResult = await client.query(updateQuery, [bookingId, status]);
+       await client.query(updateQuery, [bookingId, status]);
     
         // The procedure doesn't directly return the updated row to the client
         return res.status(200).json({

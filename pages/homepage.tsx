@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
-import Footer from './components/footer';
+import Footer from '../components/footer';
 import BookingForm from './bookingform';
 import Image from 'next/image';
 import { Bookings } from './api/type';
@@ -8,6 +8,8 @@ import { FaBars, FaCheckCircle, FaShoppingCart } from 'react-icons/fa';
 import Services from './services';
 import Cart from './cart';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext'; // Adjust the path if necessary
+
 
 
 function Homepage() {
@@ -19,6 +21,16 @@ function Homepage() {
   const [showNotice, setShowNotice] = useState(false);
   const { user, loading, logout } = useAuth(); // Access user and loading states from AuthContext
   const router = useRouter();
+  const [cartCount, setCartCount] = useState(0);
+  const { cart } = useCart(); // Extract `cart` from the CartContext
+  
+
+  useEffect(() => {
+    const totalCount = cart.reduce((total, item) => total + item.quantity, 0);
+    setCartCount(totalCount);
+  }, [cart]);
+
+
 
   useEffect(() => {
     if (!user) {
@@ -355,15 +367,20 @@ function Homepage() {
         </div>
       )}
 
-      {/* Cart Icon */}
-      <div className="fixed bottom-4 right-4 z-50">
-        <button
-          onClick={toggleCart}
-          className="bg-rose-600 p-4 sm:p-5 md:p-6 rounded-full shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center justify-center"
-        >
-          <FaShoppingCart size={30} className="text-white" />
-        </button>
-      </div>
+<div className="fixed bottom-4 right-4 z-50">
+      <button
+        onClick={toggleCart}
+        className="bg-red-400 p-4 sm:p-5 md:p-6 rounded-full shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center justify-center relative"
+      >
+        <FaShoppingCart size={30} className="text-white" />
+        {/* Cart Item Count Notification */}
+        {cartCount > 0 && (
+          <div className="absolute top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+            {cartCount}
+          </div>
+        )}
+      </button>
+    </div>
 
 
       {/* Cart Overlay */}

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Bookings } from './api/type';
-import Footer from './components/footer';
+import Footer from '../components/footer';
 import Image from 'next/image';
-import { FaUser } from 'react-icons/fa';
-import { Calendar, Clock, Briefcase, Users, CreditCard, StampIcon } from 'lucide-react';
+import { FaBars } from 'react-icons/fa';
+import { Calendar, Clock, Briefcase, Users, CreditCard} from 'lucide-react';
 import { HiHashtag } from 'react-icons/hi';
 import { BiWorld } from 'react-icons/bi';
 import { BsGenderAmbiguous } from 'react-icons/bs';
@@ -204,7 +204,7 @@ const UserProfile: React.FC = () => {
       </div>
 
       <button onClick={toggleDropdown} className="flex items-center text-rose-600 text-lg sm:text-xl py-2 px-4 rounded-md font-semibold hover:text-rose-500 transition duration-300">
-        <FaUser size={30} className="mr-2" />
+        <FaBars size={24} className="mr-2" />
       </button>
 
       {dropdownVisible && (
@@ -346,30 +346,35 @@ const UserProfile: React.FC = () => {
               </span>
             </div>
             {/* Separator Line */}
-            <div className="border-t-2 border-gray-300 my-4"></div>
-            <div className="flex items-center mb-4 text-slate-700">
-              <Calendar size={20} className="text-pink-600 mr-2" />
-              <span>{booking.date}</span>
+          <div className="border-t border-gray-300 my-4"></div>
+          {/* Booking Details */}
+          <div className="space-y-4 text-gray-700">
+            <div className="flex items-center">
+              <Calendar size={20} className="text-pink-600 mr-3" />
+              <span className="text-sm font-medium">{booking.date}</span>
             </div>
-            <div className="flex items-center mb-4 text-slate-700">
-              <Clock size={20} className="text-pink-600 mr-2" />
-              <span>{booking.time}</span>
+            <div className="flex items-center">
+              <Clock size={20} className="text-pink-600 mr-3" />
+              <span className="text-sm font-medium">{booking.time}</span>
             </div>
-            <div className="flex items-center mb-4 text-slate-700">
-              <Briefcase size={20} className="text-pink-600 mr-2" />
-              <span>{booking.services}</span>
+            <div className="flex items-center">
+              <Briefcase size={20} className="text-pink-600 mr-3" />
+              <span className="text-sm font-medium">{booking.services}</span>
             </div>
-            <div className="flex items-center mb-4 text-slate-700">
-              <Users size={20} className="text-pink-600 mr-2" />
-              <span>{booking.staffname}</span>
+            <div className="flex items-center">
+              <Users size={20} className="text-pink-600 mr-3" />
+              <span className="text-sm font-medium">{booking.staffname}</span>
             </div>
-            <div className="flex items-center mb-4 text-slate-700">
-              <CreditCard size={20} className="text-pink-600 mr-2" />
-              <span>{booking.paymentmethod}</span>
+            <div className="flex items-center">
+              <CreditCard size={20} className="text-pink-600 mr-3" />
+              <span className="text-sm font-medium">{booking.paymentmethod}</span>
             </div>
-            <div className="flex items-center mb-4 text-slate-700">
-              <StampIcon size={20} className="text-pink-600 mr-2" />
-              <span>{booking.status}</span> 
+            <div className="flex items-center">
+              <span className="text-sm font-bold text-gray-600">Status:</span>
+              <span className={`ml-2 text-sm font-medium ${booking.status === 'Completed' ? 'text-green-600' : 'text-yellow-600'}`}>
+                {booking.status}
+              </span>
+              </div>
             </div>
           </div>
         ))}

@@ -71,18 +71,6 @@ function Footer() {
 
             </div>
           </div>
-
-          {/* Navigation Links */}
-          <div className=" sm:flex sm:text-sm sm:ml-4 md:flex md:text-lg lg:text-lg justify-center text-slate-600 w-full">
-            <nav className="flex space-x-8">
-              <a href="#" className="hover:text-teal-600 ">
-                About Us
-              </a>
-              <a href="#" className="hover:text-teal-600">
-                Contacts
-              </a>
-            </nav>
-          </div>
         </div>
 
       {/* Address Section */}

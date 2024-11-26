@@ -10,7 +10,13 @@ interface AdminBookingsProps {
 
 const AdminBookings: React.FC<AdminBookingsProps> = ({ email }) => {
   const [bookings, setBookings] = useState<Bookings[]>([]);
-  const [loading, setLoading] = useState(false);  // Loading state for status change or deletion
+  const [loading, setLoading] = useState(false);
+  const [confirmationMessage, setConfirmationMessage] = useState<string | null>(null);
+  const [showConfirmDialog, setShowConfirmDialog] = useState<{
+    bookingId: number;
+    newStatus: string;
+    previousStatus: string;
+  } | null>(null); // Store previous and new statuses for confirmation
   const [, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -30,30 +36,41 @@ const AdminBookings: React.FC<AdminBookingsProps> = ({ email }) => {
     fetchBookings();
   }, [email]);
 
-  const handleStatusChange = async (e: React.ChangeEvent<HTMLSelectElement>, bookingId: number) => {
+  const handleStatusChange = (
+    e: React.ChangeEvent<HTMLSelectElement>,
+    bookingId: number,
+    currentStatus: string
+  ) => {
     const newStatus = e.target.value;
-    setLoading(true);  // Set loading state to true while updating
-  
+    // Show confirmation dialog
+    setShowConfirmDialog({ bookingId, newStatus, previousStatus: currentStatus });
+  };
+
+  const confirmStatusChange = async (bookingId: number, newStatus: string) => {
+    setLoading(true);
+
     try {
       const response = await fetch(`/api/booking`, {
-        method: 'PUT', // PUT is correct for updating data
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ bookingId, status: newStatus }),
       });
-  
+
       if (response.ok) {
         const updatedBooking = await response.json();
-  
-        // Ensure the structure is as expected (check if updatedBooking.status exists)
+
         setBookings((prevBookings) =>
           prevBookings.map((booking) =>
             booking.bookingid === bookingId
-              ? { ...booking, status: updatedBooking.status }  // Access updatedBooking.status directly
+              ? { ...booking, status: updatedBooking.status }
               : booking
           )
         );
+
+        setConfirmationMessage(`Booking ID ${bookingId} status updated to "${newStatus}"`);
+        setTimeout(() => setConfirmationMessage(null), 3000);
       } else {
         const errorData = await response.json();
         setError(errorData.message || 'Failed to update booking status');
@@ -61,13 +78,26 @@ const AdminBookings: React.FC<AdminBookingsProps> = ({ email }) => {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unexpected error occurred during status update');
     } finally {
-      setLoading(false);  // Set loading state to false when request completes
+      setLoading(false);
+      setShowConfirmDialog(null);
     }
   };
-  
+
+  const cancelStatusChange = () => {
+    // Revert dropdown to the previous status
+    if (showConfirmDialog) {
+      const { bookingId, previousStatus } = showConfirmDialog;
+      setBookings((prevBookings) =>
+        prevBookings.map((booking) =>
+          booking.bookingid === bookingId ? { ...booking, status: previousStatus } : booking
+        )
+      );
+    }
+    setShowConfirmDialog(null); // Close the confirmation dialog
+  };
 
   const handleDelete = async (bookingId: number) => {
-    setLoading(true);  // Set loading state to true while deleting
+    setLoading(true);
 
     try {
       const response = await fetch(`/api/booking?bookingID=${bookingId}`, {
@@ -85,7 +115,7 @@ const AdminBookings: React.FC<AdminBookingsProps> = ({ email }) => {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unexpected error occurred during deletion');
     } finally {
-      setLoading(false);  // Set loading state to false when request completes
+      setLoading(false);
     }
   };
 
@@ -93,6 +123,41 @@ const AdminBookings: React.FC<AdminBookingsProps> = ({ email }) => {
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-6">
         <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+          {confirmationMessage && (
+            <div className="bg-green-500 text-white p-4 rounded-md mb-4">
+              {confirmationMessage}
+            </div>
+          )}
+
+          {/* Confirmation Dialog */}
+          {showConfirmDialog && (
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white p-6 rounded-md shadow-lg">
+                <h2 className="text-lg font-semibold">Are you sure you want to update the status?</h2>
+                <p>Booking ID: {showConfirmDialog.bookingId}</p>
+                <p>New Status: {showConfirmDialog.newStatus}</p>
+                <div className="mt-4">
+                  <button
+                    className="px-4 py-2 bg-green-500 text-white rounded-md mr-4"
+                    onClick={() =>
+                      confirmStatusChange(showConfirmDialog.bookingId, showConfirmDialog.newStatus)
+                    }
+                    disabled={loading}
+                  >
+                    Yes
+                  </button>
+                  <button
+                    className="px-4 py-2 bg-red-500 text-white rounded-md"
+                    onClick={cancelStatusChange}
+                    disabled={loading}
+                  >
+                    No
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           <table className="w-full table-auto">
             <thead className="bg-gray-200">
               <tr>
@@ -124,8 +189,10 @@ const AdminBookings: React.FC<AdminBookingsProps> = ({ email }) => {
                       <select
                         className="border rounded px-2 py-1"
                         value={booking.status}
-                        onChange={(e) => handleStatusChange(e, booking.bookingid)}
-                        disabled={loading} // Disable during loading to prevent multiple submissions
+                        onChange={(e) =>
+                          handleStatusChange(e, booking.bookingid, booking.status)
+                        }
+                        disabled={loading}
                       >
                         <option value="Pending">Pending</option>
                         <option value="Ongoing">Ongoing</option>
@@ -136,7 +203,7 @@ const AdminBookings: React.FC<AdminBookingsProps> = ({ email }) => {
                       <button
                         className="text-red-500 hover:text-red-700"
                         onClick={() => handleDelete(booking.bookingid)}
-                        disabled={loading} // Disable during loading to prevent multiple submissions
+                        disabled={loading}
                       >
                         <FaTrashAlt />
                       </button>
