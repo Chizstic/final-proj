@@ -16,7 +16,7 @@ const AdminBookings: React.FC<AdminBookingsProps> = ({ email }) => {
     bookingId: number;
     newStatus: string;
     previousStatus: string;
-  } | null>(null); // Store previous and new statuses for confirmation
+  } | null>(null);
   const [, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -27,7 +27,12 @@ const AdminBookings: React.FC<AdminBookingsProps> = ({ email }) => {
           throw new Error('Failed to fetch bookings');
         }
         const data: Bookings[] = await response.json();
-        setBookings(data);
+        const sortedBookings = data.sort((a, b) => {
+          if (a.status === 'Completed' && b.status !== 'Completed') return 1;
+          if (a.status !== 'Completed' && b.status === 'Completed') return -1;
+          return 0;
+        });
+        setBookings(sortedBookings);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An unexpected error occurred');
       }
@@ -42,7 +47,6 @@ const AdminBookings: React.FC<AdminBookingsProps> = ({ email }) => {
     currentStatus: string
   ) => {
     const newStatus = e.target.value;
-    // Show confirmation dialog
     setShowConfirmDialog({ bookingId, newStatus, previousStatus: currentStatus });
   };
 
@@ -84,7 +88,6 @@ const AdminBookings: React.FC<AdminBookingsProps> = ({ email }) => {
   };
 
   const cancelStatusChange = () => {
-    // Revert dropdown to the previous status
     if (showConfirmDialog) {
       const { bookingId, previousStatus } = showConfirmDialog;
       setBookings((prevBookings) =>
@@ -93,7 +96,7 @@ const AdminBookings: React.FC<AdminBookingsProps> = ({ email }) => {
         )
       );
     }
-    setShowConfirmDialog(null); // Close the confirmation dialog
+    setShowConfirmDialog(null);
   };
 
   const handleDelete = async (bookingId: number) => {
@@ -124,12 +127,9 @@ const AdminBookings: React.FC<AdminBookingsProps> = ({ email }) => {
       <div className="max-w-7xl mx-auto px-6">
         <div className="bg-white shadow-lg rounded-lg overflow-hidden">
           {confirmationMessage && (
-            <div className="bg-green-500 text-white p-4 rounded-md mb-4">
-              {confirmationMessage}
-            </div>
+            <div className="bg-green-500 text-white p-4 rounded-md mb-4">{confirmationMessage}</div>
           )}
 
-          {/* Confirmation Dialog */}
           {showConfirmDialog && (
             <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white p-6 rounded-md shadow-lg">
@@ -158,36 +158,35 @@ const AdminBookings: React.FC<AdminBookingsProps> = ({ email }) => {
             </div>
           )}
 
-          <table className="w-full table-auto">
-            <thead className="bg-gray-200">
-              <tr>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Booking ID</th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Email</th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Date</th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Time</th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Service</th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Staff</th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Payment</th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Created At</th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Status</th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {bookings.length > 0 ? (
-                bookings.map((booking) => (
-                  <tr key={booking.bookingid} className="border-t hover:bg-gray-100 transition duration-200">
-                    <td className="px-6 py-4 text-sm text-gray-600">{booking.bookingid}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{booking.email}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{booking.date}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{booking.time}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{booking.services}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{booking.staffname}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{booking.paymentmethod}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{new Date(booking.created_at).toLocaleString()}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      <select
-                        className="border rounded px-2 py-1"
+<table className="w-full table-auto">
+<thead className="bg-gray-200">
+  <tr>
+    <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Booking ID</th>
+    <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Email</th>
+    <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Date</th>
+    <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Time</th>
+    <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Service</th>
+    <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Staff</th>
+    <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Payment</th>
+    <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Created At</th>
+    <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Status</th>
+    <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Actions</th>
+  </tr>
+</thead>
+<tbody>
+  {bookings.length > 0 ? (
+    bookings.map((booking) => (
+      <tr key={booking.bookingid} className="border-t hover:bg-gray-100 transition duration-200">
+        <td className="px-6 py-4 text-sm text-gray-600">{booking.bookingid}</td>
+        <td className="px-6 py-4 text-sm text-gray-600">{booking.email}</td>
+        <td className="px-6 py-4 text-sm text-gray-600">{booking.date}</td>
+        <td className="px-6 py-4 text-sm text-gray-600">{booking.time}</td>
+        <td className="px-6 py-4 text-sm text-gray-600">{booking.services}</td>
+        <td className="px-6 py-4 text-sm text-gray-600">{booking.staffname}</td>
+        <td className="px-6 py-4 text-sm text-gray-600">{booking.paymentmethod}</td>
+        <td className="px-6 py-4 text-sm text-gray-600">{new Date(booking.created_at).toLocaleString()}</td>
+        <td className="px-6 py-4 text-sm text-gray-600">
+          <select
                         value={booking.status}
                         onChange={(e) =>
                           handleStatusChange(e, booking.bookingid, booking.status)
@@ -199,9 +198,8 @@ const AdminBookings: React.FC<AdminBookingsProps> = ({ email }) => {
                         <option value="Completed">Completed</option>
                       </select>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    <td>
                       <button
-                        className="text-red-500 hover:text-red-700"
                         onClick={() => handleDelete(booking.bookingid)}
                         disabled={loading}
                       >
@@ -212,7 +210,7 @@ const AdminBookings: React.FC<AdminBookingsProps> = ({ email }) => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={10} className="px-6 py-4 text-center text-sm text-gray-600">No bookings found</td>
+                  <td colSpan={10}>No bookings found</td>
                 </tr>
               )}
             </tbody>
@@ -224,3 +222,4 @@ const AdminBookings: React.FC<AdminBookingsProps> = ({ email }) => {
 };
 
 export default AdminBookings;
+

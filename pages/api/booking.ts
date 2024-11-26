@@ -32,26 +32,23 @@ const bookingHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     if (req.method === 'POST') {
       // Create a new booking
       const { email, date, time, services, staffname, paymentmethod } = req.body;
-
+    
       console.log('Received booking data:', req.body);
-
+    
       // Validate required fields
       if (!email || !date || !time || !services || !staffname || !paymentmethod) {
         return res.status(400).json({ message: 'All booking fields are required' });
       }
-
+    
       try {
         const serviceToStore = Array.isArray(services) ? services.join(', ') : services;
-
-        const combinedDateTime = new Date(
-          `${date}T${time}:00Z`
-        );
-
+    
+        const combinedDateTime = new Date(`${date}T${time}:00Z`);
+    
         const insertQuery = `
-          INSERT INTO bookings (email, date, time, services, staffname, paymentmethod, created_at)
-          VALUES ($1, $2, $3::TIME, $4, $5, $6, NOW()) RETURNING *;
+          INSERT INTO bookings (email, date, time, services, staffname, paymentmethod, created_at, status)
+          VALUES ($1, $2, $3::TIME, $4, $5, $6, NOW(), 'Pending') RETURNING *;
         `;
-
         const insertResult = await client.query(insertQuery, [
           email,
           combinedDateTime.toISOString().split('T')[0],
@@ -60,18 +57,18 @@ const bookingHandler = async (req: NextApiRequest, res: NextApiResponse) => {
           staffname,
           paymentmethod.trim(),
         ]);
-
+    
         const insertedBooking = insertResult.rows[0];
         console.log('Inserted Booking:', insertedBooking);
-
+    
         return res.status(201).json({
           message: 'Booking created successfully',
           booking: insertedBooking,
         });
-      } catch  {
-        console.error('Database error:', );
+      } catch (err) {
+        console.error('Database error:', err);
         return res.status(500).json({ message: 'Internal server error during booking creation' });
-      }
+      }    
     } else if (req.method === 'GET') {
       // Retrieve all bookings
       const selectQuery = 'SELECT * FROM bookings ORDER BY created_at DESC';
@@ -88,18 +85,44 @@ const bookingHandler = async (req: NextApiRequest, res: NextApiResponse) => {
       }));
 
       return res.status(200).json(bookings);
-    } else if (req.method === 'DELETE' && req.query.past) {
-      // Delete past bookings
-      const deletePastBookingsQuery = `
-        DELETE FROM bookings
-        WHERE date < CURRENT_DATE;
-      `;
-
-      const deleteResult = await client.query(deletePastBookingsQuery);
-
-      return res.status(200).json({
-        message: `Successfully deleted ${deleteResult.rowCount} past bookings.`,
-      });
+    } else if (req.method === 'DELETE') {
+      if (req.query.past) {
+        // Delete past bookings
+        const deletePastBookingsQuery = `
+          DELETE FROM bookings
+          WHERE date < CURRENT_DATE;
+        `;
+    
+        const deleteResult = await client.query(deletePastBookingsQuery);
+    
+        return res.status(200).json({
+          message: `Successfully deleted ${deleteResult.rowCount} past bookings.`,
+        });
+      } else if (req.query.bookingID) {
+        // Delete a specific booking
+        const bookingID = parseInt(req.query.bookingID as string, 10);
+    
+        if (isNaN(bookingID)) {
+          return res.status(400).json({ message: 'Invalid booking ID' });
+        }
+    
+        const deleteBookingQuery = `
+          DELETE FROM bookings
+          WHERE bookingid = $1;
+        `;
+    
+        const deleteResult = await client.query(deleteBookingQuery, [bookingID]);
+    
+        if (deleteResult.rowCount === 0) {
+          return res.status(404).json({ message: 'Booking not found' });
+        }
+    
+        return res.status(200).json({
+          message: `Successfully deleted booking with ID ${bookingID}.`,
+        });
+      } else {
+        return res.status(400).json({ message: 'Invalid DELETE request' });
+      }
     } else if (req.method === 'PUT') {
       // Update booking status
       const { bookingId, status } = req.body;
