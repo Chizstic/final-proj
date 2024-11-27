@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Footer from '../components/footer';
-import BookingForm from './bookingform';
 import Image from 'next/image';
 import { Bookings } from './api/type';
 import { FaBars, FaCheckCircle, FaShoppingCart } from 'react-icons/fa';
@@ -13,9 +12,8 @@ import { useCart } from '../context/CartContext'; // Adjust the path if necessar
 
 
 function Homepage() {
-  const [showBookingForm, setShowBookingForm] = useState(false);
   const [showCart, setShowCart] = useState(false);
-  const [booking, setBooking] = useState<Bookings | null>(null);
+  const [, setBooking] = useState<Bookings | null>(null);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const servicesRef = useRef<HTMLDivElement | null>(null);
   const [showNotice, setShowNotice] = useState(false);
@@ -66,10 +64,7 @@ function Homepage() {
   };
 
 
-  const handleCloseBookingForm = () => {
-    setShowBookingForm(false);
-  };
-
+ 
   
   const handleContainerClick = (serviceName: string) => {
     console.log(`Service selected: ${serviceName}`);
@@ -93,13 +88,6 @@ function Homepage() {
 
   };
 
-  const currentUserEmail = typeof window !== 'undefined'
-    ? localStorage.getItem('email') || ''
-    : '';
-
-  const bookingID = typeof window !== 'undefined' && localStorage.getItem('bookingID')
-    ? Number(localStorage.getItem('bookingID'))
-    : 0;
 
   return (
     <div className="bg-white">
@@ -276,7 +264,7 @@ function Homepage() {
   
   <div className="w-full lg:w-[30%] lg:ml-8 mt-6 lg:mt-0">
     <h1 className="font-semibold text-xl text-rose-700 mb-2 text-center lg:text-left">OUR BENEFITS</h1>
-    <ul className="space-y-2 text-center lg:text-left">
+    <ul className="space-y-2 text-center  text-black lg:text-left">
       <li className="flex items-center justify-center lg:justify-start">
         <FaCheckCircle className="text-rose-700 mr-2" />
         Relaxing and rejuvenating experience
@@ -302,8 +290,6 @@ function Homepage() {
 </div>
 
 
-
-
 {/* Second Image Section */}
 <div className="flex justify-center mt-8 w-full">
   <Image 
@@ -316,13 +302,7 @@ function Homepage() {
   />
 </div>
 
-
-
-
-
-      
-     
-
+    
 <div className="text-center sm:text-left mt-10 text-gray-600 w-11/12 sm:w-9/12  mx-auto border rounded p-4">
   <p>
     Note: Prices are quoted at a minimum and may vary depending on hair length. Please consult with your stylist for possible additional charges.
@@ -345,32 +325,10 @@ function Homepage() {
       <Footer/>
       
 
-      {showBookingForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="relative bg-white rounded-lg p-6 shadow-lg">
-            {/* Close Button */}
-            <button
-              onClick={handleCloseBookingForm}
-              className="absolute top-4 right-4 text-gray-600 hover:text-gray-800 focus:outline-none"
-              aria-label="Close"
-            >
-              &times;
-            </button>
-
-            {/* Booking Form */}
-            <BookingForm
-              bookingid={bookingID}
-              email={currentUserEmail}
-              servicePrice={booking?.servicePrice || 0} // Provide a default value (like 0) if it's undefined
-            />
-          </div>
-        </div>
-      )}
-
-<div className="fixed bottom-4 right-4 z-50">
+    <div className="fixed bottom-4 right-4 z-50">
       <button
         onClick={toggleCart}
-        className="bg-red-400 p-4 sm:p-5 md:p-6 rounded-full shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center justify-center relative"
+        className="bg-rose-500 p-4 sm:p-5 md:p-6 rounded-full shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center justify-center relative"
       >
         <FaShoppingCart size={30} className="text-white" />
         {/* Cart Item Count Notification */}
@@ -384,22 +342,23 @@ function Homepage() {
 
 
       {/* Cart Overlay */}
-      {showCart && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="relative bg-white rounded-lg p-6 shadow-lg">
-            {/* Close Button */}
-            <button
-              onClick={toggleCart}
-              className="absolute top-4 right-4 text-gray-600 hover:text-gray-800 focus:outline-none"
-              aria-label="Close"
-            >
-              &times;
-            </button>
+        {showCart && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="relative bg-white rounded-lg p-10 shadow-lg">
+              {/* Close Button */}
+              <button
+                onClick={toggleCart}
+                className="absolute top-4 right-4 text-3xl text-gray-600 hover:text-gray-800 focus:outline-none"
+                aria-label="Close"
+              >
+                &times;
+              </button>
 
-            <Cart />
+              <Cart />
+            </div>
           </div>
-        </div>
-      )}
+        )}
+
     </div>
   );
 }

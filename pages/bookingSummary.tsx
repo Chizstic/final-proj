@@ -78,10 +78,10 @@ const BookingSummary: React.FC<BookingSummaryProps> = ({ booking, onBack }) => {
     return <div>Loading...</div>;
   };
   return (
-    <div className="bg-rose-400  rounded-2xl p-6 sm:p-8 shadow-xl border border-gray-200 max-w-xs sm:max-w-md mx-auto">
+    <div className="bg-rose-50  rounded-2xl p-6 sm:p-8 shadow-xl border border-gray-200 max-w-xs sm:max-w-md mx-auto">
       {isSummaryVisible && !isPaymentVisible ? (
         <>
-          <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-center text-blue-600">Booking Summary</h2>
+          <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-center text-slate-700">Booking Summary</h2>
           <div className="space-y-4">
             <div className="p-4 border border-gray-200 rounded-lg shadow-sm">
               <p className="text-gray-700 font-medium"><strong>Email:</strong> {booking.email}</p>
@@ -108,13 +108,13 @@ const BookingSummary: React.FC<BookingSummaryProps> = ({ booking, onBack }) => {
           <div className="flex flex-col sm:flex-row justify-center sm:justify-between mt-6 space-y-4 sm:space-y-0">
             <button
               onClick={onBack}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+              className="border-2 border-rose-500  text-slate-800  px-4 py-2 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105"
             >
               Back to Booking Form
             </button>
             <button
               onClick={handleProceedToPayment}
-              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+              className="bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105"
             >
               Proceed to Payment
             </button>
@@ -122,7 +122,7 @@ const BookingSummary: React.FC<BookingSummaryProps> = ({ booking, onBack }) => {
         </>
       ) : isPaymentVisible ? (
         <div>
-          <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-center text-blue-600">Payment</h2>
+          <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-center text-slate-600">Payment</h2>
           <div className="mb-6">
             <label className="block text-gray-600 font-medium mb-2">Amount to Pay (50%):</label>
             <input

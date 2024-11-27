@@ -234,8 +234,8 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookin
       {showSummary ? (
         <BookingSummary booking={formDetails} onBack={handleBackToForm} />
       ) : (
-        <div className="bg-rose-400 rounded-2xl p-10 shadow-xl border border-gray-200">
-          <h2 className="text-3xl font-extrabold text-white mb-8 text-center">Book Your Appointment</h2>
+        <div className="bg-rose-50 rounded-2xl p-10 shadow-xl border border-gray-200">
+          <h2 className="text-3xl font-extrabold text-slate-800 mb-8 text-center">Book Your Appointment</h2>
   
           {errorMessages.length > 0 && (
             <div className="bg-red-50 border-l-4 border-red-500 text-red-700 px-6 py-4 rounded-lg mb-8 shadow-md">
@@ -259,7 +259,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookin
                 onChange={handleInputChange}
                 required
                 placeholder="Enter your email address"
-                className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out hover:shadow-lg"
+                className="w-full p-4 border-2 border-rose-300 text-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out hover:shadow-lg"
               />
             </div>
   
@@ -274,7 +274,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookin
                   value={formDetails.date}
                   onChange={handleInputChange}
                   required
-                  className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out hover:shadow-lg"
+                  className="w-full p-4 border-2 border-rose-300 text-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out hover:shadow-lg"
                   min={new Date().toISOString().split("T")[0]}
                 />
               </div>
@@ -288,7 +288,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookin
                   value={formDetails.time}
                   onChange={handleInputChange}
                   required
-                  className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out hover:shadow-lg"
+                  className="w-full p-4 border-2 border-rose-300 text-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out hover:shadow-lg"
                 />
               </div>
             </div>
@@ -297,7 +297,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookin
             <div className="col-span-1 sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-8">
               {/* Services */}
               <div>
-                <label className="block text-lg font-medium text-gray-800 mb-2">Select Services</label>
+                <label className="block text-lg font-medium text-gray-800 mb-2 ">Select Services</label>
                 <Select
                   options={serviceOptions}
                   isMulti
@@ -305,9 +305,28 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookin
                   value={serviceOptions.filter((option) =>
                     formDetails.services.includes(option.value)
                   )}
-                  className="mt-2"
+                  className="mt-2 border-2 border-rose-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   classNamePrefix="select"
                   placeholder="Select one or more services..."
+                  styles={{
+                    control: (base) => ({
+                      ...base,
+                      color: "gray",
+                    }),
+                    singleValue: (base) => ({
+                      ...base,
+                      color: "gray", // Change this to desired text color
+                    }),
+                    multiValueLabel: (base) => ({
+                      ...base,
+                      color: "black", // Text color for selected options
+                    }),
+                    option: (base, state) => ({
+                      ...base,
+                      color: state.isSelected ? "white" : "black", // Text color of options
+                      backgroundColor: state.isSelected ? "#007BFF" : "white", // Highlight selected option
+                    }),
+                  }}
                 />
               </div>
   
@@ -318,10 +337,30 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookin
                   options={staffOptions}
                   isMulti
                   onChange={handleStaffChange}
-                  className="mt-2"
+                  className="mt-2 border-2 border-rose-300 rounded-lg"
                   classNamePrefix="select"
                   placeholder="Select staff members..."
+                  styles={{
+                    control: (base) => ({
+                      ...base,
+                      color: "gray", // Text color in the input area
+                    }),
+                    multiValueLabel: (base) => ({
+                      ...base,
+                      color: "black", // Text color for selected items
+                    }),
+                    placeholder: (base) => ({
+                      ...base,
+                      color: "gray", // Placeholder text color
+                    }),
+                    option: (base, state) => ({
+                      ...base,
+                      color: state.isSelected ? "white" : "black", // Text color for dropdown options
+                      backgroundColor: state.isSelected ? "#007BFF" : "white", // Highlight for selected options
+                    }),
+                  }}
                 />
+
               </div>
             </div>
   
@@ -333,14 +372,15 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookin
                 value={formDetails.paymentmethod || ""}
                 onChange={handleInputChange}
                 required
-                className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out hover:shadow-lg"
+                className="w-full p-4 border-2 border-rose-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out hover:shadow-lg text-slate-700" // Tailwind class for blue text
               >
                 <option value="">Select a payment method</option>
-                <option value="GCash">GCash</option>
-                <option value="Credit Card">Credit Card</option>
-                <option value="Grab Pay">GrabPay</option>
-                <option value="PayMaya">PayMaya</option>
+                <option value="GCash" className="text-black">GCash</option>
+                <option value="Credit Card" className="text-black">Credit Card</option>
+                <option value="Grab Pay" className="text-black">GrabPay</option>
+                <option value="PayMaya" className="text-black">PayMaya</option>
               </select>
+
             </div>
   
             {/* Submit Button */}

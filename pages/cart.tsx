@@ -99,13 +99,13 @@ const Cart: React.FC = () => {
               {tempCart.map((item) => (
                 <li key={item.id} className="flex justify-between items-center py-4 border-b border-gray-300">
                   <div>
-                    <p className="font-semibold">{item.title}</p>
+                    <p className="font-semibold text-slate-800">{item.title}</p>
                     <p className="text-sm text-gray-600">{item.price}</p>
                   </div>
                   {isEditing && (
                     <button
                       onClick={() => handleRemoveItem(item.id)}
-                      className="text-red-500 hover:text-red-700 font-semibold text-lg"
+                      className="text-red-500  hover:text-red-700 font-semibold text-lg"
                     >
                       Remove
                     </button>
@@ -117,13 +117,13 @@ const Cart: React.FC = () => {
               {isEditing ? (
                 <>
                   <button
-                    className="py-3 px-6 bg-gray-500 text-white rounded-full font-semibold text-lg hover:bg-gray-600 transition"
+                    className="py-3 px-6 border-2 border-gray-700  text-slate-800 rounded-full font-semibold text-lg hover:bg-slate-200 transition"
                     onClick={handleCancelEdit}
                   >
                     Cancel
                   </button>
                   <button
-                    className="py-3 px-6 bg-green-600 text-white rounded-full font-semibold text-lg hover:bg-green-700 transition"
+                    className="py-3 px-6 bg-green-600 ml-2 text-white rounded-full font-semibold text-lg hover:bg-green-700 transition"
                     onClick={handleEditToggle}
                   >
                     Done
@@ -132,13 +132,13 @@ const Cart: React.FC = () => {
               ) : (
                 <>
                   <button
-                    className="py-3 px-6 bg-blue-600 text-white rounded-full font-semibold text-lg hover:bg-blue-700 transition"
+                    className="py-3 px-6 border-2 border-rose-500 text-slate-800 rounded-full font-semibold text-lg hover:bg-slate-200 transition"
                     onClick={handleEditToggle}
                   >
                     Edit Services
                   </button>
                   <button
-                    className="py-3 px-6 bg-rose-600 text-white rounded-full font-semibold text-lg hover:bg-rose-700 transition"
+                    className="py-3 px-6 bg-rose-600 ml-2 text-white rounded-full font-semibold text-lg hover:bg-rose-700 transition"
                     onClick={handleCheckout}
                   >
                     Checkout
