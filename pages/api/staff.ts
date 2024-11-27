@@ -43,32 +43,32 @@ const staffHandler = async (req: NextApiRequest, res: NextApiResponse) => {
         res.status(201).json({ message: 'Staff member added successfully', staff: newStaffRows[0] });
         break;
 
-        case 'PUT':
-  // Update an existing staff member
-  const { staffid, fname: updateFname, lname: updateLname, position: updatePosition } = req.body;
+      case 'PUT':
+        // Update an existing staff member
+        const { staffid, fname: updateFname, lname: updateLname, position: updatePosition } = req.body;
 
-  if (!staffid || !updateFname || !updateLname || !updatePosition) {
-    return res.status(400).json({ message: 'Missing required fields: staffid, fname, lname, position' });
-  }
+        if (!staffid || !updateFname || !updateLname || !updatePosition) {
+          return res.status(400).json({ message: 'Missing required fields: staffid, fname, lname, position' });
+        }
 
-  try {
-    // Update the staff in the database
-    const { rowCount: updatedRowCount } = await client.query(
-      'UPDATE staff SET fname = $1, lname = $2, position = $3 WHERE staffID = $4',
-      [updateFname, updateLname, updatePosition, staffid] // Using the correct staffID
-    );
+        try {
+          // Call the stored procedure for updating staff member
+          const result = await client.query(
+            'CALL update_staff_member($1, $2, $3, $4)', // Call the procedure
+            [staffid, updateFname, updateLname, updatePosition]
+          );
 
-    if (updatedRowCount === 0) {
-      return res.status(404).json({ message: 'Staff member not found' });
-    }
+          // If no rows were affected, staff member was not found
+          if (result.rowCount === 0) {
+            return res.status(404).json({ message: 'Staff member not found' });
+          }
 
-    res.status(200).json({ message: 'Staff member updated successfully' });
-  } catch  {
-    res.status(500).json({ message: 'Internal server error' });
-  }
-  break;
-
-        
+          res.status(200).json({ message: 'Staff member updated successfully' });
+        } catch (error) {
+          console.error('Error updating staff member:', error);
+          res.status(500).json({ message: 'Internal server error' });
+        }
+        break;
 
       case 'DELETE':
         // Delete a staff member
@@ -90,7 +90,7 @@ const staffHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     }
   } catch (error) {
     console.error('Error handling staff:', error);
-   
+    res.status(500).json({ message: 'Internal server error' });
   } finally {
     if (client) {
       await client.release();

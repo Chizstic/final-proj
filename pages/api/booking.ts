@@ -7,19 +7,23 @@ const pool = createPool({
   connectionString: process.env.DATABASE_URL,
 });
 
-
+// Cron job to delete bookings older than 15 days
 cron.schedule('0 0 * * *', async () => {
-  console.log('Running daily cleanup task for past bookings...');
+  console.log('Running daily cleanup task for bookings older than 15 days...');
+  
   const client = await pool.connect();
+  
   try {
-    const deletePastBookingsQuery = `
+    const deleteOldBookingsQuery = `
       DELETE FROM bookings
-      WHERE date < CURRENT_DATE;
+      WHERE date < CURRENT_DATE - INTERVAL '15 days';
     `;
-    const deleteResult = await client.query(deletePastBookingsQuery);
-    console.log(`Successfully deleted ${deleteResult.rowCount} past bookings.`);
+    
+    const deleteResult = await client.query(deleteOldBookingsQuery);
+    console.log(`Successfully deleted ${deleteResult.rowCount} old bookings.`);
+    
   } catch (err) {
-    console.error('Error deleting past bookings:', err);
+    console.error('Error deleting old bookings:', err);
   } finally {
     client.release();
   }
@@ -45,25 +49,21 @@ const bookingHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     
         const combinedDateTime = new Date(`${date}T${time}:00Z`);
     
+        // Call the stored procedure to create the booking
         const insertQuery = `
-          INSERT INTO bookings (email, date, time, services, staffname, paymentmethod, created_at, status)
-          VALUES ($1, $2, $3::TIME, $4, $5, $6, NOW(), 'Pending') RETURNING *;
+          CALL create_booking($1, $2, $3::TIME, $4, $5, $6);
         `;
-        const insertResult = await client.query(insertQuery, [
+        await client.query(insertQuery, [
           email,
-          combinedDateTime.toISOString().split('T')[0],
-          time,
-          serviceToStore,
-          staffname,
-          paymentmethod.trim(),
+          combinedDateTime.toISOString().split('T')[0], // Date
+          time,  // Time
+          serviceToStore,  // Services (comma-separated list)
+          staffname,  // Staff name
+          paymentmethod.trim(),  // Payment method
         ]);
-    
-        const insertedBooking = insertResult.rows[0];
-        console.log('Inserted Booking:', insertedBooking);
     
         return res.status(201).json({
           message: 'Booking created successfully',
-          booking: insertedBooking,
         });
       } catch (err) {
         console.error('Database error:', err);
@@ -76,12 +76,12 @@ const bookingHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
       const bookings = result.rows.map((booking) => ({
         ...booking,
-        date: new Date(booking.date).toISOString().split('T')[0],
+        date: new Date(booking.date).toISOString().split('T')[0], // Format date
         time: new Date(`1970-01-01T${booking.time}`).toLocaleTimeString([], {
           hour: '2-digit',
           minute: '2-digit',
           hour12: true,
-        }),
+        }), // Format time
       }));
 
       return res.status(200).json(bookings);
@@ -137,12 +137,12 @@ const bookingHandler = async (req: NextApiRequest, res: NextApiResponse) => {
       }
     
       try {
+        // Call the stored procedure to update the booking status
         const updateQuery = `
           CALL update_booking_status($1, $2);
         `;
-       await client.query(updateQuery, [bookingId, status]);
+        await client.query(updateQuery, [bookingId, status]);
     
-        // The procedure doesn't directly return the updated row to the client
         return res.status(200).json({
           message: 'Booking status updated successfully',
         });
