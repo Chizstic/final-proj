@@ -46,21 +46,25 @@ const bookingHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     
       try {
         const serviceToStore = Array.isArray(services) ? services.join(', ') : services;
-    
+
         const combinedDateTime = new Date(`${date}T${time}:00Z`);
-    
-        // Call the stored procedure to create the booking
+        
+        // Construct the insert query
         const insertQuery = `
-          CALL create_booking($1, $2, $3::TIME, $4, $5, $6);
+          INSERT INTO bookings (email, date, time, services, staffname, paymentmethod)
+          VALUES ($1, $2, $3::TIME, $4, $5, $6);
         `;
+        
+        // Execute the query
         await client.query(insertQuery, [
           email,
-          combinedDateTime.toISOString().split('T')[0], // Date
+          combinedDateTime.toISOString().split('T')[0], // Date (just the date part)
           time,  // Time
           serviceToStore,  // Services (comma-separated list)
           staffname,  // Staff name
           paymentmethod.trim(),  // Payment method
         ]);
+        
     
         return res.status(201).json({
           message: 'Booking created successfully',
