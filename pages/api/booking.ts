@@ -71,7 +71,7 @@ const bookingHandler = async (req: NextApiRequest, res: NextApiResponse) => {
         });
       } catch (err) {
         console.error('Database error:', err);
-        return res.status(500).json({ message: 'Internal server error during booking creation' });
+        return res.status(500).json({ message: 'The selected date and time are already booked by another customer. Please choose a different slot.' });
       }    
     } else if (req.method === 'GET') {
       // Retrieve all bookings
