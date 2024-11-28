@@ -35,11 +35,11 @@ const profileHandler = async (req: NextApiRequest, res: NextApiResponse) => {
       }
 
       // Insert the profile
-      const insertQuery = `
-        INSERT INTO user_profiles (email, name, age, sex, address, contact_number)
+      const insertQuery = 
+        `INSERT INTO user_profiles (email, name, age, sex, address, contact_number)
         VALUES ($1, $2, $3, $4, $5, $6)
         RETURNING *;
-      `;
+      ;`
       const newProfileResult = await client.query(insertQuery, [email, name, age, sex, address, contact_number]);
 
       return res.status(201).json({ profile: newProfileResult.rows[0] });
@@ -63,12 +63,12 @@ const profileHandler = async (req: NextApiRequest, res: NextApiResponse) => {
       }
 
       // Update the profile
-      const updateQuery = `
-        UPDATE user_profiles
+      const updateQuery = 
+        `UPDATE user_profiles
         SET name = $2, age = $3, sex = $4, address = $5, contact_number = $6
         WHERE email = $1
-        RETURNING *;
-      `;
+        RETURNING *;`
+      ;
       const updatedProfileResult = await client.query(updateQuery, [email, name, age, sex, address, contact_number]);
 
       return res.status(200).json({ profile: updatedProfileResult.rows[0] });
