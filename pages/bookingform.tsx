@@ -3,6 +3,7 @@ import BookingSummary from './bookingSummary';
 import { useRouter } from 'next/router';
 import { Bookings } from './api/type';
 import Select, { MultiValue } from 'react-select';
+import { useCart } from "../context/CartContext";
 
 interface ServiceOption {
   servicename: string;
@@ -47,6 +48,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookin
     status:'',
   });
 
+  const { cart, removeFromCart } = useCart();
   const [showSummary, setShowSummary] = useState(false);
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const [serviceOptions, setServiceOptions] = useState<ServiceOption[]>([]);
@@ -54,6 +56,8 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookin
   const [, setBookedDates] = useState<string[]>([]);
   const router = useRouter();
   const { cartItems } = router.query;
+
+  
 
   useEffect(() => {
     if (cartItems) {
@@ -223,6 +227,15 @@ const BookingForm: React.FC<BookingFormProps> = ({ initialBookingDetails, bookin
       console.error('Error submitting booking:', error);
       setErrorMessages(['Failed to submit booking.']);
     }
+    // Clear all cart items properly (context + localStorage)
+try {
+  if (Array.isArray(cart)) {
+    cart.forEach((item: any) => removeFromCart(item.id));
+  }
+} catch (err) {
+  console.warn("Failed to clear cart:", err);
+}
+
   };
   
   

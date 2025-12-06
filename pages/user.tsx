@@ -213,7 +213,7 @@ const UserProfile: React.FC = () => {
             onClick={handleProfileClick}
             className="block px-4 py-2 text-gray-800 hover:bg-rose-100 w-full text-left"
           >
-            Profile
+            Bookings
           </button>
           <button
             onClick={handleLogout}
@@ -230,7 +230,7 @@ const UserProfile: React.FC = () => {
 
 
 <main>
-  <div className="bg-rose-400 shadow-lg overflow-hidden">
+  {/* <div className="bg-rose-400 shadow-lg overflow-hidden">
   <div className="bg-rose-400 text-white p-5 sm:p-6 md:p-8  md:h-40 lg:h-40 sm:h-32 ">
   <div className="flex items-center justify-start">
     <div>
@@ -327,7 +327,7 @@ const UserProfile: React.FC = () => {
         )
       )}
     </div>
-  </div>
+  </div> */}
 
   <div className="p-10">
     <h3 className="text-2xl font-semibold mb-6 text-pink-600">Your Bookings</h3>

@@ -131,25 +131,30 @@ const AdminBookings: React.FC<AdminBookingsProps> = ({ email }) => {
           )}
 
           {showConfirmDialog && (
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white p-6 rounded-md shadow-lg">
-                <h2 className="text-lg font-semibold">Are you sure you want to update the status?</h2>
-                <p>Booking ID: {showConfirmDialog.bookingId}</p>
-                <p>New Status: {showConfirmDialog.newStatus}</p>
-                <div className="mt-4">
+            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 backdrop-blur-sm">
+              <div className="bg-white/95 backdrop-blur-md text-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-md animate-fadeIn">
+                <h2 className="text-2xl font-bold mb-4">Confirm Status Update</h2>
+                <p className="text-gray-700 mb-2">
+                  <span className="font-semibold">Booking ID:</span> {showConfirmDialog.bookingId}
+                </p>
+                <p className="text-gray-700 mb-6">
+                  <span className="font-semibold">New Status:</span> {showConfirmDialog.newStatus}
+                </p>
+                
+                <div className="flex justify-end gap-4">
                   <button
-                    className="px-4 py-2 bg-green-500 text-white rounded-md mr-4"
                     onClick={() =>
                       confirmStatusChange(showConfirmDialog.bookingId, showConfirmDialog.newStatus)
                     }
                     disabled={loading}
+                    className="px-6 py-2 bg-green-600 text-white font-semibold rounded-lg shadow hover:bg-green-700 transition"
                   >
                     Yes
                   </button>
                   <button
-                    className="px-4 py-2 bg-red-500 text-white rounded-md"
                     onClick={cancelStatusChange}
                     disabled={loading}
+                    className="px-6 py-2 bg-red-600 text-white font-semibold rounded-lg shadow hover:bg-red-700 transition"
                   >
                     No
                   </button>
@@ -157,6 +162,7 @@ const AdminBookings: React.FC<AdminBookingsProps> = ({ email }) => {
               </div>
             </div>
           )}
+
 <table className="w-full table-auto">
 <thead className="bg-gray-200">
   <tr>
@@ -222,5 +228,3 @@ const AdminBookings: React.FC<AdminBookingsProps> = ({ email }) => {
 };
 
 export default AdminBookings;
-
-

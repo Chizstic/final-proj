@@ -23,6 +23,9 @@ function Homepage() {
   const { cart } = useCart(); // Extract `cart` from the CartContext
   
 
+
+  
+
   useEffect(() => {
     const totalCount = cart.reduce((total, item) => total + item.quantity, 0);
     setCartCount(totalCount);
@@ -148,7 +151,7 @@ function Homepage() {
                     onClick={handleProfileClick}
                     className="block px-4 py-2 text-gray-800 hover:bg-rose-100 w-full text-left"
                   >
-                    Profile
+                    Bookings
                   </button>
                   <button
                     onClick={handleLogoutClick}
@@ -324,40 +327,6 @@ function Homepage() {
 
       <Footer/>
       
-
-    <div className="fixed bottom-4 right-4 z-50">
-      <button
-        onClick={toggleCart}
-        className="bg-rose-500 p-4 sm:p-5 md:p-6 rounded-full shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center justify-center relative"
-      >
-        <FaShoppingCart size={30} className="text-white" />
-        {/* Cart Item Count Notification */}
-        {cartCount > 0 && (
-          <div className="absolute top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-            {cartCount}
-          </div>
-        )}
-      </button>
-    </div>
-
-
-      {/* Cart Overlay */}
-        {showCart && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="relative bg-white rounded-lg p-10 shadow-lg">
-              {/* Close Button */}
-              <button
-                onClick={toggleCart}
-                className="absolute top-4 right-4 text-3xl text-gray-600 hover:text-gray-800 focus:outline-none"
-                aria-label="Close"
-              >
-                &times;
-              </button>
-
-              <Cart />
-            </div>
-          </div>
-        )}
 
     </div>
   );
