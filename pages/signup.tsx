@@ -1,125 +1,158 @@
-import { useState } from 'react';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
-
-// Removed Spinner component since it's no longer needed
+import { useState } from "react";
+import { useRouter } from "next/router";
+import Link from "next/link";
+import Image from "next/image";
 
 const SignUpPage = () => {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  // const [success, setSuccess] = useState('');
-  const [loading, setLoading] = useState(false); // Loading state
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const validateEmail = (email: string) => {
+  const validateEmail = (value: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+    return emailRegex.test(value);
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
 
-    // Validate email format
     if (!validateEmail(email)) {
-      return; // No error message will be displayed
+      setError("Please enter a valid email address.");
+      return;
     }
 
-    // Check if passwords match
     if (password !== confirmPassword) {
-      return; // No error message will be displayed
+      setError("Passwords do not match.");
+      return;
     }
 
-    setLoading(true); // Set loading to true when the button is clicked
+    setLoading(true);
 
-    // Send data to the backend
     try {
-      const response = await fetch('/api/register', {
-        method: 'POST',
+      const response = await fetch("/api/register", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password, role: 'client' }),
+        body: JSON.stringify({ email, password, role: "client" }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Something went wrong'); // No error message will be displayed
+        throw new Error(data.message || "Something went wrong");
       }
 
-      // If registration is successful
-      // setSuccess('Sign up successful! You can now log in.');
-
-      // Simulate a redirect to login after successful sign-up
       setTimeout(() => {
-        router.push('/login');
-      }, 1000); // Redirect after 1 second
+        router.push("/login");
+      }, 800);
     } catch (err) {
-      console.error(err); // Error is logged but not shown to the user
+      setError(err instanceof Error ? err.message : "Unable to sign up right now.");
     } finally {
-      setLoading(false); // Reset loading state after completion
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex h-screen justify-center items-center bg-slate-100">
-      <div className="flex items-center justify-center w-full">
-        <div className="w-full max-w-md bg-pink-300 bg-opacity-30 p-12 rounded-lg shadow-md">
-          <div className="w-full flex flex-col mb-10">
-            <h3 className="text-4xl font-extrabold mb-2 text-center">
-              <span className="bg-gradient-to-r from-pink-400 to-pink-600 text-transparent bg-clip-text">Sign Up</span>
-            </h3>
+    <div className="min-h-screen bg-rose-50">
+      <div className="mx-auto grid min-h-screen max-w-6xl items-center gap-10 px-4 py-10 sm:px-6 lg:grid-cols-2 lg:px-8">
+        <section className="hidden lg:block">
+          <div className="max-w-xl">
+            <p className="inline-flex rounded-full bg-rose-100 px-4 py-2 text-sm font-semibold text-rose-700">
+              New client account
+            </p>
+            <h1 className="mt-6 text-5xl font-bold leading-tight text-slate-800">
+              Create your account and start booking easily.
+            </h1>
+            <p className="mt-5 text-lg leading-8 text-slate-600">
+              A simple sign-up flow helps clients of all ages get to their
+              appointments faster and with less confusion.
+            </p>
           </div>
-          <form onSubmit={handleSignUp}>
-            <div className="mb-4 opacity-95 text-slate-700">
-              <label htmlFor="email" className="block text-sm font-semibold mb-2">Email</label>
+        </section>
+
+        <section className="rounded-[2rem] bg-white p-6 shadow-sm sm:p-10">
+          <div className="mb-8 flex flex-col items-center text-center">
+            <Image
+              src="/logo.png"
+              alt="Guys & Gals Salon"
+              width={84}
+              height={84}
+              className="rounded-full border border-rose-200"
+            />
+            <h2 className="mt-4 text-3xl font-bold text-rose-700">
+              Create Your Account
+            </h2>
+            <p className="mt-2 text-base text-slate-600">
+              Sign up to book services and track appointments
+            </p>
+          </div>
+
+          <form onSubmit={handleSignUp} className="space-y-5">
+            <div className="text-slate-700">
+              <label htmlFor="email" className="mb-2 block text-sm font-semibold">
+                Email
+              </label>
               <input
                 type="email"
                 id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                className="w-full rounded-2xl border border-rose-200 px-4 py-4 text-base outline-none transition focus:border-rose-400 focus:ring-4 focus:ring-rose-100"
                 placeholder="Enter your email"
                 required
               />
             </div>
-            <div className="mb-4 opacity-95 text-slate-700">
-              <label htmlFor="password" className="block text-sm font-semibold mb-2">Password</label>
+            <div className="text-slate-700">
+              <label htmlFor="password" className="mb-2 block text-sm font-semibold">
+                Password
+              </label>
               <input
                 type="password"
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                className="w-full rounded-2xl border border-rose-200 px-4 py-4 text-base outline-none transition focus:border-rose-400 focus:ring-4 focus:ring-rose-100"
                 placeholder="Enter your password"
                 required
               />
             </div>
-            <div className="mb-4 opacity-95 text-slate-700">
-              <label htmlFor="confirmPassword" className="block text-sm font-semibold mb-2">Confirm Password</label>
+            <div className="text-slate-700">
+              <label htmlFor="confirmPassword" className="mb-2 block text-sm font-semibold">
+                Confirm Password
+              </label>
               <input
                 type="password"
                 id="confirmPassword"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                className="w-full rounded-2xl border border-rose-200 px-4 py-4 text-base outline-none transition focus:border-rose-400 focus:ring-4 focus:ring-rose-100"
                 placeholder="Confirm your password"
                 required
               />
             </div>
+
             <button
               type="submit"
-              className="w-full bg-pink-500 bg-opacity-80 text-white py-2 px-4 rounded-md font-semibold hover:bg-pink-600 transition duration-300 flex items-center justify-center"
+              className="w-full rounded-2xl bg-rose-600 py-4 text-lg font-semibold text-white transition hover:bg-rose-700"
             >
-              {loading ? 'Signing up...' : 'Sign Up'} {/* Change made here */}
+              {loading ? "Signing up..." : "Sign Up"}
             </button>
-            {/* {success && <p className="text-green-500 mt-4 text-center">{success}</p>} */}
+
+            {error && <p className="text-center text-red-600">{error}</p>}
           </form>
-          <p className="mt-4 text-center text-slate-700">
-            Already have an account? <Link href="/login" className="text-pink-500 hover:text-pink-700">Login</Link>
+
+          <p className="mt-6 text-center text-slate-700">
+            Already have an account?{" "}
+            <Link href="/login" className="font-semibold text-rose-600 hover:text-rose-700">
+              Login
+            </Link>
           </p>
-        </div>
+        </section>
       </div>
     </div>
   );

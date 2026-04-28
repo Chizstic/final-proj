@@ -1,11 +1,10 @@
 export interface Staff {
-  staffid?: number; 
+  staffid?: number;
   fname: string;
   lname: string;
   position: string;
 }
 
-// Assuming this is your type definition in './api/type'
 export interface Bookings {
   bookingid: number;
   email: string;
@@ -18,7 +17,3 @@ export interface Bookings {
   created_at: string;
   status: string;
 }
-
-
-
-

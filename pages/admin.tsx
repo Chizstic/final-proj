@@ -1,128 +1,96 @@
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import StaffList from './stafflist';
-import AdminBookings from './Bookings';
-import { Staff, Bookings } from './api/type';
-import { AiOutlineUser, AiOutlineSchedule, AiOutlineLogout, AiOutlineMenu } from 'react-icons/ai';
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import StaffList from "@/components/admin/StaffList";
+import AdminBookings from "@/components/admin/AdminBookings";
+import { Users, ClipboardList, LogOut, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-
 
 const AdminPage: React.FC = () => {
   const router = useRouter();
-  const [staffList, setStaffList] = useState<Staff[]>([]);
-  const [bookings, setBookings] = useState<Bookings[]>([]);
-  const [userEmail, ] = useState<string>('');
-  const [activeTab, setActiveTab] = useState<'staff' | 'bookings'>('staff');
-  const [loading, setLoading] = useState(true);
-  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
-   const { user, logout } = useAuth();
- 
+  const [activeTab, setActiveTab] = useState<"staff" | "bookings">("staff");
+  const [pageLoading, setPageLoading] = useState(true);
+  const { user, loading, logout } = useAuth();
 
   useEffect(() => {
-      if (!loading) {
-          if (!user) {
-              router.push("/login");
-          } else if (user.role !== "admin") {
-              router.push("/unauthorized");
-          }
+    if (!loading) {
+      if (!user) {
+        router.push("/login");
+        return;
       }
+
+      if (user.role !== "admin") {
+        router.push("/unauthorized");
+        return;
+      }
+
+      setPageLoading(false);
+    }
   }, [user, loading, router]);
 
-  useEffect(() => {
-    const fetchBookings = async () => {
-      try {
-        const response = await fetch('/api/booking');
-        if (!response.ok) throw new Error('Network response was not ok');
-        const data = await response.json();
-        setBookings(data);
-      } catch (error) {
-        console.error('Error fetching bookings:', error);
-      }
-      setLoading(false);
-    };
+  if (loading || pageLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-rose-50">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-rose-200 border-t-rose-600" />
+      </div>
+    );
+  }
 
-  
-
-    fetchBookings();
-  }, []);
-
-  const handleLogout = () => {
-   logout();
-  };
-
-  const pageTitle = activeTab === 'staff' ? 'Manage Staff' : 'Manage Bookings';
+  const tabs = [
+    { key: "staff", label: "Manage Staff", icon: Users },
+    { key: "bookings", label: "Manage Bookings", icon: ClipboardList },
+  ] as const;
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
-      {/* Header with Sidebar Toggle and Page Title */}
-      <header className="flex items-center bg-white shadow-lg px-6 py-4 z-10">
-        <button onClick={() => setIsSidebarVisible(!isSidebarVisible)} className="text-3xl text-gray-600 mr-4">
-          {isSidebarVisible ? <AiOutlineMenu /> : <AiOutlineMenu />}
-        </button>
-        <h1 className="text-2xl font-bold text-gray-800">{pageTitle}</h1>
-      </header>
+    <div className="min-h-screen bg-rose-50">
+      <header className="border-b border-rose-200 bg-white/95 backdrop-blur">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-5 sm:px-6 lg:px-8">
+          <div>
+            <p className="inline-flex items-center gap-2 rounded-full bg-rose-100 px-3 py-1 text-sm font-semibold text-rose-700">
+              <ShieldCheck size={16} />
+              Admin Panel
+            </p>
+            <h1 className="mt-3 text-3xl font-bold text-slate-800">
+              Salon management dashboard
+            </h1>
+            <p className="mt-2 text-slate-600">
+              Manage staff details and monitor customer bookings in one place.
+            </p>
+          </div>
 
-      {/* Sidebar - Position it absolutely so it slides over content, without covering the header */}
-      {isSidebarVisible && (
-        <aside
-          className="fixed top-0 left-0 h-full w-64 bg-white shadow-lg p-6 z-20 transition-transform transform"
-          style={{ marginTop: '4rem' }} // Adjust to match header height so it starts just below the header
-        >
           <button
-            onClick={() => setActiveTab('staff')}
-            className={`flex items-center w-full px-4 py-3 mb-4 rounded-lg text-lg font-medium text-gray-800 hover:bg-gray-100 transition-all ${
-              activeTab === 'staff' ? 'bg-gray-100' : ''
-            }`}
+            onClick={logout}
+            className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-rose-50"
           >
-            <AiOutlineUser className="mr-3 text-xl text-gray-600" />
-            Manage Staff
-          </button>
-          <button
-            onClick={() => setActiveTab('bookings')}
-            className={`flex items-center w-full px-4 py-3 mb-4 rounded-lg text-lg font-medium text-gray-800 hover:bg-gray-100 transition-all ${
-              activeTab === 'bookings' ? 'bg-gray-100' : ''
-            }`}
-          >
-            <AiOutlineSchedule className="mr-3 text-xl text-gray-600" />
-            View Bookings
-          </button>
-          <button
-            onClick={handleLogout}
-            className="flex items-center w-full px-4 py-3 mt-6 rounded-lg text-lg font-medium bg-red-500 text-white hover:bg-red-600 transition-all"
-          >
-            <AiOutlineLogout className="mr-3 text-xl" />
+            <LogOut size={16} />
             Logout
           </button>
-        </aside>
-      )}
+        </div>
+      </header>
 
-      {/* Main Content */}
-      <main className={`flex-1 p-8 transition-all ${isSidebarVisible ? 'ml-64' : ''}`}>
-        {loading ? (
-          <div className="flex justify-center items-center h-full">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-gray-400"></div>
-          </div>
-        ) : activeTab === 'staff' ? (
-          <StaffList
-            staffList={staffList}
-            handleAddStaff={(newStaff) => setStaffList((prev) => [...prev, newStaff])}
-            handleDeleteStaff={(staffId) =>
-              setStaffList((prev) => prev.filter((staff) => staff.staffid !== staffId))
-            }
-          />
-        ) : (
-          <AdminBookings
-  bookings={bookings}
-  editBooking={(updatedBooking): void =>
-    setBookings((prev) =>
-      prev.map((booking) =>
-        booking.bookingid === updatedBooking.bookingid ? updatedBooking : booking
-      )
-              )
-            }
-            email={userEmail}
-          />
-        )}
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mb-6 flex flex-wrap gap-3">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.key;
+
+            return (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition ${
+                  isActive
+                    ? "bg-rose-600 text-white"
+                    : "border border-rose-200 bg-white text-slate-700 hover:bg-rose-50"
+                }`}
+              >
+                <Icon size={16} />
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {activeTab === "staff" ? <StaffList staffList={[]} handleAddStaff={() => {}} handleDeleteStaff={() => {}} /> : <AdminBookings bookings={[]} editBooking={() => {}} email={user?.email ?? ""} />}
       </main>
     </div>
   );

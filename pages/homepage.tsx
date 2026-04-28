@@ -1,333 +1,206 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/router';
-import Footer from '../components/footer';
-import Image from 'next/image';
-import { Bookings } from './api/type';
-import { FaBars, FaCheckCircle, FaShoppingCart } from 'react-icons/fa';
-import Services from './services';
-import Cart from './cart';
-import { useAuth } from '../context/AuthContext';
-import { useCart } from '../context/CartContext'; // Adjust the path if necessary
-
-
+import React, { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/router";
+import Image from "next/image";
+import { Scissors, Sparkles, HeartHandshake, Clock3, CheckCircle2 } from "lucide-react";
+import Footer from "@/components/layout/Footer";
+import SalonHeader from "@/components/layout/SalonHeader";
+import Services from "@/components/services/Services";
+import { useAuth } from "../context/AuthContext";
 
 function Homepage() {
-  const [showCart, setShowCart] = useState(false);
-  const [, setBooking] = useState<Bookings | null>(null);
-  const [dropdownVisible, setDropdownVisible] = useState(false);
   const servicesRef = useRef<HTMLDivElement | null>(null);
   const [showNotice, setShowNotice] = useState(false);
-  const { user, loading, logout } = useAuth(); // Access user and loading states from AuthContext
+  const { user, loading, logout } = useAuth();
   const router = useRouter();
-  const [cartCount, setCartCount] = useState(0);
-  const { cart } = useCart(); // Extract `cart` from the CartContext
-  
-
-
-  
 
   useEffect(() => {
-    const totalCount = cart.reduce((total, item) => total + item.quantity, 0);
-    setCartCount(totalCount);
-  }, [cart]);
-
-
-
-  useEffect(() => {
-    if (!user) {
+    if (!loading && !user) {
       router.push("/");
-    } 
+    }
   }, [loading, user, router]);
-  useEffect(() => {
-    const bookingData = localStorage.getItem('bookingDetails');
-    if (bookingData) {
-      setBooking(JSON.parse(bookingData));
-    }
-    
-  }, []);
-
-  const toggleCart = () => {
-    setShowCart((prev) => !prev);
-  };
 
   useEffect(() => {
-    if (showNotice) {
-      const timer = setTimeout(() => {
-        setShowNotice(false);
-      }, 10000); // Hide notice after 10 seconds
-      return () => clearTimeout(timer);
-    }
+    if (!showNotice) return;
+    const timer = setTimeout(() => setShowNotice(false), 5000);
+    return () => clearTimeout(timer);
   }, [showNotice]);
 
   const handleBookNowClick = () => {
     if (servicesRef.current) {
-      servicesRef.current.scrollIntoView({ behavior: 'smooth' });
-      setShowNotice(true); // Show the notice message
+      servicesRef.current.scrollIntoView({ behavior: "smooth" });
+      setShowNotice(true);
     }
   };
 
-
- 
-  
-  const handleContainerClick = (serviceName: string) => {
-    console.log(`Service selected: ${serviceName}`);
-    // Scroll to the services section
+  const handleCategoryClick = () => {
     if (servicesRef.current) {
-      servicesRef.current.scrollIntoView({ behavior: 'smooth' });
+      servicesRef.current.scrollIntoView({ behavior: "smooth" });
     }
-    
   };
 
-  const toggleDropdown = () => {
-    setDropdownVisible((prev) => !prev);
-  };
+  const categories = [
+    { title: "Hair Care", image: "/Hair_Care.png", icon: Scissors },
+    { title: "Spa", image: "/Spa.png", icon: HeartHandshake },
+    { title: "Hair & Make-up", image: "/HnM.jpg", icon: Sparkles },
+    { title: "Nail Care", image: "/Nail Care.png", icon: Sparkles },
+  ];
 
-  const handleProfileClick = () => {
-    window.location.href = '/user';
-  };
-
-  const handleLogoutClick = () => {
-   logout();
-
-  };
-
+  const benefits = [
+    "Relaxing and rejuvenating experience",
+    "Skilled and certified professionals",
+    "High-quality salon and spa products",
+    "Comfortable service for young and older clients",
+  ];
 
   return (
-    <div className="bg-white">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
-      <div className="bg-[#cd668855] p-2 scroll-smooth">
-        <div className="text-xs md:text-sm font-semibold text-center text-gray-600">
-          Call Us: +63 998 9099 129
-        </div>
-        <div className="text-xs sm:text-sm md:text-sm lg:text-sm font-semibold text-center text-gray-600">
-          Opening Hours: Mon-Fri 9:00am - 8:00pm, Sat-Sun 9:00am - 7:00pm
-        </div>
+    <div className="min-h-screen bg-rose-50 text-slate-800">
+      <SalonHeader active="home" onLogout={logout} />
 
-      </div>
+      <main>
+        <section className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-black/35" />
+          <Image
+            src="/coverphoto1.jpg"
+            alt="Salon interior and beauty service"
+            fill
+            className="object-cover"
+            priority
+          />
 
-      <header
-          className="sticky top-0 z-50 shadow-md"
-          style={{ backgroundColor: 'rgba(251, 207, 232, 0.2)' }}
-        >
-          <nav className="flex flex-wrap items-center justify-between p-6 h-24">
-            {/* Logo Section */}
-            <div className="flex items-center flex-shrink-0 text-white mr-6">
-              <Image
-                src="/logo.png"
-                alt=""
-                className="rounded-full"
-                width={60}
-                height={60}
-              />
-              <div className="flex flex-row ml-6 items-center">
-                <span
-                  className="font-bold text-xl sm:text-xl md:text-xl lg:text-xl tracking-tight"
-                  style={{ color: '#D20062', fontFamily: 'Serif' }}
+          <div className="relative mx-auto flex min-h-[540px] max-w-6xl items-center justify-end px-4 py-20 sm:px-6 lg:px-8">
+            <div className="max-w-2xl text-white lg:ml-auto">
+              <p className="mb-4 inline-flex rounded-full bg-white/15 px-4 py-2 text-sm font-semibold backdrop-blur">
+                Friendly beauty care for everyone
+              </p>
+              <h1 className="text-4xl font-bold leading-tight sm:text-5xl">
+                Feel fresh, confident, and cared for.
+              </h1>
+              <p className="mt-5 max-w-xl text-base text-rose-50 sm:text-lg">
+                Simple booking, clear prices, and a warm salon experience for
+                teens, adults, and older clients.
+              </p>
+
+              <div className="mt-8 flex flex-wrap gap-3">
+                <button
+                  onClick={handleBookNowClick}
+                  className="rounded-full bg-rose-600 px-6 py-3 text-base font-semibold text-white shadow-lg transition hover:bg-rose-700"
                 >
-                  Guys & Gals
-                </span>
-                <span
-                  className="font-bold text-xl sm:text-xl md:text-xl lg:text-xl tracking-tight ml-2"
-                  style={{ color: '#D6589F', fontFamily: 'Serif' }}
+                  Book a Service
+                </button>
+                <button
+                  onClick={() => router.push("/user")}
+                  className="rounded-full border border-white/60 bg-white/10 px-6 py-3 text-base font-semibold text-white backdrop-blur transition hover:bg-white/20"
                 >
-                  Salon
-                </span>
+                  View My Bookings
+                </button>
               </div>
-
             </div>
+          </div>
+        </section>
 
-            {/* User Dropdown Section */}
-            <div className="flex items-center space-x-4 relative">
-              <button
-                onClick={toggleDropdown}
-                className="flex items-center text-rose-600 text-lg sm:text-xl py-2 px-4 rounded-md font-semibold hover:text-rose-500 transition duration-300"
-              >
-                <FaBars size={24} className="mr-2" />
-              </button>
+        <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {categories.map((category) => {
+              const Icon = category.icon;
+              return (
+                <button
+                  key={category.title}
+                  onClick={handleCategoryClick}
+                  className="flex min-h-[220px] flex-col items-center justify-center rounded-3xl border border-rose-200 bg-white p-5 text-center shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                >
+                  <div className="relative mb-4 h-24 w-24 overflow-hidden rounded-full border border-rose-100">
+                    <Image
+                      src={category.image}
+                      alt={category.title}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="mb-2 inline-flex h-10 w-10 items-center justify-center rounded-full bg-rose-100 text-rose-700">
+                    <Icon size={18} />
+                  </div>
+                  <h2 className="text-lg font-bold text-slate-800">{category.title}</h2>
+                  <p className="mt-2 text-sm text-slate-600">
+                    Tap to explore available services.
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+        </section>
 
-              {dropdownVisible && (
-                <div className="absolute right-0 mt-32 sm:mt-32 w-40 sm:w-48 bg-white rounded-md shadow-lg">
-                  <button
-                    onClick={handleProfileClick}
-                    className="block px-4 py-2 text-gray-800 hover:bg-rose-100 w-full text-left"
-                  >
-                    Bookings
-                  </button>
-                  <button
-                    onClick={handleLogoutClick}
-                    className="block px-4 py-2 text-gray-800 hover:bg-rose-100 w-full text-left"
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
+        <section className="mx-auto grid max-w-6xl gap-8 px-4 pb-10 sm:px-6 lg:grid-cols-[1.2fr_0.8fr] lg:px-8">
+          <div className="rounded-3xl bg-white p-8 shadow-sm">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-rose-500">
+              Why clients choose us
+            </p>
+            <h2 className="text-3xl font-bold text-slate-800">
+              Easy to understand, easy to book, easy to enjoy.
+            </h2>
+            <p className="mt-4 text-base leading-7 text-slate-600">
+              Our salon offers hair care, spa services, make-up, and nail care
+              in a calm, welcoming space. We keep the booking steps simple so
+              every client can move through the system comfortably.
+            </p>
+
+            <div className="mt-8 grid gap-4 sm:grid-cols-3">
+              <div className="rounded-2xl bg-rose-50 p-5">
+                <Scissors className="mb-3 text-rose-600" size={22} />
+                <p className="font-semibold text-slate-800">Beauty Services</p>
+                <p className="mt-1 text-sm text-slate-600">
+                  Hair, nails, spa, and special occasion care.
+                </p>
+              </div>
+              <div className="rounded-2xl bg-rose-50 p-5">
+                <Clock3 className="mb-3 text-rose-600" size={22} />
+                <p className="font-semibold text-slate-800">Simple Booking</p>
+                <p className="mt-1 text-sm text-slate-600">
+                  Pick services first, then continue to your appointment form.
+                </p>
+              </div>
+              <div className="rounded-2xl bg-rose-50 p-5">
+                <HeartHandshake className="mb-3 text-rose-600" size={22} />
+                <p className="font-semibold text-slate-800">Warm Experience</p>
+                <p className="mt-1 text-sm text-slate-600">
+                  Comfortable support for first-time and returning clients.
+                </p>
+              </div>
             </div>
-          </nav>
-        </header>
+          </div>
 
-      
+          <div className="rounded-3xl bg-white p-8 shadow-sm">
+            <h2 className="text-2xl font-bold text-rose-700">Our Benefits</h2>
+            <ul className="mt-5 space-y-4">
+              {benefits.map((benefit) => (
+                <li key={benefit} className="flex items-start gap-3 text-slate-700">
+                  <CheckCircle2 className="mt-0.5 shrink-0 text-rose-600" size={20} />
+                  <span>{benefit}</span>
+                </li>
+              ))}
+            </ul>
 
-        <main>
-  {/* Hero Section */}
-  <div className="relative w-full min-h-[300px] sm:min-h-[400px] md:min-h-[500px] lg:min-h-[600px] xl:min-h-[680px]">
-    {/* Overlay */}
-    <div className="absolute inset-0 bg-black bg-opacity-25"></div>
+            <div className="mt-8 rounded-2xl border border-rose-100 bg-rose-50 p-5 text-sm text-slate-600">
+              <p className="font-semibold text-slate-800">Helpful note</p>
+              <p className="mt-2">
+                Prices shown are minimum rates and may change depending on hair
+                length or additional treatment needs.
+              </p>
+            </div>
+          </div>
+        </section>
 
-    {/* Responsive Background Image */}
-    <Image
-      src="/coverphoto1.jpg"
-      alt="Cover Photo"
-      fill
-      className="object-cover object-center"
-      priority
-    />
+        <section ref={servicesRef} className="scroll-mt-28">
+          <Services />
+        </section>
 
-    {/* Text and Button */}
-    <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 sm:px-6 md:px-8 lg:px-10">
-      <h2 className="text-white text-base sm:text-lg lg:text-2xl font-bold mb-2 font-serif">
-        `ELEVATE YOUR LOOK,
-      </h2>
-      <h2 className="text-white text-base sm:text-lg lg:text-2xl font-bold mb-4 font-serif">
-        ELEVATE YOUR CONFIDENCE.`
-      </h2>
-      <h2 className="text-white text-xs sm:text-sm lg:text-lg mb-4 font-thin">
-        Get ready to be served what you deserve
-      </h2>
-      <button
-        onClick={handleBookNowClick}
-        className="text-rose-600 font-semibold py-1 px-4 sm:py-1 sm:px-4 lg:py-1 lg:px-4 rounded-full border-2 border-rose-600 hover:bg-rose-600 hover:text-white transition text-sm sm:text-base lg:text-lg"
-      >
-        Book Now
-      </button>
-    </div>
-  </div>
+        {showNotice && (
+          <div className="fixed bottom-6 right-6 z-50 max-w-xs rounded-2xl bg-rose-600 px-5 py-4 text-sm font-medium text-white shadow-xl">
+            Please choose one or more services below before continuing.
+          </div>
+        )}
+      </main>
 
-  {/* Service Category */}
-  <div className="relative -mt-9 px-4 sm:px-6 md:px-8 lg:px-10 pb-20">
-    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-center">
-      {/* Service Category Buttons */}
-      <button
-        className="bg-white bg-opacity-80 shadow-inner shadow-rose-300 p-4 sm:p-5 rounded-lg w-full h-36 flex flex-col items-center justify-center hover:bg-rose-50 focus:outline-none"
-        onClick={() => handleContainerClick('Hair Care')}
-      >
-        <Image src="/Hair_Care.png" alt="Hair Care" width={150} height={100} className="object-cover rounded-full" />
-        <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 text-center -mt-2">Hair Care</h1>
-      </button>
-
-      <button
-        className="bg-white bg-opacity-80 shadow-inner shadow-rose-300 p-4 sm:p-5 rounded-lg w-full h-36 flex flex-col items-center justify-center hover:bg-rose-50 focus:outline-none"
-        onClick={() => handleContainerClick('Spa')}
-      >
-        <Image src="/Spa.png" alt="Spa" width={100} height={100} className="object-cover rounded-full" />
-        <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 text-center">Spa</h1>
-      </button>
-
-      <button
-        className="bg-white bg-opacity-80 shadow-inner shadow-rose-300 p-4 sm:p-5 rounded-lg w-full h-36 flex flex-col items-center justify-center hover:bg-rose-50 focus:outline-none"
-        onClick={() => handleContainerClick('Hair & Make-up')}
-      >
-        <Image src="/HnM.jpg" alt="Hair & Make-up" width={100} height={100} className="object-cover rounded-full" />
-        <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 text-center">Hair & Make-up</h1>
-      </button>
-
-      <button
-        className="bg-white bg-opacity-80 shadow-inner shadow-rose-300 p-4 sm:p-5 rounded-lg w-full h-36 flex flex-col items-center justify-center hover:bg-rose-50 focus:outline-none"
-        onClick={() => handleContainerClick('Nail Care')}
-      >
-        <Image src="/Nail Care.png" alt="Nail Care" width={100} height={100} className="object-cover rounded-full" />
-        <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 text-center">Nail Care</h1>
-      </button>
-    </div>
-  </div>
-</main>
-
-
-
-<div className="flex flex-col lg:flex-row items-center lg:items-start space-y-8 lg:space-y-0 lg:space-x-8 ml-4 lg:ml-16 mt-10">
-  
-  <div className="w-full lg:w-[250px] max-w-[300px]">
-    <Image 
-      src="/desc.png" 
-      alt="Description Image" 
-      className="w-full h-auto object-contain"
-      width={250} 
-      height={250} 
-    />
-  </div>
-
-  <div className="flex flex-col justify-center text-center lg:text-left px-4 sm:px-8 lg:px-0 w-full lg:w-[60%]">
-    <div className="text-lg font-semibold text-rose-700 mx-auto lg:mx-0">
-      We provide the best quality spa and beauty services.
-    </div>
-    
-    <div className="mt-2 text-lg text-gray-600 mx-auto lg:mx-0">
-      Our salon offers a wide variety of beauty treatments tailored to meet your unique needs. From relaxing foot massages and makeup to expert hair styling, we ensure you leave feeling refreshed and confident.
-    </div>
-  </div>
-  
-  <div className="w-full lg:w-[30%] lg:ml-8 mt-6 lg:mt-0">
-    <h1 className="font-semibold text-xl text-rose-700 mb-2 text-center lg:text-left">OUR BENEFITS</h1>
-    <ul className="space-y-2 text-center  text-black lg:text-left">
-      <li className="flex items-center justify-center lg:justify-start">
-        <FaCheckCircle className="text-rose-700 mr-2" />
-        Relaxing and rejuvenating experience
-      </li>
-      <li className="flex items-center justify-center lg:justify-start">
-        <FaCheckCircle className="text-rose-700 mr-2" />
-        Skilled and certified professionals
-      </li>
-      <li className="flex items-center justify-center lg:justify-start">
-        <FaCheckCircle className="text-rose-700 mr-2" />
-        Use of high-quality, organic products
-      </li>
-      <li className="flex items-center justify-center lg:justify-start">
-        <FaCheckCircle className="text-rose-700 mr-2" />
-        Customized treatments for all skin types
-      </li>
-      <li className="flex items-center justify-center lg:justify-start">
-        <FaCheckCircle className="text-rose-700 mr-2" />
-        Affordable and luxurious service options
-      </li>
-    </ul>
-  </div>
-</div>
-
-
-{/* Second Image Section */}
-<div className="flex justify-center mt-8 w-full">
-  <Image 
-    src="/time.png" 
-    alt="Time Image" 
-    width={800} 
-    height={600} 
-    objectFit="contain" 
-    className="w-full sm:max-w-4xl"  // Ensures the image is responsive and adjusts to screen size
-  />
-</div>
-
-    
-<div className="text-center sm:text-left mt-10 text-gray-600 w-11/12 sm:w-9/12  mx-auto border rounded p-4">
-  <p>
-    Note: Prices are quoted at a minimum and may vary depending on hair length. Please consult with your stylist for possible additional charges.
-  </p>
-</div>
-
-      {/* Services Section */}
-      <div ref={servicesRef}>
-        <Services/>
-      </div>
-
-       {/* Notice Message */}
-      {showNotice && (
-        <div className="fixed bottom-24 right-8 bg-rose-600 text-white px-4 py-2 rounded shadow-lg z-50">
-        Please select a service first.
-      </div>
-      
-      )}
-
-      <Footer/>
-      
-
+      <Footer />
     </div>
   );
 }

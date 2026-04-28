@@ -1,389 +1,188 @@
-import React, { useEffect, useState } from 'react';
-import { Bookings } from './api/type';
-import Footer from '../components/footer';
-import Image from 'next/image';
-import { FaBars } from 'react-icons/fa';
-import { Calendar, Clock, Briefcase, Users, CreditCard} from 'lucide-react';
-import { HiHashtag } from 'react-icons/hi';
-import { BiWorld } from 'react-icons/bi';
-import { BsGenderAmbiguous } from 'react-icons/bs';
-import Link from 'next/link';
-
+import React, { useEffect, useState } from "react";
+import { Bookings } from "@/types";
+import Footer from "@/components/layout/Footer";
+import SalonHeader from "@/components/layout/SalonHeader";
+import { Calendar, Clock, Briefcase, Users, CreditCard, ClipboardList } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/router";
 
 const UserProfile: React.FC = () => {
-  const [email, setEmail] = useState<string | null>(null);
-  const [name, setName] = useState<string | null>(null);
-  const [age, setAge] = useState<number | null>(null);
-  const [sex, setSex] = useState<string | null>(null);
-  const [address, setAddress] = useState<string | null>(null);
-  const [contactNumber, setContactNumber] = useState<string | null>(null);
   const [bookings, setBookings] = useState<Bookings[]>([]);
   const [loading, setLoading] = useState(true);
-  const [dropdownVisible, setDropdownVisible] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [profileInfo, setProfileInfo] = useState<Profile | null>(null);
-  const [showDetails, setShowDetails] = useState(false);
-  
-  interface Profile {
-    name: string;
-    age: number;
-    sex: string;
-    address: string;
-    contact_number: string;
-  }
+  const { user, loading: authLoading, logout } = useAuth();
+  const router = useRouter();
 
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/login");
+    }
+  }, [authLoading, user, router]);
 
-  
-  const fetchProfile = async (email: string) => {
-    try {
-      const response = await fetch(`/api/profile?email=${email}`);
-      if (response.ok) {
-        const data = await response.json();
-        setProfileInfo(data.profile);  // Assuming the response contains the profile data
-      } else {
-        throw new Error('Profile fetch failed');
+  useEffect(() => {
+    if (!user?.email) return;
+
+    const fetchBookings = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch("/api/booking");
+        if (!response.ok) {
+          throw new Error("Failed to fetch bookings: " + response.statusText);
+        }
+        const data: Bookings[] = await response.json();
+        const userBookings = data.filter((booking) => booking.email === user.email);
+        setBookings(userBookings);
+      } catch (fetchError) {
+        const errorMessage =
+          fetchError instanceof Error ? fetchError.message : "An error occurred";
+        setError(errorMessage);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-      setError('Failed to load profile');
-    }
-  };
-
- useEffect(() => {
-    const storedClient = localStorage.getItem('client');
-    if (storedClient) {
-      setEmail(JSON.parse(storedClient).email);
-      fetchBookings(JSON.parse(storedClient).email);  // Pass the email here
-      fetchProfile(JSON.parse(storedClient).email);    // Fetch the profile using the email
-    }
-  }, []);
-
-  const toggleDetails = () => {
-    setShowDetails((prevState) => !prevState);
-  };
-
-  const fetchBookings = async (userEmail: string) => { // Change here to accept email as a parameter
-    setLoading(true);
-    try {
-      const response = await fetch('/api/booking');
-      if (!response.ok) {
-        throw new Error('Failed to fetch bookings: ' + response.statusText);
-      }
-      const data: Bookings[] = await response.json();
-      console.log('All bookings:', data);
-
-      // Use the provided userEmail instead of the component state
-      const userBookings = data.filter(booking => booking.email === userEmail);
-      console.log('User bookings:', userBookings);
-      setBookings(userBookings);
-
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'An error occurred';
-      setError(errorMessage);
-      console.error('Error fetching bookings:', errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('userEmail');
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('userName');
-    window.location.href = '/login';
-  };
-
-  const toggleDropdown = () => {
-    setDropdownVisible((prev) => !prev);
-  };
-
-  const handleProfileClick = () => {
-    window.location.href = '/user';
-  };
-
-  const handleEditProfile = () => {
-    // If profile is already in editing mode, toggle it off (hide edit form)
-    setIsEditing((prevState) => !prevState);
-  };
-
-  const handleSaveProfile = async () => {
-    const profileData = {
-      email,
-      name,
-      age,
-      sex,
-      address,
-      contact_number: contactNumber,
     };
-  
-    const response = await fetch(`/api/profile?email=${email}`);
-    const data = await response.json();
-  
-    if (data && data.profile) {
-      const updateResponse = await fetch(`/api/profile`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(profileData),
-      });
-      if (updateResponse.ok) {
-        const updatedProfile = await updateResponse.json();
-        setProfileInfo(updatedProfile.profile);
-      } else {
-        console.error('Failed to update profile');
-      }
-    } else {
-      const createResponse = await fetch('/api/profile', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(profileData),
-      });
-      if (createResponse.ok) {
-        const newProfile = await createResponse.json();
-        setProfileInfo(newProfile.profile);
-      } else {
-        console.error('Failed to create profile');
-      }
-      if (contactNumber && contactNumber.length !== 11) {
-        alert("Contact number must be exactly 11 digits.");
-      }
-    }
 
-    // Close the edit form after saving
-    setIsEditing(false);
-  };  
-  const handleCancelEdit = () => {
-    // Close the edit form and reset the inputs to original profile data
-    setName(profileInfo?.name || '');
-    setAge(profileInfo?.age || 0);
-    setSex(profileInfo?.sex || '');
-    setAddress(profileInfo?.address || '');
-    setContactNumber(profileInfo?.contact_number || '');
-    setIsEditing(false);
-  };
+    fetchBookings();
+  }, [user]);
 
-  
-  if (loading) {
+  if (loading || authLoading) {
     return (
-      <div className="flex justify-center items-center h-screen bg-gradient-to-br from-purple-100 to-indigo-100">
-        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-x-4 border-b-2 border-rose-500"></div>
+      <div className="flex min-h-screen items-center justify-center bg-rose-50">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-rose-200 border-t-rose-600" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex justify-center items-center h-screen bg-gradient-to-br from-purple-100 to-indigo-100">
-        <div className="text-red-500 text-center">Error: {error}</div>
+      <div className="flex min-h-screen items-center justify-center bg-rose-50 px-4">
+        <div className="rounded-3xl bg-white p-8 text-center shadow-sm">
+          <p className="text-lg font-semibold text-red-600">Error: {error}</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br bg-slate-100">
-      <header className="sticky top-0 z-50 shadow-md" style={{ backgroundColor: 'rgba(251, 207, 232, 0.2)' }}>
-  <nav className="flex items-center justify-between flex-wrap p-6 h-24">
-    <div className="header-background flex items-center flex-shrink-0 text-white mr-6">
-      <Image src="/logo.png" alt="Logo" className="rounded-full" width={60} height={60} />
-      <div className="flex flex-col sm:flex-row ml-6 items-center">
-        <span className="font-bold text-xl sm:text-lg tracking-tight" style={{ color: '#D20062', fontFamily: 'Serif' }}>
-          Guys & Gals
-        </span>
-        <span className="font-bold text-xl sm:text-lg tracking-tight mt-2 sm:mt-0 ml-2" style={{ color: '#D6589F', fontFamily: 'Serif' }}>
-          Salon
-        </span>
-      </div>
-    </div>
+    <div className="min-h-screen bg-rose-50">
+      <SalonHeader active="bookings" onLogout={logout} />
 
-    <div className="flex items-center space-x-4 relative">
-      <div className="hidden sm:flex space-x-6 text-lg sm:text-xl">
-      <Link href="/homepage" className="text-rose-600 hover:text-rose-500 font-semibold transition duration-300">
-  Home
-</Link>
+      <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+        <section className="rounded-3xl bg-white p-8 shadow-sm">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-rose-500">
+                My Booking History
+              </p>
+              <h1 className="mt-2 text-3xl font-bold text-slate-800">
+                Keep track of your salon appointments.
+              </h1>
+              <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">
+                Review your date, time, service, assigned staff, payment method,
+                and current status in one clear place.
+              </p>
+            </div>
 
-      </div>
-
-      <button onClick={toggleDropdown} className="flex items-center text-rose-600 text-lg sm:text-xl py-2 px-4 rounded-md font-semibold hover:text-rose-500 transition duration-300">
-        <FaBars size={24} className="mr-2" />
-      </button>
-
-      {dropdownVisible && (
-        <div className="absolute right-0 mt-32 w-48 bg-white rounded-md shadow-lg">
-          <button
-            onClick={handleProfileClick}
-            className="block px-4 py-2 text-gray-800 hover:bg-rose-100 w-full text-left"
-          >
-            Bookings
-          </button>
-          <button
-            onClick={handleLogout}
-            className="block px-4 py-2 text-gray-800 hover:bg-rose-100 w-full text-left"
-          >
-            Logout
-          </button>
-        </div>
-      )}
-    </div>
-  </nav>
-</header>
-
-
-
-<main>
-  {/* <div className="bg-rose-400 shadow-lg overflow-hidden">
-  <div className="bg-rose-400 text-white p-5 sm:p-6 md:p-8  md:h-40 lg:h-40 sm:h-32 ">
-  <div className="flex items-center justify-start">
-    <div>
-      <h2 className="text-3xl sm:text-2xl md:text-3xl font-semibold">{profileInfo?.name || ''}</h2>
-      <p className="text-pink-200 text-lg sm:text-sm md:text-lg">{email}</p>
-      <button
-        onClick={toggleDetails}
-        className="mt-2 bg-rose-600 bg-opacity-65 hover:bg-rose-500 text-white p-2 text-sm sm:text-base rounded">
-        Details
-      </button>
-
-      <button 
-        onClick={handleEditProfile} 
-        className="mt-2 ml-2 bg-rose-600 hover:bg-rose-500 text-white p-2 text-sm sm:text-base rounded">
-        Edit Profile
-      </button>
-    </div>
-  </div>
-</div>
-
-
-    <div className="">
-      {isEditing ? (
-        <div className="bg-white w-full p-10">
-          <h3 className="text-2xl font-semibold mb-6 text-pink-600">Edit Profile</h3>
-          <div className="space-y-4">
-            <input
-              type="text"
-              placeholder="Name"
-              value={name || ''}
-              onChange={(e) => setName(e.target.value)}
-              className="border p-2 w-full sm:w-2/3 md:w-1/2"
-            />
-            <input
-              type="number"
-              placeholder="Age"
-              value={age || ''}
-              onChange={(e) => setAge(Number(e.target.value))}
-              className="border p-2 w-full sm:w-2/3 md:w-1/2"
-            />
-            <input
-              type="text"
-              placeholder="Sex"
-              value={sex || ''}
-              onChange={(e) => setSex(e.target.value)}
-              className="border p-2 w-full sm:w-2/3 md:w-1/2"
-            />
-            <input
-              type="text"
-              placeholder="Address"
-              value={address || ''}
-              onChange={(e) => setAddress(e.target.value)}
-              className="border p-2 w-full sm:w-2/3 md:w-1/2"
-            />
-            <input
-              type="text"
-              value={contactNumber || ''}
-              onChange={(e) => setContactNumber(e.target.value)}
-              className="border border-gray-300 p-2 rounded w-full sm:w-2/3 md:w-1/2"
-              maxLength={11} // Limit the input to 11 characters
-              placeholder="Enter 11-digit contact number"
-            />
-            <button onClick={handleSaveProfile} className="bg-pink-600 text-white p-2 rounded">Save</button>
-            <button onClick={handleCancelEdit} className="bg-gray-300 text-white p-2 rounded ml-3">Cancel</button>
-          </div>
-        </div>
-      ) : (
-        showDetails && (
-          <div className="bg-white w-full p-10 ">
-            <h3 className="text-2xl font-semibold text-pink-600">Profile Information</h3>
-            <div className="space-y-4">
-              <div className="flex items-center">
-                <Users size={24} className="text-pink-600 mr-2" />
-                <span className="font-medium">Name: </span>  {profileInfo?.name}
-              </div>
-              <div className="flex items-center">
-                <Clock size={24} className="text-pink-600 mr-2" />
-                <span className="font-medium">Age: </span> {profileInfo?.age}
-              </div>
-              <div className="flex items-center">
-                <BsGenderAmbiguous size={24} className="text-pink-600 mr-2" />
-                <span className="font-medium">Sex: </span> {profileInfo?.sex}
-              </div>
-              <div className="flex items-center">
-                <BiWorld size={24} className="text-pink-600 mr-2" />
-                <span className="font-medium">Address: </span> {profileInfo?.address}
-              </div>
-              <div className="flex items-center">
-                <HiHashtag size={24} className="text-pink-600 mr-2" />
-                <span className="font-medium">Contact Number: </span> {profileInfo?.contact_number}
-              </div>
+            <div className="rounded-2xl bg-rose-50 px-5 py-4 text-left">
+              <p className="text-sm text-slate-500">Total bookings</p>
+              <p className="text-3xl font-bold text-rose-700">{bookings.length}</p>
             </div>
           </div>
-        )
-      )}
-    </div>
-  </div> */}
+        </section>
 
-  <div className="p-10">
-    <h3 className="text-2xl font-semibold mb-6 text-pink-600">Your Bookings</h3>
-    {bookings.length > 0 ? (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
-        {bookings.map((booking) => (
-          <div key={booking.bookingid} className="bg-gray-50 p-6 rounded-lg shadow-inner shadow-rose-100">
-            <div className="flex items-center mb-4">
-              <span className="ml-2 text-gray-600 text-sm">
-                {new Date(booking.created_at).toLocaleString('en-US', {
-                  weekday: 'long', // Full weekday name (e.g. Monday)
-                  year: 'numeric',
-                  month: 'long', // Full month name (e.g. January)
-                  day: 'numeric'
-                })}
-              </span>
+        <section className="mt-8">
+          {bookings.length > 0 ? (
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {bookings.map((booking) => (
+                <article
+                  key={booking.bookingid}
+                  className="rounded-3xl border border-rose-100 bg-white p-6 shadow-sm"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-sm text-slate-500">Booking #{booking.bookingid}</p>
+                      <p className="mt-1 text-lg font-bold text-slate-800">
+                        {new Date(booking.created_at).toLocaleDateString("en-US", {
+                          weekday: "long",
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </p>
+                    </div>
+
+                    <span
+                      className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                        booking.status === "Completed"
+                          ? "bg-green-100 text-green-700"
+                          : booking.status === "Ongoing"
+                            ? "bg-blue-100 text-blue-700"
+                            : "bg-amber-100 text-amber-700"
+                      }`}
+                    >
+                      {booking.status}
+                    </span>
+                  </div>
+
+                  <div className="mt-6 space-y-4 text-slate-700">
+                    <div className="flex items-start gap-3">
+                      <Calendar size={18} className="mt-1 text-rose-600" />
+                      <div>
+                        <p className="text-sm text-slate-500">Appointment date</p>
+                        <p className="font-medium">{booking.date}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Clock size={18} className="mt-1 text-rose-600" />
+                      <div>
+                        <p className="text-sm text-slate-500">Time</p>
+                        <p className="font-medium">{booking.time}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Briefcase size={18} className="mt-1 text-rose-600" />
+                      <div>
+                        <p className="text-sm text-slate-500">Services</p>
+                        <p className="font-medium">{booking.services}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Users size={18} className="mt-1 text-rose-600" />
+                      <div>
+                        <p className="text-sm text-slate-500">Assigned staff</p>
+                        <p className="font-medium">{booking.staffname}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <CreditCard size={18} className="mt-1 text-rose-600" />
+                      <div>
+                        <p className="text-sm text-slate-500">Payment method</p>
+                        <p className="font-medium">{booking.paymentmethod}</p>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              ))}
             </div>
-            {/* Separator Line */}
-          <div className="border-t border-gray-300 my-4"></div>
-          {/* Booking Details */}
-          <div className="space-y-4 text-gray-700">
-            <div className="flex items-center">
-              <Calendar size={20} className="text-pink-600 mr-3" />
-              <span className="text-sm font-medium">{booking.date}</span>
+          ) : (
+            <div className="rounded-3xl bg-white p-10 text-center shadow-sm">
+              <ClipboardList className="mx-auto text-rose-500" size={32} />
+              <h2 className="mt-4 text-2xl font-bold text-slate-800">
+                No bookings yet
+              </h2>
+              <p className="mt-2 text-slate-600">
+                Once you book a service, your appointment details will appear
+                here.
+              </p>
+              <button
+                onClick={() => router.push("/homepage")}
+                className="mt-6 rounded-full bg-rose-600 px-6 py-3 font-semibold text-white transition hover:bg-rose-700"
+              >
+                Browse Services
+              </button>
             </div>
-            <div className="flex items-center">
-              <Clock size={20} className="text-pink-600 mr-3" />
-              <span className="text-sm font-medium">{booking.time}</span>
-            </div>
-            <div className="flex items-center">
-              <Briefcase size={20} className="text-pink-600 mr-3" />
-              <span className="text-sm font-medium">{booking.services}</span>
-            </div>
-            <div className="flex items-center">
-              <Users size={20} className="text-pink-600 mr-3" />
-              <span className="text-sm font-medium">{booking.staffname}</span>
-            </div>
-            <div className="flex items-center">
-              <CreditCard size={20} className="text-pink-600 mr-3" />
-              <span className="text-sm font-medium">{booking.paymentmethod}</span>
-            </div>
-            <div className="flex items-center">
-              <span className="text-sm font-bold text-gray-600">Status:</span>
-              <span className={`ml-2 text-sm font-medium ${booking.status === 'Completed' ? 'text-green-600' : 'text-yellow-600'}`}>
-                {booking.status}
-              </span>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    ) : (
-      <p className="text-center text-gray-500 text-xl">No bookings found.</p>
-    )}
-  </div>
-</main>
+          )}
+        </section>
+      </main>
 
       <Footer />
     </div>
