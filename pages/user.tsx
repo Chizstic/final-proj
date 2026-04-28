@@ -2,14 +2,37 @@ import React, { useEffect, useState } from "react";
 import { Bookings } from "@/types";
 import Footer from "@/components/layout/Footer";
 import SalonHeader from "@/components/layout/SalonHeader";
-import { Calendar, Clock, Briefcase, Users, CreditCard, ClipboardList } from "lucide-react";
+import { Calendar, Clock, Briefcase, Users, CreditCard, ClipboardList, UserCircle2, MapPin, Phone, PencilLine, Save } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/router";
+
+interface UserProfileData {
+  email: string;
+  name: string;
+  age: number;
+  sex: string;
+  address: string;
+  contact_number: string;
+}
 
 const UserProfile: React.FC = () => {
   const [bookings, setBookings] = useState<Bookings[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [profile, setProfile] = useState<UserProfileData | null>(null);
+  const [profileForm, setProfileForm] = useState<UserProfileData>({
+    email: "",
+    name: "",
+    age: 0,
+    sex: "",
+    address: "",
+    contact_number: "",
+  });
+  const [profileLoading, setProfileLoading] = useState(true);
+  const [profileSaving, setProfileSaving] = useState(false);
+  const [profileMessage, setProfileMessage] = useState<string | null>(null);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [showProfileSection, setShowProfileSection] = useState(false);
   const { user, loading: authLoading, logout } = useAuth();
   const router = useRouter();
 
@@ -21,6 +44,43 @@ const UserProfile: React.FC = () => {
 
   useEffect(() => {
     if (!user?.email) return;
+
+    const fetchProfile = async () => {
+      setProfileLoading(true);
+      try {
+        const response = await fetch(`/api/profile?email=${encodeURIComponent(user.email)}`);
+
+        if (response.status === 404) {
+          setProfile(null);
+          setProfileForm((prev) => ({
+            ...prev,
+            email: user.email,
+          }));
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch profile");
+        }
+
+        const data = await response.json();
+        const loadedProfile: UserProfileData = {
+          email: data.profile.email,
+          name: data.profile.name ?? "",
+          age: Number(data.profile.age ?? 0),
+          sex: data.profile.sex ?? "",
+          address: data.profile.address ?? "",
+          contact_number: data.profile.contact_number ?? "",
+        };
+
+        setProfile(loadedProfile);
+        setProfileForm(loadedProfile);
+      } catch (fetchError) {
+        console.error("Profile fetch error:", fetchError);
+      } finally {
+        setProfileLoading(false);
+      }
+    };
 
     const fetchBookings = async () => {
       setLoading(true);
@@ -41,8 +101,60 @@ const UserProfile: React.FC = () => {
       }
     };
 
+    fetchProfile();
     fetchBookings();
   }, [user]);
+
+  const handleProfileInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setProfileForm((prev) => ({
+      ...prev,
+      [name]: name === "age" ? Number(value) : value,
+    }));
+  };
+
+  const handleProfileSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setProfileSaving(true);
+    setProfileMessage(null);
+
+    try {
+      const method = profile ? "PUT" : "POST";
+      const response = await fetch("/api/profile", {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(profileForm),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to save profile");
+      }
+
+      setProfile(data.profile);
+      setProfileForm({
+        email: data.profile.email,
+        name: data.profile.name ?? "",
+        age: Number(data.profile.age ?? 0),
+        sex: data.profile.sex ?? "",
+        address: data.profile.address ?? "",
+        contact_number: data.profile.contact_number ?? "",
+      });
+      setIsEditingProfile(false);
+      setProfileMessage("Profile saved successfully.");
+    } catch (saveError) {
+      setProfileMessage(
+        saveError instanceof Error ? saveError.message : "Unable to save profile."
+      );
+    } finally {
+      setProfileSaving(false);
+    }
+  };
 
   if (loading || authLoading) {
     return (
@@ -67,6 +179,236 @@ const UserProfile: React.FC = () => {
       <SalonHeader active="bookings" onLogout={logout} />
 
       <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+        <section className="mb-8 rounded-3xl bg-white p-8 shadow-sm">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-rose-500">
+                My Profile
+              </p>
+              <h1 className="mt-2 text-3xl font-bold text-slate-800">
+                User credentials and details
+              </h1>
+              <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">
+                Open this section only when you want to review or update your
+                personal details.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                setShowProfileSection((prev) => !prev);
+                setProfileMessage(null);
+                if (profile) {
+                  setProfileForm(profile);
+                }
+                if (showProfileSection) {
+                  setIsEditingProfile(false);
+                }
+              }}
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-rose-600 px-6 py-3 font-semibold text-white transition hover:bg-rose-700"
+            >
+              <UserCircle2 size={16} />
+              {showProfileSection ? "Hide Profile" : "Show Profile"}
+            </button>
+          </div>
+
+          {showProfileSection ? (
+            <div className="mt-6">
+          {isEditingProfile || !profile ? (
+            <form onSubmit={handleProfileSave} className="grid gap-6 md:grid-cols-2">
+              <div>
+                <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700">
+                  <UserCircle2 size={16} className="text-rose-600" />
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={profileForm.name}
+                  onChange={handleProfileInputChange}
+                  placeholder="Enter your full name"
+                  className="w-full rounded-2xl border border-rose-200 px-4 py-4 text-slate-700 outline-none transition focus:border-rose-400 focus:ring-4 focus:ring-rose-100"
+                  required
+                  disabled={profileLoading || profileSaving}
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700">
+                  <PencilLine size={16} className="text-rose-600" />
+                  Age
+                </label>
+                <input
+                  type="number"
+                  name="age"
+                  value={profileForm.age || ""}
+                  onChange={handleProfileInputChange}
+                  placeholder="Enter your age"
+                  className="w-full rounded-2xl border border-rose-200 px-4 py-4 text-slate-700 outline-none transition focus:border-rose-400 focus:ring-4 focus:ring-rose-100"
+                  min={1}
+                  max={150}
+                  required
+                  disabled={profileLoading || profileSaving}
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700">
+                  <Users size={16} className="text-rose-600" />
+                  Sex
+                </label>
+                <select
+                  name="sex"
+                  value={profileForm.sex}
+                  onChange={handleProfileInputChange}
+                  className="w-full rounded-2xl border border-rose-200 px-4 py-4 text-slate-700 outline-none transition focus:border-rose-400 focus:ring-4 focus:ring-rose-100"
+                  required
+                  disabled={profileLoading || profileSaving}
+                >
+                  <option value="">Select sex</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Prefer not to say">Prefer not to say</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700">
+                  <Phone size={16} className="text-rose-600" />
+                  Contact Number
+                </label>
+                <input
+                  type="text"
+                  name="contact_number"
+                  value={profileForm.contact_number}
+                  onChange={handleProfileInputChange}
+                  placeholder="Enter your contact number"
+                  className="w-full rounded-2xl border border-rose-200 px-4 py-4 text-slate-700 outline-none transition focus:border-rose-400 focus:ring-4 focus:ring-rose-100"
+                  required
+                  disabled={profileLoading || profileSaving}
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700">
+                  <MapPin size={16} className="text-rose-600" />
+                  Address
+                </label>
+                <textarea
+                  name="address"
+                  value={profileForm.address}
+                  onChange={handleProfileInputChange}
+                  placeholder="Enter your complete address"
+                  className="min-h-[120px] w-full rounded-2xl border border-rose-200 px-4 py-4 text-slate-700 outline-none transition focus:border-rose-400 focus:ring-4 focus:ring-rose-100"
+                  required
+                  disabled={profileLoading || profileSaving}
+                />
+              </div>
+
+              <div className="md:col-span-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="text-sm text-slate-600">
+                  {profileMessage ? (
+                    <span
+                      className={
+                        profileMessage.toLowerCase().includes("success")
+                          ? "text-green-600"
+                          : "text-red-600"
+                      }
+                    >
+                      {profileMessage}
+                    </span>
+                  ) : (
+                    <span>
+                      {profile ? "Update your saved profile anytime." : "Add your details to create your profile."}
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex flex-wrap gap-3">
+                  {profile && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsEditingProfile(false);
+                        setProfileMessage(null);
+                        setProfileForm(profile);
+                      }}
+                      className="inline-flex items-center justify-center rounded-full border border-slate-300 px-6 py-3 font-semibold text-slate-700 transition hover:bg-slate-50"
+                      disabled={profileSaving}
+                    >
+                      Cancel
+                    </button>
+                  )}
+                  <button
+                    type="submit"
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-rose-600 px-6 py-3 font-semibold text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-70"
+                    disabled={profileLoading || profileSaving}
+                  >
+                    <Save size={16} />
+                    {profileSaving ? "Saving..." : profile ? "Update Profile" : "Save Profile"}
+                  </button>
+                </div>
+              </div>
+            </form>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="rounded-2xl bg-rose-50 p-5">
+                <p className="mb-2 text-sm font-semibold text-slate-500">Full Name</p>
+                <p className="text-base font-semibold text-slate-800">{profile.name}</p>
+              </div>
+              <div className="rounded-2xl bg-rose-50 p-5">
+                <p className="mb-2 text-sm font-semibold text-slate-500">Age</p>
+                <p className="text-base font-semibold text-slate-800">{profile.age}</p>
+              </div>
+              <div className="rounded-2xl bg-rose-50 p-5">
+                <p className="mb-2 text-sm font-semibold text-slate-500">Sex</p>
+                <p className="text-base font-semibold text-slate-800">{profile.sex}</p>
+              </div>
+              <div className="rounded-2xl bg-rose-50 p-5">
+                <p className="mb-2 text-sm font-semibold text-slate-500">Contact Number</p>
+                <p className="text-base font-semibold text-slate-800">{profile.contact_number}</p>
+              </div>
+              <div className="rounded-2xl bg-rose-50 p-5 md:col-span-2">
+                <p className="mb-2 text-sm font-semibold text-slate-500">Address</p>
+                <p className="text-base font-semibold text-slate-800">{profile.address}</p>
+              </div>
+
+              <div className="md:col-span-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="text-sm text-slate-600">
+                  {profileMessage ? (
+                    <span
+                      className={
+                        profileMessage.toLowerCase().includes("success")
+                          ? "text-green-600"
+                          : "text-red-600"
+                      }
+                    >
+                      {profileMessage}
+                    </span>
+                  ) : (
+                    <span>Your saved profile details are shown here.</span>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsEditingProfile(true);
+                    setProfileMessage(null);
+                  }}
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-rose-600 px-6 py-3 font-semibold text-white transition hover:bg-rose-700"
+                >
+                  <PencilLine size={16} />
+                  Edit Profile
+                </button>
+              </div>
+            </div>
+          )}
+            </div>
+          ) : null}
+        </section>
+
         <section className="rounded-3xl bg-white p-8 shadow-sm">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
