@@ -1,51 +1,75 @@
-Here is a cleaner and easier-to-understand version you can copy:
+# Guys & Gals Salon
 
----
+This project is a salon booking system built with **Next.js**, **TypeScript**, and **Tailwind CSS**. It is deployed on **Vercel**.
 
-This project is built using **Next.js** and deployed on **Vercel**.
-**Live website:** [https://guys-gals-salon.vercel.app](https://guys-gals-salon.vercel.app)
+Live website: [https://guys-gals-salon.vercel.app](https://guys-gals-salon.vercel.app)
+
+## Features
+
+- client login and signup
+- service browsing and selection
+- appointment booking form
+- user profile and booking history
+- admin dashboard for staff and booking management
+- API routes for bookings, profiles, staff, payments, and users
 
 ## Getting Started
 
-To run the project locally, start the development server:
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the development server:
 
 ```bash
 npm run dev
 ```
 
-Then open your browser and go to:
+Then open:
+
 [http://localhost:3000](http://localhost:3000)
 
-You can edit the main page in:
+## Main Pages
 
-```
-pages/index.tsx
-```
-
-The site will automatically update when you save changes.
+- `pages/index.tsx` - app entry and redirect logic
+- `pages/homepage.tsx` - client homepage
+- `pages/bookingform.tsx` - booking page
+- `pages/user.tsx` - user profile and booking history
+- `pages/admin.tsx` - admin dashboard
+- `pages/login.tsx` - login page
+- `pages/signup.tsx` - signup page
 
 ## API Routes
 
-Sample API route:
+All files inside `pages/api` are API endpoints.
 
-```
-http://localhost:3000/api/hello
-```
+Examples:
 
-Edit it here:
+- `pages/api/booking.ts` - booking create, read, update, delete
+- `pages/api/profile.ts` - user profile create, read, update
+- `pages/api/staff.ts` - staff management
+- `pages/api/payment.ts` - payment flow
+- `pages/api/users.ts` - login/auth-related user lookup
+- `pages/api/register.ts` - client account registration
 
-```
-pages/api/hello.ts
-```
+## Tech Stack
 
-Any file inside `pages/api` becomes an API endpoint.
-
-## Learn More
-
-* Next.js Docs: [https://nextjs.org/docs](https://nextjs.org/docs)
-* Next.js Tutorial: [https://nextjs.org/learn](https://nextjs.org/learn)
+- Next.js 14
+- React 18
+- TypeScript
+- Tailwind CSS
+- Vercel Postgres
+- PayMongo
 
 ## Deployment
 
-This app is deployed on Vercel and available at:
+This app is deployed on Vercel:
+
 [https://guys-gals-salon.vercel.app](https://guys-gals-salon.vercel.app)
+
+## Learn More
+
+- Next.js Docs: [https://nextjs.org/docs](https://nextjs.org/docs)
+- Next.js Learn: [https://nextjs.org/learn](https://nextjs.org/learn)
